@@ -9,7 +9,12 @@ import de.robv.android.xposed.Callback;
 import de.robv.android.xposed.XposedBridge;
 
 /**
- * Example module which 
+ * Example module which changes the color of the clock in the statusbar to red and
+ * also appends a smiley to it. It does so by hooking the updateClock method of the
+ * Clock class in the systemui as soon as the com.android.systemui is being loaded.
+ * <br/>
+ * This demonstrates how a very central component can be modified without changing
+ * the APKs (including deodexing, recompiling, signing etc).
  */
 public class RedClock {
 	private static Method methodGetText;
