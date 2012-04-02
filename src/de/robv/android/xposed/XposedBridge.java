@@ -45,6 +45,10 @@ public final class XposedBridge {
 	 */
 	private static boolean onVmCreated(String startClassName) throws Exception {
 		boolean isZygote = (startClassName == null);
+		
+		try {
+			logWriter = new PrintWriter(new FileWriter("/data/xposed/debug.log", true));
+		} catch (IOException ignored) {}
 
 		try {
 			if (isZygote) {
@@ -115,18 +119,14 @@ public final class XposedBridge {
 	}
 	
 	/**
-	 * Writes a message to /data/xposed/test.log (needs to have chmod 777)
+	 * Writes a message to /data/xposed/debug.log (needs to have chmod 777)
 	 * @param text log message
 	 */
 	public static void log(String text) {
 		System.out.println(text);
-		try {
-			if (logWriter == null)
-				logWriter = new PrintWriter(new FileWriter("/data/xposed/test.log", true));
+		if (logWriter != null) {
 			logWriter.println(text);
 			logWriter.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -137,13 +137,9 @@ public final class XposedBridge {
 	 */
 	public static void log(Throwable t) {
 		t.printStackTrace();
-		try {
-			if (logWriter == null)
-				logWriter = new PrintWriter(new FileWriter("/data/xposed/test.log", true));
+		if (logWriter != null) {
 			t.printStackTrace(logWriter);
 			logWriter.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	

@@ -29,7 +29,7 @@ public class RedClock {
 			methodSetTextColor = TextView.class.getDeclaredMethod("setTextColor", Integer.TYPE);
 		} catch (Throwable t) {
 			XposedBridge.log(t);
-		} 
+		}
 	}
 	
 	@SuppressWarnings("unused")
