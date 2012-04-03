@@ -1,7 +1,12 @@
 package de.robv.android.xposed;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.InvocationTargetException;
@@ -14,7 +19,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import android.app.Instrumentation;
-import de.robv.android.xposed.mods.RedClock;
+import dalvik.system.PathClassLoader;
 
 public final class XposedBridge {
 	public static boolean DEBUG = false;
@@ -46,27 +51,35 @@ public final class XposedBridge {
 	private static boolean onVmCreated(String startClassName) throws Exception {
 		boolean isZygote = (startClassName == null);
 		
+		// initialize log file
 		try {
-			logWriter = new PrintWriter(new FileWriter("/data/xposed/debug.log", true));
+			File logFile = new File("/data/xposed/debug.log");
+			logWriter = new PrintWriter(new FileWriter(logFile, true));
+			logFile.setReadable(true, false);
+			logFile.setWritable(true, false);
 		} catch (IOException ignored) {}
+		
+		log("-----------------\nLoading Xposed...");
 
+		// load our internal stuff
 		try {
 			if (isZygote) {
 				initXbridgeInternal();
 				if (DEBUG)
 					DebugHandlers.init();
-				
-				// TODO load modules dynamically
-				RedClock.init();
-
-	//		} else if ("com.android.commands.am.Am".equals(startClassName)) {
-	//			Method originalMain = Class.forName("com.android.commands.am.Am").getDeclaredMethod("main", new Class[] { String[].class });
-	//			hookMethod(originalMain, XposedBridge.class, "logHookedMethodParams", Callback.PRIORITY_DEFAULT);
 			}
 		} catch (Throwable t) {
 			log("Could not init Xbridge");
 			log(t);
 			return false;
+		}
+		
+		// load modules
+		try {
+			loadModules(startClassName);			
+		} catch (Throwable t) {
+			log("Loading modules failed");
+			log(t);
 		}
 		
 		return true;
@@ -90,6 +103,49 @@ public final class XposedBridge {
 			loadedApkGetPackageName,
 			loadedApkGetApplication
 		}, true);
+	}
+	
+	private static void loadModules(String startClassName) throws IOException {
+		BufferedReader apks = new BufferedReader(new FileReader("/data/xposed/modules.list"));
+		String apk;
+		while ((apk = apks.readLine()) != null) {
+			loadModule(apk, startClassName);
+		}
+	}
+	
+	private static void loadModule(String apk, String startClassName) {
+		log("Loading modules from " + apk);
+		
+		ClassLoader xbcl = XposedBridge.class.getClassLoader();
+		ClassLoader mcl = new PathClassLoader(apk, xbcl);
+		
+		InputStream is = mcl.getResourceAsStream("assets/xposed_init");
+		if (is == null) {
+			log("assets/xposed_init not found in the APK");
+			return;
+		}
+		
+		BufferedReader moduleClassesReader = new BufferedReader(new InputStreamReader(is));
+		try {
+			String moduleClassName;
+			while ((moduleClassName = moduleClassesReader.readLine()) != null) {
+				moduleClassName = moduleClassName.trim();
+				if (moduleClassName.isEmpty() || moduleClassName.startsWith("#"))
+					continue;
+				
+				try {
+					log ("  Loading class " + moduleClassName);
+					Class<?> moduleClass;moduleClass = mcl.loadClass(moduleClassName);
+					Method moduleInit = moduleClass.getDeclaredMethod("init", String.class);
+					System.out.println(moduleInit);
+					moduleInit.invoke(null, startClassName);
+				} catch (Throwable t) {
+					log(t);
+				}
+			}
+		} catch (IOException e) {
+			log(e);
+		}
 	}
 	
 	/**
@@ -122,7 +178,7 @@ public final class XposedBridge {
 	 * Writes a message to /data/xposed/debug.log (needs to have chmod 777)
 	 * @param text log message
 	 */
-	public static void log(String text) {
+	public synchronized static void log(String text) {
 		System.out.println(text);
 		if (logWriter != null) {
 			logWriter.println(text);
@@ -135,7 +191,7 @@ public final class XposedBridge {
 	 * @param t The Throwable object for the stacktrace
 	 * @see XposedBridge#log(String)
 	 */
-	public static void log(Throwable t) {
+	public synchronized static void log(Throwable t) {
 		t.printStackTrace();
 		if (logWriter != null) {
 			t.printStackTrace(logWriter);
@@ -200,7 +256,7 @@ public final class XposedBridge {
 	 * @param priority The higher the priority, the earlier this handler called.
 	 * @throws NoSuchMethodException The handler method was not found
 	 */
-	public static void hookMethod(Method hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
+	public synchronized static void hookMethod(Method hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
 		Callback c = new Callback(handlerClass, handlerMethodName, priority, HOOK_METHOD_CALLBACK_PARAMS);
 		if (c.method.getReturnType().equals(Void.TYPE))
 			throw new NoSuchMethodException("Method must have a return type (not void)");
@@ -245,7 +301,7 @@ public final class XposedBridge {
 	 * <code>public static void anyName(String packageName, ClassLoader classLoader)</code>
 	 * <br/>
 	 */
-	public static void hookLoadPackage(Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
+	public synchronized static void hookLoadPackage(Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
 		Callback c = new Callback(handlerClass, handlerMethodName, priority, LOADED_PACKAGE_CALLBACK_PARAMS);
 		c.method.setAccessible(true);
 		loadedPackageCallbacks.add(c);
