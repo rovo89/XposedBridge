@@ -111,6 +111,7 @@ public final class XposedBridge {
 		while ((apk = apks.readLine()) != null) {
 			loadModule(apk, startClassName);
 		}
+		apks.close();
 	}
 	
 	private static void loadModule(String apk, String startClassName) {
@@ -145,6 +146,10 @@ public final class XposedBridge {
 			}
 		} catch (IOException e) {
 			log(e);
+		} finally {
+			try {
+				is.close();
+			} catch (IOException ignored) {}
 		}
 	}
 	
