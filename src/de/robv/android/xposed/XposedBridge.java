@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -45,7 +46,7 @@ public final class XposedBridge {
 	 * because native methods have not been linked yet. Calling such a method will result in a
 	 * {@link UnsatisfiedLinkError}.
 	 * 
-	 * @param startClassName Name of the class the VM has been created for. @code{null} for the Zygote process
+	 * @param startClassName Name of the class the VM has been created for or {@code null} for the Zygote process
 	 * @return Whether you want to keep on using Xposed for this process 
 	 */
 	private static boolean onVmCreated(String startClassName) throws Exception {
@@ -86,7 +87,7 @@ public final class XposedBridge {
 	}
 	
 	/**
-	 * Hook some methods which we want to create an easier interface for
+	 * Hook some methods which we want to create an easier interface for developers.
 	 */
 	private static void initXbridgeInternal() throws NoSuchMethodException, ClassNotFoundException {
 		Class<?> classLoadedApk = Class.forName("android.app.LoadedApk");
@@ -105,6 +106,9 @@ public final class XposedBridge {
 		}, true);
 	}
 	
+	/**
+	 * Try to load all modules defined in /data/xposed/modules.list
+	 */
 	private static void loadModules(String startClassName) throws IOException {
 		BufferedReader apks = new BufferedReader(new FileReader("/data/xposed/modules.list"));
 		String apk;
@@ -114,6 +118,11 @@ public final class XposedBridge {
 		apks.close();
 	}
 	
+	/**
+	 * Load a module from an APK by calling the init(String) method for all classes defined
+	 * in assets/xposed_init.
+	 * @see MethodSignatureGuide#init
+	 */
 	private static void loadModule(String apk, String startClassName) {
 		log("Loading modules from " + apk);
 		
@@ -247,13 +256,15 @@ public final class XposedBridge {
 		}
 	}
 	
+	private static void ensureMethodIsStatic(Method method) throws NoSuchMethodException {
+		if (!Modifier.isStatic(method.getModifiers()))
+			throw new NoSuchMethodException("Callback methods have to be static");
+	}
+		
+	
 	/**
-	 * Hook any method and call the specified handler method.
-	 * The handler method needs to have the following signature:<br/>
-	 * <code>public static Object anyName(Iterator&lt;Callback&gt; iterator, Method method, Object thisObject, Object[] args)</code>
-	 * <br/>
-	 * It should use {@link #callNext} to call the next handler method in the queue. The last handler will be
-	 * the method that was originally hooked.
+	 * Hook any method and call the specified handler method.<br/>
+	 * The handler methods has to have the signature described in {@link MethodSignatureGuide#handleHookedMethod}.
 	 * 
 	 * @param hookMethod The method to be hooked
 	 * @param handlerClass Class of the handler
@@ -263,8 +274,10 @@ public final class XposedBridge {
 	 */
 	public synchronized static void hookMethod(Method hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
 		Callback c = new Callback(handlerClass, handlerMethodName, priority, HOOK_METHOD_CALLBACK_PARAMS);
+		ensureMethodIsStatic(c.method);
 		if (c.method.getReturnType().equals(Void.TYPE))
 			throw new NoSuchMethodException("Method must have a return type (not void)");
+
 		
 		SortedSet<Callback> callbacks = hookedMethodCallbacks.get(hookMethod);
 		if (callbacks == null) {
@@ -281,12 +294,7 @@ public final class XposedBridge {
 	/**
 	 * This method is called as a replacement for hooked methods.
 	 * Use {@link #invokeOriginalMethod} to call the method that was hooked.
-	 * 
-	 * @param method The Method object, describing which method was called
-	 * @param thisObject For non-static calls, the "this" pointer
-	 * @param args Arguments for the method call as Object[] array
-	 * @return The object to return to the original caller of the method
-	 * @throws Throwable
+	 * The arguments are basically the same that are passed on to {@link MethodSignatureGuide#handleHookedMethod}.
 	 */
 	private static Object handleHookedMethod(Method method, Object thisObject, Object[] args) throws Throwable {
 		SortedSet<Callback> callbacks = hookedMethodCallbacks.get(method);
@@ -301,13 +309,12 @@ public final class XposedBridge {
 	}
 
 	/**
-	 * Get notified when a package is loaded
-	 * The handler method needs to have the following signature:<br/>
-	 * <code>public static void anyName(String packageName, ClassLoader classLoader)</code>
-	 * <br/>
+	 * Get notified when a package is loaded. This is especially useful to hook some package-specific methods.<br/>
+	 * The handler methods has to have the signature described in {@link MethodSignatureGuide#handleLoadPackage}.
 	 */
 	public synchronized static void hookLoadPackage(Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
 		Callback c = new Callback(handlerClass, handlerMethodName, priority, LOADED_PACKAGE_CALLBACK_PARAMS);
+		ensureMethodIsStatic(c.method);
 		c.method.setAccessible(true);
 		loadedPackageCallbacks.add(c);
 	}
