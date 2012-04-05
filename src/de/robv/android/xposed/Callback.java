@@ -16,7 +16,10 @@ public class Callback implements Comparable<Callback> {
 	@Override
 	public int compareTo(Callback another) {
 		// order descending by priority
-		return another.priority - this.priority;
+		if (another.priority != this.priority)
+			return another.priority - this.priority;
+		else
+			return method.toString().compareTo(another.method.toString());
 	}
 	
 	@Override
