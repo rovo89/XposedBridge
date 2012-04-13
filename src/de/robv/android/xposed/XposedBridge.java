@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -20,10 +23,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import android.app.Instrumentation;
+import android.content.res.Resources;
 import dalvik.system.PathClassLoader;
 
 public final class XposedBridge {
 	public static boolean DEBUG = false;
+	private static String startClassName;
 	
 	private static PrintWriter logWriter = null;
 	
@@ -36,21 +41,28 @@ public final class XposedBridge {
 	private static final SortedSet<Callback> loadedPackageCallbacks = new TreeSet<Callback>();
 	private static final Class<?>[] LOADED_PACKAGE_CALLBACK_PARAMS = new Class[] { String.class, ClassLoader.class };
 	
+	private static final SortedSet<Callback> initPackageResourcesCallbacks = new TreeSet<Callback>();
+	private static final Class<?>[] INIT_PACKAGE_RESOURCES_CALLBACK_PARAMS = new Class[] { String.class, XResources.class };
+	
 	// cached methods
 	private static Method loadedApkGetClassLoader;
 	private static Method loadedApkGetPackageName;
 	private static Method loadedApkGetApplication;
+	private static Method loadedApkGetResDir;
+	private static Field f_mActiveResources;
+	private static Field f_mPackages;
+	private static Constructor<?> newResourcesKey;
+	private static Field fieldCI;
 	
 	/**
-	 * Called when the VM has just been created. Be careful, not everything is possible at this time
-	 * because native methods have not been linked yet. Calling such a method will result in a
-	 * {@link UnsatisfiedLinkError}.
+	 * Called when the VM has just been created. As native methods have not been linked at this time
+	 * we just hook the real init method and perform most things there.
 	 * 
 	 * @param startClassName Name of the class the VM has been created for or {@code null} for the Zygote process
 	 * @return Whether you want to keep on using Xposed for this process 
 	 */
 	private static boolean onVmCreated(String startClassName) throws Exception {
-		boolean isZygote = (startClassName == null);
+		XposedBridge.startClassName = startClassName;
 		
 		// initialize log file
 		try {
@@ -62,58 +74,80 @@ public final class XposedBridge {
 		
 		log("-----------------\nLoading Xposed...");
 
-		// load our internal stuff
+		String initClassName = (startClassName == null) ? "com.android.internal.os.ZygoteInit" : "com.android.internal.os.RuntimeInit";
 		try {
-			if (isZygote) {
-				initXbridgeInternal();
-				if (DEBUG)
-					DebugHandlers.init();
-			}
+			Class<?> initClass = Class.forName(initClassName);
+			Method initMain = initClass.getDeclaredMethod("main",  String[].class );
+			hookMethod(initMain, XposedBridge.class, "handleInitMain", Callback.PRIORITY_HIGHEST);
 		} catch (Throwable t) {
 			log("Could not init Xbridge");
 			log(t);
 			return false;
 		}
-		
-		// load modules
+
+		return true;
+	}
+	
+	/**
+	 * Called when native methods and other things are initialized, but before preloading classes etc.
+	 */
+	private static Object handleInitMain(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable {
 		try {
-			loadModules(startClassName);			
+			if (startClassName == null) {
+				// Initializations for Zygote
+				log("Loading some internal stuff");
+				initXbridgeInternal();
+				if (DEBUG)
+					DebugHandlers.init();
+			}
+				
+			loadModules();			
 		} catch (Throwable t) {
-			log("Loading modules failed");
+			log("Errors during Xposed initialization");
 			log(t);
 		}
-		
-		return true;
+		return callNext(iterator, method, thisObject, args);
 	}
 	
 	/**
 	 * Hook some methods which we want to create an easier interface for developers.
 	 */
-	private static void initXbridgeInternal() throws NoSuchMethodException, ClassNotFoundException {
+	private static void initXbridgeInternal() throws Exception {
 		Class<?> classLoadedApk = Class.forName("android.app.LoadedApk");
-		Method makeApplication= classLoadedApk.getDeclaredMethod("makeApplication", Boolean.TYPE, Instrumentation.class);
+		Method makeApplication = classLoadedApk.getDeclaredMethod("makeApplication", Boolean.TYPE, Instrumentation.class);
 		hookMethod(makeApplication, XposedBridge.class, "handleMakeApplication", Callback.PRIORITY_DEFAULT);
 		
+		Class<?> classActivityThread = Class.forName("android.app.ActivityThread");
+		Class<?> classCompatibilityInfo = Class.forName("android.content.res.CompatibilityInfo");
+		Method getTopLevelResources = classActivityThread.getDeclaredMethod("getTopLevelResources", String.class, classCompatibilityInfo);
+		hookMethod(getTopLevelResources, XposedBridge.class, "handleGetTopLevelResources", Callback.PRIORITY_HIGHEST - 10);
+
+		Field systemResources = Resources.class.getDeclaredField("mSystem");
+		systemResources.setAccessible(true);
+		systemResources.set(null, new XResources(Resources.getSystem(), null));
+
 		// Get references to some methods and make them accessible for later use
 		loadedApkGetClassLoader = classLoadedApk.getDeclaredMethod("getClassLoader");
 		loadedApkGetPackageName = classLoadedApk.getDeclaredMethod("getPackageName");
 		loadedApkGetApplication = classLoadedApk.getDeclaredMethod("getApplication");
+		loadedApkGetResDir = classLoadedApk.getDeclaredMethod("getResDir");
 		
 		Method.setAccessible(new AccessibleObject[] {
 			loadedApkGetClassLoader,
 			loadedApkGetPackageName,
-			loadedApkGetApplication
+			loadedApkGetApplication,
+			loadedApkGetResDir
 		}, true);
 	}
 	
 	/**
 	 * Try to load all modules defined in /data/xposed/modules.list
 	 */
-	private static void loadModules(String startClassName) throws IOException {
+	private static void loadModules() throws IOException {
 		BufferedReader apks = new BufferedReader(new FileReader("/data/xposed/modules.list"));
 		String apk;
 		while ((apk = apks.readLine()) != null) {
-			loadModule(apk, startClassName);
+			loadModule(apk);
 		}
 		apks.close();
 	}
@@ -123,8 +157,13 @@ public final class XposedBridge {
 	 * in assets/xposed_init.
 	 * @see MethodSignatureGuide#init
 	 */
-	private static void loadModule(String apk, String startClassName) {
+	private static void loadModule(String apk) {
 		log("Loading modules from " + apk);
+		
+		if (!new File(apk).exists()) {
+			log("File does not exist");
+			return;
+		}
 		
 		ClassLoader xbcl = XposedBridge.class.getClassLoader();
 		ClassLoader mcl = new PathClassLoader(apk, xbcl);
@@ -147,7 +186,6 @@ public final class XposedBridge {
 					log ("  Loading class " + moduleClassName);
 					Class<?> moduleClass;moduleClass = mcl.loadClass(moduleClassName);
 					Method moduleInit = moduleClass.getDeclaredMethod("init", String.class);
-					System.out.println(moduleInit);
 					moduleInit.invoke(null, startClassName);
 				} catch (Throwable t) {
 					log(t);
@@ -327,13 +365,88 @@ public final class XposedBridge {
 		try {
 			String packageName = (String) loadedApkGetPackageName.invoke(thisObject);
 			boolean firstLoad = (loadedApkGetApplication.invoke(thisObject) == null);
-			ClassLoader classLoader = (ClassLoader)loadedApkGetClassLoader.invoke(thisObject);
-			if (firstLoad)
+			if (firstLoad) {
+				String resDir = (String)loadedApkGetResDir.invoke(thisObject);
+				XResources.setPackageNameForResDir(resDir, packageName);
+				ClassLoader classLoader = (ClassLoader)loadedApkGetClassLoader.invoke(thisObject);
 				callAll(loadedPackageCallbacks, packageName, classLoader);
+			}
 		} catch (Exception e) {
 			log(e);
 		}
 		return callNext(iterator, method, thisObject, args);
+	}
+	
+	public synchronized static void hookInitPackageResources(Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
+		Callback c = new Callback(handlerClass, handlerMethodName, priority, INIT_PACKAGE_RESOURCES_CALLBACK_PARAMS);
+		ensureMethodIsStatic(c.method);
+		c.method.setAccessible(true);
+		initPackageResourcesCallbacks.add(c);
+	}
+	
+	
+	private static void test() throws Exception {
+		Class<?> classCompatibilityInfo = Class.forName("android.content.res.CompatibilityInfo");
+		fieldCI = classCompatibilityInfo.getDeclaredField("applicationScale");
+		fieldCI.setAccessible(true);
+		
+		Class<?> classActivityThread = Class.forName("android.app.ActivityThread");
+		f_mActiveResources = classActivityThread.getDeclaredField("mActiveResources");
+		f_mActiveResources.setAccessible(true);
+		
+		f_mPackages = classActivityThread.getDeclaredField("mActiveResources");
+		f_mPackages.setAccessible(true);
+		
+		Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
+		setClassModifiersNative(classResourcesKey, 0);
+		newResourcesKey = classResourcesKey.getDeclaredConstructor(String.class, float.class);
+		newResourcesKey.setAccessible(true);
+	}
+	
+	private static Object handleGetTopLevelResources(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable {
+		Object result = XposedBridge.callNext(iterator, method, thisObject, args);
+		try {
+			if (result instanceof XResources)
+				return result;
+			
+			// replace the returned resources with our subclass
+			Resources origRes = (Resources) result;
+			String resDir = (String) args[0];
+			Object compInfo = (Object) args[1];
+			
+			XResources newRes = new XResources(origRes, resDir);
+			if (fieldCI == null)
+				test();
+			
+	        @SuppressWarnings("unchecked")
+			Map<Object,WeakReference<Resources>> mActiveResources = (Map<Object,WeakReference<Resources>>) f_mActiveResources.get(thisObject);
+	        Object key = newResourcesKey.newInstance(resDir, fieldCI.getFloat(compInfo));
+	        synchronized (f_mPackages.get(thisObject)) {
+	        	WeakReference<Resources> existing = mActiveResources.get(key);
+	        	if (existing != null && existing.get().getAssets() != newRes.getAssets())
+	        		existing.get().getAssets().close();
+	        	//mActiveResources.put(key, new WeakReference<Resources>(newRes));
+			}
+	        
+			try {
+				if (newRes.checkFirstLoad()) {
+					// the package name association will be set when the first Activity or Service
+					// of this package is started. There are some calls that get the Resources before
+					// that time, but it should be early enough to set the replacments when the
+					// app is really loaded
+					String packageName = newRes.getPackageName();
+					if (packageName != null)
+						callAll(initPackageResourcesCallbacks, newRes.getPackageName(), newRes);
+				}
+			} catch (Exception e) {
+				// even if some of this fails, we want the app to use the subclass
+				XposedBridge.log(e);		
+			}
+			return newRes;
+		} catch (Throwable t) {
+			XposedBridge.log(t);
+		}
+		return result;
 	}
 	
 
