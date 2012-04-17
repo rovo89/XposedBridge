@@ -1,33 +1,19 @@
-package de.robv.android.xposed;
+package android.content.res;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import android.content.res.Resources;
 
 public class XResources extends Resources {
 	private static final HashMap<Integer, HashMap<String, Object>> replacements = new HashMap<Integer, HashMap<String, Object>>();
 	private static final HashMap<String, String> resDirToPackage = new HashMap<String, String>();
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
-	private static Field field_mCompatibilityInfo;
 
 	private final String resDir;
 	
 	public XResources(Resources parent, String resDir) {
-		super(parent.getAssets(), parent.getDisplayMetrics(), parent.getConfiguration());
+		super(parent.getAssets(), parent.getDisplayMetrics(), parent.getConfiguration(), parent.getCompatibilityInfo());
 		this.resDir = resDir;
-		
-		try {
-			if (field_mCompatibilityInfo == null) {
-				field_mCompatibilityInfo = Resources.class.getDeclaredField("mCompatibilityInfo");
-				field_mCompatibilityInfo.setAccessible(true);
-			}
-			field_mCompatibilityInfo.set(this, field_mCompatibilityInfo.get(parent));
-		} catch (Exception e) {
-			XposedBridge.log(e);
-			return;
-		}
 	}
 	
 	public boolean checkFirstLoad() {
@@ -164,7 +150,7 @@ public class XResources extends Resources {
 		Object replacement = getReplacement(id);
 		if (replacement != null && replacement instanceof Integer)
 			return (Integer) replacement;
+
 		return super.getColor(id);
 	}
-
 }
