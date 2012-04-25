@@ -113,7 +113,7 @@ public final class XposedBridge {
 	 * Hook some methods which we want to create an easier interface for developers.
 	 */
 	private static void initXbridgeInternal() throws Exception {
-		Method makeApplication = LoadedApk.class.getDeclaredMethod("makeApplication", Boolean.TYPE, Instrumentation.class);
+		Method makeApplication = LoadedApk.class.getDeclaredMethod("makeApplication", boolean.class, Instrumentation.class);
 		hookMethod(makeApplication, XposedBridge.class, "handleMakeApplication", Callback.PRIORITY_DEFAULT);
 		
 		Method getTopLevelResources = ActivityThread.class.getDeclaredMethod("getTopLevelResources", String.class, CompatibilityInfo.class);
@@ -317,7 +317,7 @@ public final class XposedBridge {
 	public synchronized static void hookMethod(Method hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
 		Callback c = new Callback(handlerClass, handlerMethodName, priority, HOOK_METHOD_CALLBACK_PARAMS);
 		ensureMethodIsStatic(c.method);
-		if (c.method.getReturnType().equals(Void.TYPE))
+		if (c.method.getReturnType().equals(void.class))
 			throw new NoSuchMethodException("Method must have a return type (not void)");
 
 		
