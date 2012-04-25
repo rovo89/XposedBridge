@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -55,7 +54,6 @@ public final class XposedBridge {
 	
 	// cached methods
 	private static Field field_LoadedApk_mApplication;
-	private static Constructor<?> constructor_ResourcesKey;
 	
 	/**
 	 * Called when the VM has just been created. As native methods have not been linked at this time
@@ -129,13 +127,12 @@ public final class XposedBridge {
 		// Get references to some methods and fields and make them accessible for later use
 		field_LoadedApk_mApplication = LoadedApk.class.getDeclaredField("mApplication");
 		
-		Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
-		constructor_ResourcesKey = classResourcesKey.getDeclaredConstructor(String.class, float.class);
 		
 		AccessibleObject.setAccessible(new AccessibleObject[] {
 			field_LoadedApk_mApplication,
-			constructor_ResourcesKey,
 		}, true);
+		
+		XResources.init();
 	}
 	
 	/**
@@ -182,7 +179,16 @@ public final class XposedBridge {
 				
 				try {
 					log ("  Loading class " + moduleClassName);
-					Class<?> moduleClass;moduleClass = mcl.loadClass(moduleClassName);
+					Class<?> moduleClass = mcl.loadClass(moduleClassName);
+					
+					// set the static field MODULE_PATH to the path of the module's APK if found
+					try {
+						Field modulePath = moduleClass.getDeclaredField("MODULE_PATH");
+						modulePath.setAccessible(true);
+						modulePath.set(null, apk);
+					} catch (Throwable ignored) {};
+					
+					// call the init(String) method of the module
 					Method moduleInit = moduleClass.getDeclaredMethod("init", String.class);
 					moduleInit.invoke(null, startClassName);
 				} catch (Throwable t) {
@@ -374,6 +380,10 @@ public final class XposedBridge {
 		return callNext(iterator, method, thisObject, args);
 	}
 	
+	/**
+	 * Get notified when the resources for a package are loaded. In callbacks, resource replacements can be created.<br/>
+	 * The handler methods has to have the signature described in {@link MethodSignatureGuide#handleInitPackageResources}.
+	 */
 	public synchronized static void hookInitPackageResources(Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
 		Callback c = new Callback(handlerClass, handlerMethodName, priority, INIT_PACKAGE_RESOURCES_CALLBACK_PARAMS);
 		ensureMethodIsStatic(c.method);
@@ -381,47 +391,59 @@ public final class XposedBridge {
 		initPackageResourcesCallbacks.add(c);
 	}
 	
+	
+	/**
+	 * Called when the resources for a specific package are requested and instead returns an instance of {@link XResources}.
+	 */
 	private static Object handleGetTopLevelResources(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable {
 		Object result = callNext(iterator, method, thisObject, args);
 		try {
-			if (result instanceof XResources)
-				return result;
-
-			// replace the returned resources with our subclass
-			ActivityThread thisActivityThread = (ActivityThread) thisObject;
-			Resources origRes = (Resources) result;
-			String resDir = (String) args[0];
-			CompatibilityInfo compInfo = (CompatibilityInfo) args[1];
-			
-			XResources newRes = new XResources(origRes, resDir);
-			
-			Map<Object, WeakReference<Resources>> mActiveResources =
-					(Map<Object, WeakReference<Resources>>) AndroidAppHelper.getActivityThread_mActiveResources(thisActivityThread);
-			Object mPackages = AndroidAppHelper.getActivityThread_mPackages(thisActivityThread);
-			
-			Object key = constructor_ResourcesKey.newInstance(resDir, compInfo.applicationScale);
-			synchronized (mPackages) {
-				WeakReference<Resources> existing = mActiveResources.get(key);
-				if (existing != null && existing.get().getAssets() != newRes.getAssets())
-					existing.get().getAssets().close();
-				mActiveResources.put(key, new WeakReference<Resources>(newRes));
+			XResources newRes;
+			if (result instanceof XResources) {
+				newRes = (XResources) result;
+			} else {
+				// replace the returned resources with our subclass
+				ActivityThread thisActivityThread = (ActivityThread) thisObject;
+				Resources origRes = (Resources) result;
+				String resDir = (String) args[0];
+				CompatibilityInfo compInfo = (CompatibilityInfo) args[1];
+				
+				newRes = new XResources(origRes, resDir);
+				
+				Map<Object, WeakReference<Resources>> mActiveResources =
+						(Map<Object, WeakReference<Resources>>) AndroidAppHelper.getActivityThread_mActiveResources(thisActivityThread);
+				Object mPackages = AndroidAppHelper.getActivityThread_mPackages(thisActivityThread);
+				
+				Object key = AndroidAppHelper.createResourcesKey(resDir, compInfo.applicationScale);
+				synchronized (mPackages) {
+					WeakReference<Resources> existing = mActiveResources.get(key);
+					if (existing != null && existing.get().getAssets() != newRes.getAssets())
+						existing.get().getAssets().close();
+					mActiveResources.put(key, new WeakReference<Resources>(newRes));
+				}
+				
+				newRes.setInited(resDir == null || !newRes.checkFirstLoad());
 			}
-			
-			try {
-				if (newRes.checkFirstLoad()) {
+
+			if (!newRes.isInited()) {
+				try {
 					// the package name association will be set when the first Activity or Service
 					// of this package is started. There are some calls that get the Resources before
 					// that time, but it should be early enough to set the replacments when the
 					// app is really loaded
 					String packageName = newRes.getPackageName();
-					if (packageName != null)
+					if (packageName != null) {
 						callAll(initPackageResourcesCallbacks, packageName, newRes);
+						newRes.setInited(true);
+					}
+				} catch (Exception e) {
+					// even if some of this fails, we want the app to use the subclass
+					log(e);		
 				}
-			} catch (Exception e) {
-				// even if some of this fails, we want the app to use the subclass
-				log(e);		
 			}
+			
 			return newRes;
+			
 		} catch (Throwable t) {
 			log(t);
 		}
@@ -434,14 +456,6 @@ public final class XposedBridge {
 	 * @param method The method to intercept
 	 */
 	private native static void hookMethodNative(Method method);
-	
-	/**
-	 * Change the modifiers (access flags) for a class.
-	 * Do not use for now!
-	 * @param clazz The class to modify
-	 * @param modifiers New modifiers to set
-	 */
-	private native static void setClassModifiersNative(Class<?> clazz, int modifiers);	
 	
 	private native static Object invokeOriginalMethodNative(Method method, Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
     			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
@@ -466,7 +480,7 @@ public final class XposedBridge {
      *             if an exception was thrown by the invoked method
 
 	 */
-	private static Object invokeOriginalMethod(Method method, Object thisObject, Object[] args)
+	public static Object invokeOriginalMethod(Method method, Object thisObject, Object[] args)
 				throws NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (args == null) {
             args = EMPTY_ARRAY;

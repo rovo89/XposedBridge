@@ -3,6 +3,8 @@ package de.robv.android.xposed;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
+import android.content.res.XResources;
+
 /**
  * Callback methods have to follow these method signatures.
  * They do NOT have to implement this interface, just the parameters
@@ -37,4 +39,12 @@ public interface MethodSignatureGuide {
 	 * @param classLoader The ClassLoader used for this package 
 	 */
 	void handleLoadPackage(String packageName, ClassLoader classLoader);
+	
+	/**
+	 * Signature of callbacks for {@link XposedBridge#hookInitPackageResources}.
+	 * 
+	 * @param packageName The name of the package for which resources are being loaded
+	 * @param classLoader Reference to the resources that can be used for calls to {@link XResources#setReplacement}
+	 */
+	void handleInitPackageResources(String packageName, XResources res);
 }
