@@ -10,8 +10,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import android.app.LoadedApk;
 import android.content.res.CompatibilityInfo;
 import android.content.res.Resources;
 import android.content.res.XResources;
+import android.util.Log;
 
 import com.android.internal.os.RuntimeInit;
 import com.android.internal.os.ZygoteInit;
@@ -36,15 +39,16 @@ import dalvik.system.PathClassLoader;
 
 public final class XposedBridge {
 	public static boolean DEBUG = false;
-	private static String startClassName;
 	
 	private static PrintWriter logWriter = null;
 	
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 	
 	// built-in handlers
-	private static final Map<Method, SortedSet<Callback>> hookedMethodCallbacks = new HashMap<Method, SortedSet<Callback>>();
-	private static final Class<?>[] HOOK_METHOD_CALLBACK_PARAMS = new Class[] { Iterator.class, Method.class, Object.class, Object[].class };
+	private static final Map<Member, SortedSet<Callback>> hookedMethodCallbacks = new HashMap<Member, SortedSet<Callback>>();
+	private static final Class<?>[] HOOK_METHOD_CALLBACK_PARAMS_METHOD = new Class[] { Iterator.class, Method.class, Object.class, Object[].class };
+	private static final Class<?>[] HOOK_METHOD_CALLBACK_PARAMS_CONSTRUCTOR = new Class[] { Iterator.class, Constructor.class, Object.class, Object[].class };
+	private static final Class<?>[] HOOK_METHOD_CALLBACK_PARAMS_GENERIC = new Class[] { Iterator.class, Member.class, Object.class, Object[].class };
 
 	private static final SortedSet<Callback> loadedPackageCallbacks = new TreeSet<Callback>();
 	private static final Class<?>[] LOADED_PACKAGE_CALLBACK_PARAMS = new Class[] { String.class, ClassLoader.class };
@@ -56,63 +60,55 @@ public final class XposedBridge {
 	private static Field field_LoadedApk_mApplication;
 	
 	/**
-	 * Called when the VM has just been created. As native methods have not been linked at this time
-	 * we just hook the real init method and perform most things there.
-	 * 
-	 * @param startClassName Name of the class the VM has been created for or {@code null} for the Zygote process
-	 * @return Whether you want to keep on using Xposed for this process 
-	 */
-	private static boolean onVmCreated(String startClassName) throws Exception {
-		XposedBridge.startClassName = startClassName;
-		
-		// initialize log file
-		try {
-			File logFile = new File("/data/xposed/debug.log");
-			logWriter = new PrintWriter(new FileWriter(logFile, true));
-			logFile.setReadable(true, false);
-			logFile.setWritable(true, false);
-		} catch (IOException ignored) {}
-		
-		log("-----------------\nLoading Xposed...");
-		
-		try {
-			Class<?> initClass = (startClassName == null) ? ZygoteInit.class : RuntimeInit.class;
-			Method initMain = initClass.getDeclaredMethod("main",  String[].class );
-			hookMethod(initMain, XposedBridge.class, "handleInitMain", Callback.PRIORITY_HIGHEST);
-		} catch (Throwable t) {
-			log("Could not init Xbridge");
-			log(t);
-			return false;
-		}
-
-		return true;
-	}
-	
-	/**
 	 * Called when native methods and other things are initialized, but before preloading classes etc.
 	 */
-	private static Object handleInitMain(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable {
+	private static void main(String[] args) {
+		// the class the VM has been created for or null for the Zygote process
+		String startClassName = getStartClassName();
+
+		// initialize the Xposed framework and modules
 		try {
+			// initialize log file
+			try {
+				File logFile = new File("/data/xposed/debug.log");
+				logWriter = new PrintWriter(new FileWriter(logFile, true));
+				logFile.setReadable(true, false);
+				logFile.setWritable(true, false);
+			} catch (IOException ignored) {}
+			
+			log("-----------------\nLoading Xposed...");
+			
 			if (startClassName == null) {
 				// Initializations for Zygote
 				log("Loading some internal stuff");
-				initXbridgeInternal();
+				initXbridgeZygote();
 				if (DEBUG)
 					DebugHandlers.init();
 			}
 				
-			loadModules();			
+			loadModules(startClassName);			
 		} catch (Throwable t) {
 			log("Errors during Xposed initialization");
 			log(t);
 		}
-		return callNext(iterator, method, thisObject, args);
+		
+		// call the original startup code
+		try {
+			Class<?> initClass = (startClassName == null) ? ZygoteInit.class : RuntimeInit.class;
+			Method initMain = initClass.getDeclaredMethod("main", String[].class);
+			initMain.invoke(null, (Object) args);
+		} catch (Throwable t) {
+			log("Errors while calling original startup class");
+			log(t);
+		}
 	}
+	
+	private static native String getStartClassName();
 	
 	/**
 	 * Hook some methods which we want to create an easier interface for developers.
 	 */
-	private static void initXbridgeInternal() throws Exception {
+	private static void initXbridgeZygote() throws Exception {
 		Method makeApplication = LoadedApk.class.getDeclaredMethod("makeApplication", boolean.class, Instrumentation.class);
 		hookMethod(makeApplication, XposedBridge.class, "handleMakeApplication", Callback.PRIORITY_DEFAULT);
 		
@@ -138,11 +134,11 @@ public final class XposedBridge {
 	/**
 	 * Try to load all modules defined in /data/xposed/modules.list
 	 */
-	private static void loadModules() throws IOException {
+	private static void loadModules(String startClassName) throws IOException {
 		BufferedReader apks = new BufferedReader(new FileReader("/data/xposed/modules.list"));
 		String apk;
 		while ((apk = apks.readLine()) != null) {
-			loadModule(apk);
+			loadModule(apk, startClassName);
 		}
 		apks.close();
 	}
@@ -152,7 +148,7 @@ public final class XposedBridge {
 	 * in assets/xposed_init.
 	 * @see MethodSignatureGuide#init
 	 */
-	private static void loadModule(String apk) {
+	private static void loadModule(String apk, String startClassName) {
 		log("Loading modules from " + apk);
 		
 		if (!new File(apk).exists()) {
@@ -204,30 +200,9 @@ public final class XposedBridge {
 		}
 	}
 	
-	/**
-	 * Called directly before executing the main method of a command line app
-	 */
-	private static void onStartedBeforeMain() {
-		if (DEBUG)
-			log("onStartedBeforeMain");
-	}
-	
-	/**
-	 * Called directly after executing the main method of a command line app
-	 */
-	private static void onStartedAfterMain() {
-		if (DEBUG)
-			log("onStartedAfterMain");
-	}
-	
 	private static void onZygoteInit() throws Exception {
 		if (DEBUG)
 			log("onZygoteInit");
-	}
-	
-	private static void onExit() {
-		if (DEBUG)
-			log("onExit");
 	}
 	
 	/**
@@ -235,7 +210,7 @@ public final class XposedBridge {
 	 * @param text log message
 	 */
 	public synchronized static void log(String text) {
-		System.out.println(text);
+		Log.i("Xposed", text);
 		if (logWriter != null) {
 			logWriter.println(text);
 			logWriter.flush();
@@ -248,7 +223,7 @@ public final class XposedBridge {
 	 * @see XposedBridge#log(String)
 	 */
 	public synchronized static void log(Throwable t) {
-		t.printStackTrace();
+		Log.i("Xposed", Log.getStackTraceString(t));
 		if (logWriter != null) {
 			t.printStackTrace(logWriter);
 			logWriter.flush();
@@ -314,18 +289,34 @@ public final class XposedBridge {
 	 * @param priority The higher the priority, the earlier this handler called.
 	 * @throws NoSuchMethodException The handler method was not found
 	 */
-	public synchronized static void hookMethod(Method hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
-		Callback c = new Callback(handlerClass, handlerMethodName, priority, HOOK_METHOD_CALLBACK_PARAMS);
+	public synchronized static void hookMethod(Member hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		if (!(hookMethod instanceof Method || hookMethod instanceof Constructor))
+			throw new IllegalArgumentException("hookMethod must be of type Method or Constructor");
+		
+		Callback c;
+		try {
+			c = new Callback(handlerClass, handlerMethodName, priority, HOOK_METHOD_CALLBACK_PARAMS_METHOD);
+		} catch (NoSuchMethodException e) {
+			try {
+				c = new Callback(handlerClass, handlerMethodName, priority, HOOK_METHOD_CALLBACK_PARAMS_CONSTRUCTOR);
+			} catch (NoSuchMethodException e1) {
+				try {
+					c = new Callback(handlerClass, handlerMethodName, priority, HOOK_METHOD_CALLBACK_PARAMS_GENERIC);
+				} catch (NoSuchMethodException e2) {
+					throw e2;
+				}
+			}
+		}
 		ensureMethodIsStatic(c.method);
-		if (c.method.getReturnType().equals(void.class))
-			throw new NoSuchMethodException("Method must have a return type (not void)");
+		if (hookMethod instanceof Method && c.method.getReturnType().equals(void.class))
+			throw new NoSuchMethodException("Handler method must have a return type (not void)");
 
 		
 		SortedSet<Callback> callbacks = hookedMethodCallbacks.get(hookMethod);
 		if (callbacks == null) {
 			callbacks = new TreeSet<Callback>();
 			// add the original method always as the last one to be called
-			callbacks.add(new Callback(XposedBridge.class, "invokeOriginalMethodCallback", Callback.PRIORITY_LOWEST, HOOK_METHOD_CALLBACK_PARAMS));
+			callbacks.add(new Callback(XposedBridge.class, "invokeOriginalMethodCallback", Callback.PRIORITY_LOWEST, HOOK_METHOD_CALLBACK_PARAMS_GENERIC));
 			hookedMethodCallbacks.put(hookMethod, callbacks);
 		}
 		c.method.setAccessible(true);
@@ -338,7 +329,7 @@ public final class XposedBridge {
 	 * Use {@link #invokeOriginalMethod} to call the method that was hooked.
 	 * The arguments are basically the same that are passed on to {@link MethodSignatureGuide#handleHookedMethod}.
 	 */
-	private static Object handleHookedMethod(Method method, Object thisObject, Object[] args) throws Throwable {
+	private static Object handleHookedMethod(Member method, Object thisObject, Object[] args) throws Throwable {
 		SortedSet<Callback> callbacks = hookedMethodCallbacks.get(method);
 		if (callbacks == null) {
 			try {
@@ -455,9 +446,9 @@ public final class XposedBridge {
 	 * Intercept every call to the specified method and call a handler function instead.
 	 * @param method The method to intercept
 	 */
-	private native static void hookMethodNative(Method method);
+	private native static void hookMethodNative(Member method);
 	
-	private native static Object invokeOriginalMethodNative(Method method, Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
+	private native static Object invokeOriginalMethodNative(Member method, Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
     			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 	
 	/**
@@ -480,19 +471,32 @@ public final class XposedBridge {
      *             if an exception was thrown by the invoked method
 
 	 */
-	public static Object invokeOriginalMethod(Method method, Object thisObject, Object[] args)
+	public static Object invokeOriginalMethod(Member method, Object thisObject, Object[] args)
 				throws NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (args == null) {
             args = EMPTY_ARRAY;
         }
-		return invokeOriginalMethodNative(method, method.getParameterTypes(), method.getReturnType(), thisObject, args);
+        
+        Class<?>[] parameterTypes;
+        Class<?> returnType;
+        if (method instanceof Method) {
+        	parameterTypes = ((Method) method).getParameterTypes();
+        	returnType = ((Method) method).getReturnType();
+        } else if (method instanceof Constructor) {
+        	parameterTypes = ((Constructor<?>) method).getParameterTypes();
+        	returnType = null;
+        } else {
+        	throw new IllegalArgumentException("method must be of type Method or Constructor");
+        }
+        	
+		return invokeOriginalMethodNative(method, parameterTypes, returnType, thisObject, args);
 	}
 	
 	/**
 	 * Callback handler that is added automatically when hooking a method.
 	 * It invokes the original method.
 	 */
-	private static Object invokeOriginalMethodCallback(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable {
+	private static Object invokeOriginalMethodCallback(Iterator<Callback> iterator, Member method, Object thisObject, Object[] args) throws Throwable {
 		try {
 			return invokeOriginalMethod(method, thisObject, args);
 		} catch (InvocationTargetException e) {

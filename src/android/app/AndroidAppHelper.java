@@ -1,10 +1,14 @@
 package android.app;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Environment;
 import de.robv.android.xposed.XposedBridge;
 
 /**
@@ -45,5 +49,23 @@ public class AndroidAppHelper {
 		getActivityThread_mActiveResources(thread).put(
 			createResourcesKey(resDir, scale),
 			new WeakReference<Resources>(resources));
+	}
+	
+	public static String currentPackageName() {
+		return ActivityThread.currentPackageName();
+	}
+	
+	public static Application currentApplication() {
+		return ActivityThread.currentApplication();
+	}
+	
+	
+	public static SharedPreferences getSharedPreferencesForPackage(String packageName, String prefFileName, int mode) {
+        File prefFile = new File(Environment.getDataDirectory(), "data/" + packageName + "/shared_prefs/" + prefFileName + ".xml");
+        return new SharedPreferencesImpl(prefFile, mode);
+	}
+	
+	public static SharedPreferences getDefaultSharedPreferencesForPackage(String packageName) {
+		return getSharedPreferencesForPackage(packageName, packageName + "_preferences", Context.MODE_PRIVATE);
 	}
 }
