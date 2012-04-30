@@ -289,10 +289,17 @@ public final class XposedBridge {
 	 * @param priority The higher the priority, the earlier this handler called.
 	 * @throws NoSuchMethodException The handler method was not found
 	 */
-	public synchronized static void hookMethod(Member hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
-		if (!(hookMethod instanceof Method || hookMethod instanceof Constructor))
-			throw new IllegalArgumentException("hookMethod must be of type Method or Constructor");
-		
+	public static void hookMethod(Method hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		hookMethod((Member) hookMethod, handlerClass, handlerMethodName, priority);
+	}
+	
+	/** @see #hookMethod(Method, Class, String, int) */
+	public static void hookMethod(Constructor<?> hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		hookMethod((Member) hookMethod, handlerClass, handlerMethodName, priority);
+	}
+	
+	/** @see #hookMethod(Method, Class, String, int) */
+	private synchronized static void hookMethod(Member hookMethod, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
 		Callback c;
 		try {
 			c = new Callback(handlerClass, handlerMethodName, priority, HOOK_METHOD_CALLBACK_PARAMS_METHOD);

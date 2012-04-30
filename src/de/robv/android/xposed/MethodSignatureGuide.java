@@ -1,5 +1,7 @@
 package de.robv.android.xposed;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
@@ -31,6 +33,8 @@ public interface MethodSignatureGuide {
 	 * @throws Throwable As this hook is very generic, any type of exception could be thrown.
 	 */
 	Object handleHookedMethod(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable;
+	Object handleHookedMethod2(Iterator<Callback> iterator, Constructor<?> method, Object thisObject, Object[] args) throws Throwable;
+	Object handleHookedMethod3(Iterator<Callback> iterator, Member method, Object thisObject, Object[] args) throws Throwable;
 	
 	/**
 	 * Signature of callbacks for {@link XposedBridge#hookLoadPackage}.
