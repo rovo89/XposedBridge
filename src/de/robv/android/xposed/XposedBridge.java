@@ -93,14 +93,10 @@ public final class XposedBridge {
 		}
 		
 		// call the original startup code
-		try {
-			Class<?> initClass = (startClassName == null) ? ZygoteInit.class : RuntimeInit.class;
-			Method initMain = initClass.getDeclaredMethod("main", String[].class);
-			initMain.invoke(null, (Object) args);
-		} catch (Throwable t) {
-			log("Errors while calling original startup class");
-			log(t);
-		}
+		if (startClassName == null)
+			ZygoteInit.main(args);
+		else
+			RuntimeInit.main(args);
 	}
 	
 	private static native String getStartClassName();
