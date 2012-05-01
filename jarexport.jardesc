@@ -12,5 +12,6 @@
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
         <javaElement handleIdentifier="=XposedBridge/src"/>
+        <folder path="/XposedBridge/assets"/>
     </selectedElements>
 </jardesc>
