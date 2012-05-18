@@ -103,4 +103,10 @@ public class AndroidAppHelper {
 	public static SharedPreferences getDefaultSharedPreferencesForPackage(String packageName) {
 		return getSharedPreferencesForPackage(packageName, packageName + "_preferences", Context.MODE_PRIVATE);
 	}
+	
+	public static void reloadSharedPreferencesIfNeeded(SharedPreferences pref) {
+		if (pref instanceof SharedPreferencesImpl) {
+			((SharedPreferencesImpl) pref).startReloadIfChangedUnexpectedly();
+		}
+	}
 }
