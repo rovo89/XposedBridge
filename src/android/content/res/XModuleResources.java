@@ -31,7 +31,7 @@ public class XModuleResources extends Resources {
 		else
 			res = new XModuleResources(assets, null, null, null);
 		
-		AndroidAppHelper.addActiveResource(modulePath, res.hashCode(), res);
+		AndroidAppHelper.addActiveResource(modulePath, res.hashCode(), false, res);
 		return res;
 	}
 	

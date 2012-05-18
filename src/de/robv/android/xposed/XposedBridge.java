@@ -408,7 +408,7 @@ public final class XposedBridge {
 						(Map<Object, WeakReference<Resources>>) AndroidAppHelper.getActivityThread_mActiveResources(thisActivityThread);
 				Object mPackages = AndroidAppHelper.getActivityThread_mPackages(thisActivityThread);
 				
-				Object key = AndroidAppHelper.createResourcesKey(resDir, compInfo.applicationScale);
+				Object key = AndroidAppHelper.createResourcesKey(resDir, compInfo);
 				synchronized (mPackages) {
 					WeakReference<Resources> existing = mActiveResources.get(key);
 					if (existing != null && existing.get().getAssets() != newRes.getAssets())
