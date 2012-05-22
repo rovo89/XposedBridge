@@ -1,27 +1,45 @@
 package android.content.res;
 
+import static de.robv.android.xposed.XposedHelpers.getObjectField;
+
 import java.io.File;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.WeakHashMap;
+
+import org.xmlpull.v1.XmlPullParser;
 
 import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import de.robv.android.xposed.Callback;
+import de.robv.android.xposed.MethodSignatureGuide;
 import de.robv.android.xposed.XposedBridge;
 
 /**
  * Resources class that allows replacements for selected resources
  */
 public class XResources extends Resources {
-	/* package */ static final HashMap<Integer, HashMap<String, Object>> replacements = new HashMap<Integer, HashMap<String, Object>>();
+	private static final HashMap<Integer, HashMap<String, Object>> replacements = new HashMap<Integer, HashMap<String, Object>>();
+	private static final HashMap<Integer, HashMap<String, ResourceNames>> resourceNames
+		= new HashMap<Integer, HashMap<String, ResourceNames>>();
+	
+	private static final HashMap<Integer, HashMap<String, SortedSet<Callback>>> layoutCallbacks
+		= new HashMap<Integer, HashMap<String, SortedSet<Callback>>>();
+	private static final Class<?>[] HOOK_LAYOUT_CALLBACK_PARAMS
+		= new Class[] { View.class, ResourceNames.class, String.class, XResources.class };
+	private static final WeakHashMap<XmlResourceParser, XMLInstanceDetails> xmlInstanceDetails
+		= new WeakHashMap<XmlResourceParser, XMLInstanceDetails>();
+	
 	private static final HashMap<String, String> resDirToPackage = new HashMap<String, String>();
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
 	private boolean inited = false;
-	private static Field field_mCachedXmlBlockIds;
 
 	private final String resDir;
 	
@@ -76,13 +94,66 @@ public class XResources extends Resources {
 	}
 	
 	public static void init() throws Exception {
-		field_mCachedXmlBlockIds = Resources.class.getDeclaredField("mCachedXmlBlockIds");
-		AccessibleObject.setAccessible(new AccessibleObject[] {
-			field_mCachedXmlBlockIds,
-		}, true);
-		
 		XposedBridge.hookMethod(Resources.class.getDeclaredMethod("getCachedStyledAttributes", int.class),
 				XResources.class, "handleGetCachedStyledAttributes", Callback.PRIORITY_DEFAULT);
+		
+		Method methodInflate = LayoutInflater.class.getDeclaredMethod("inflate", XmlPullParser.class, ViewGroup.class, boolean.class);
+		XposedBridge.hookMethod(methodInflate, XResources.class, "handleInflate", Callback.PRIORITY_DEFAULT);
+	}
+	
+	public static class ResourceNames {
+		public final int id;
+		public final String pkg;
+		public final String name;
+		public final String type;
+		public final String fullName;
+		
+		private ResourceNames(int id, String pkg, String name, String type) {
+			this.id = id;
+			this.pkg = pkg;
+			this.name = name;
+			this.type = type;
+			this.fullName = pkg + ":" + type + "/" + name;
+		}
+		
+		/**
+		 * Returns <code>true</code> if all non-null parameters match the values of this object.
+		 */
+		public boolean equals(String pkg, String name, String type, int id) {
+			return (pkg  == null || pkg.equals(this.pkg))
+				&& (name == null || name.equals(this.name))
+				&& (type == null || type.equals(this.type))
+				&& (id == 0 || id == this.id);
+		}
+	}
+	
+	private ResourceNames getResourceNames(int id) {
+		return new ResourceNames(
+				id,
+				getResourcePackageName(id),
+				getResourceTypeName(id),
+				getResourceEntryName(id));
+	}
+	
+	private static ResourceNames getSystemResourceNames(int id) {
+		Resources sysRes = getSystem();
+		return new ResourceNames(
+				id,
+				sysRes.getResourcePackageName(id),
+				sysRes.getResourceTypeName(id),
+				sysRes.getResourceEntryName(id));
+	}
+	
+	private static void putResourceNames(String resDir, ResourceNames resNames) {
+		int id = resNames.id;
+		synchronized (resourceNames) {
+			HashMap<String, ResourceNames> inner = resourceNames.get(id);
+			if (inner == null) {
+				inner = new HashMap<String, ResourceNames>();
+				resourceNames.put(id, inner);
+			}
+			inner.put(resDir, resNames);
+		}
 	}
 
 	// =======================================================
@@ -362,37 +433,61 @@ public class XResources extends Resources {
 	
 	@Override
 	XmlResourceParser loadXmlResourceParser(int id, String type) throws NotFoundException {
+		XmlResourceParser result;
 		Object replacement = getReplacement(id);
 		if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
 			
 			boolean loadFromCache = false;
-			try {
-				int[] mCachedXmlBlockIds = (int[]) field_mCachedXmlBlockIds.get(repRes);
-	
-		        synchronized (mCachedXmlBlockIds) {
-		            // First see if this block is in our cache.
-		            final int num = mCachedXmlBlockIds.length;
-		            for (int i=0; i<num; i++) {
-		                if (mCachedXmlBlockIds[i] == repId) {
-		                	loadFromCache = true;
-		                }
-		            }
-		        }
-			} catch (IllegalAccessException e) {
-				XposedBridge.log(e);
+			int[] mCachedXmlBlockIds = (int[]) getObjectField(repRes, "mCachedXmlBlockIds");
+
+			synchronized (mCachedXmlBlockIds) {
+				// First see if this block is in our cache.
+				final int num = mCachedXmlBlockIds.length;
+				for (int i=0; i<num; i++) {
+					if (mCachedXmlBlockIds[i] == repId) {
+						loadFromCache = true;
+					}
+				}
 			}
-			
-			XmlResourceParser result = repRes.loadXmlResourceParser(repId, type);
+
+			result = repRes.loadXmlResourceParser(repId, type);
 
 			if (!loadFromCache)
 				rewriteXmlReferencesNative(((XmlBlock.Parser) result).mParseState, this, repRes);
-			
-			return result;
 		} else {
-			return super.loadXmlResourceParser(id, type);
+			result = super.loadXmlResourceParser(id, type);
 		}
+		
+		if (type.equals("layout")) {
+			HashMap<String, SortedSet<Callback>> inner = layoutCallbacks.get(id);
+			if (inner != null) {
+				SortedSet<Callback> callbacks = inner.get(resDir);
+				if (callbacks == null && resDir != null)
+					callbacks = inner.get(null);
+				
+				if (callbacks != null) {
+					String variant = "layout";
+					TypedValue value = mTmpValue;
+					getValue(id, value, true);
+					if (value.type == TypedValue.TYPE_STRING) {
+						String[] components = value.string.toString().split("/", 3);
+						if (components.length == 3)
+							variant = components[1];
+						else
+							XposedBridge.log("Unexpected resource path \"" + value.string.toString()
+									+ "\" for resource id 0x" + Integer.toHexString(id));
+					} else {
+						XposedBridge.log(new NotFoundException("Could not find file name for resource id 0x") + Integer.toHexString(id));
+					}
+					
+					xmlInstanceDetails.put(result, new XMLInstanceDetails(resourceNames.get(id).get(resDir), variant, callbacks));
+				}
+			}
+		}
+		
+		return result;
 	}
 	// these are handled via loadXmlResourceParser: 
 	// public XmlResourceParser getAnimation(int id);
@@ -669,5 +764,115 @@ public class XResources extends Resources {
 		
 		// this is handled by XResources.loadXmlResourceParser:
 		// public ColorStateList getColorStateList(int index);
+	}
+	
+	// =======================================================
+	//   INFLATING LAYOUTS
+	// =======================================================
+	
+	private class XMLInstanceDetails {
+		public final ResourceNames resNames;
+		public final String variant;
+		public final SortedSet<Callback> callbacks;
+		public final XResources res = XResources.this;
+		
+		private XMLInstanceDetails(ResourceNames resNames, String variant, SortedSet<Callback> callbacks) {
+			this.resNames = resNames;
+			this.variant = variant;
+			this.callbacks = callbacks;
+		}
+	}
+	
+	/** @see #hookLayout(String, String, String, Class, String, int) */
+	public void hookLayout(int id, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		hookLayoutInternal(resDir, id, getResourceNames(id), handlerClass, handlerMethodName, priority);
+	}
+	
+	/** @see #hookLayout(String, String, String, Class, String, int) */
+	public void hookLayout(String fullName, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		int id = getIdentifier(fullName, null, null);
+		if (id == 0)
+			throw new NotFoundException(fullName);
+		hookLayout(id, handlerClass, handlerMethodName, priority);
+	}
+	
+	/**
+	 * Add a function to be called once a specific layout has been inflated.
+	 * <p>The handler method needs to have the signature described in {@link MethodSignatureGuide#handleLayoutInflated}.
+	 * @param pkg Package, e.g. <code>com.android.systemui</code>
+	 * @param type Type (in this case always <code>layout</code>)
+	 * @param hookMethod The method to be hooked
+	 * @param handlerClass Class of the handler
+	 * @param handlerMethodName Method of the handler
+	 * @param priority The higher the priority, the earlier this handler called.
+	 * @throws NoSuchMethodException The handler method was not found
+	 */
+	public void hookLayout(String pkg, String type, String name, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		int id = getIdentifier(name, type, pkg);
+		if (id == 0)
+			throw new NotFoundException(pkg + ":" + type + "/" + name);
+		hookLayout(id, handlerClass, handlerMethodName, priority);
+	}
+	
+	/** @see #hookLayout(String, String, String, Class, String, int) */
+	public static void hookSystemWideLayout(int id, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		if (id >= 0x7f000000)
+			throw new IllegalArgumentException("ids >= 0x7f000000 are app specific and cannot be set for the framework");
+		hookLayoutInternal(null, id, getSystemResourceNames(id), handlerClass, handlerMethodName, priority);
+	}
+	
+	/** @see #hookLayout(String, String, String, Class, String, int) */
+	public static void hookSystemWideLayout(String fullName, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		int id = getSystem().getIdentifier(fullName, null, null);
+		if (id == 0)
+			throw new NotFoundException(fullName);
+		hookSystemWideLayout(id, handlerClass, handlerMethodName, priority);
+	}
+	
+	/** @see #hookLayout(String, String, String, Class, String, int) */
+	public static void hookSystemWideLayout(String pkg, String type, String name, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		int id = getSystem().getIdentifier(name, type, pkg);
+		if (id == 0)
+			throw new NotFoundException(pkg + ":" + type + "/" + name);
+		hookSystemWideLayout(id, handlerClass, handlerMethodName, priority);
+	}
+	
+	private synchronized static void hookLayoutInternal(String resDir, int id, ResourceNames resNames, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		if (id == 0)
+			throw new IllegalArgumentException("id 0 is not an allowed resource identifier");
+
+		Callback c = new Callback(handlerClass, handlerMethodName, priority, HOOK_LAYOUT_CALLBACK_PARAMS);
+		XposedBridge.ensureMethodIsStatic(c.method);
+		
+		HashMap<String, SortedSet<Callback>> inner = layoutCallbacks.get(id);
+		if (inner == null) {
+			inner = new HashMap<String, SortedSet<Callback>>();
+			layoutCallbacks.put(id, inner);
+		}
+		
+		SortedSet<Callback>  callbacks = inner.get(resDir);
+		if (callbacks == null) {
+			callbacks = new TreeSet<Callback>();
+			inner.put(resDir, callbacks);
+		}
+		
+		c.method.setAccessible(true);
+		callbacks.add(c);
+		
+		putResourceNames(resDir, resNames);
+	}
+	
+	private static Object handleInflate(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable {
+		Object result = XposedBridge.callNext(iterator, method, thisObject, args);
+		try {
+			XMLInstanceDetails details = xmlInstanceDetails.get(args[0]);
+			if (details != null) {
+				View view = (View) result;
+				XposedBridge.callAll(details.callbacks, view, details.resNames, details.variant, details.res);
+			}
+		} catch (Throwable t) {
+			XposedBridge.log(t);
+		}
+		return result;
 	}
 }

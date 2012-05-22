@@ -1,0 +1,5 @@
+This is the original source code of the Apache Commons Lang library version 3.1
+as downloaded from http://commons.apache.org/lang/download_lang.cgi, except for
+these modifications:
+- Class MemberUtils changed to public
+- Method compareParameterTypes in MemberUtils changed to public

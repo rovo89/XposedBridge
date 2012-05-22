@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 
 import android.content.res.XResources;
+import android.content.res.XResources.ResourceNames;
+import android.view.View;
 
 /**
  * Callback methods have to follow these method signatures.
@@ -21,8 +23,8 @@ public interface MethodSignatureGuide {
 	void init(String startClassName);
 	
 	/**
-	 * Signature of callbacks for {@link XposedBridge#hookMethod}.<br/>
-	 * Callbacks should use {@link XposedBridge#callNext} to call the next handler method in the queue. The last handler will be
+	 * Signature of callbacks for {@link XposedBridge#hookMethod}.
+	 * <p>Callbacks should use {@link XposedBridge#callNext} to call the next handler method in the queue. The last handler will be
 	 * the method that was originally hooked.
 	 * 
 	 * @param iterator Iterator for the handler list. Just pass this on to {@link XposedBridge#callNext}
@@ -33,7 +35,9 @@ public interface MethodSignatureGuide {
 	 * @throws Throwable As this hook is very generic, any type of exception could be thrown.
 	 */
 	Object handleHookedMethod(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable;
+	/** @see #handleHookedMethod */
 	Object handleHookedMethod2(Iterator<Callback> iterator, Constructor<?> method, Object thisObject, Object[] args) throws Throwable;
+	/** @see #handleHookedMethod */
 	Object handleHookedMethod3(Iterator<Callback> iterator, Member method, Object thisObject, Object[] args) throws Throwable;
 	
 	/**
@@ -51,4 +55,14 @@ public interface MethodSignatureGuide {
 	 * @param classLoader Reference to the resources that can be used for calls to {@link XResources#setReplacement}
 	 */
 	void handleInitPackageResources(String packageName, XResources res);
+	
+	/**
+	 * Signature of callbacks for {@link XResources#hookLayout(String, String, String, Class, String, int)}.
+	 * 
+	 * @param view The view that has been created from the layout
+	 * @param resNames Container with the id and name of the underlying resource 
+	 * @param variant Directory from which the layout was actually loaded (e.g. "layout-sw600dp")
+	 * @param res Resources containing the layout
+	 */
+	void handleLayoutInflated(View view, ResourceNames resNames, String variant, XResources res);
 }

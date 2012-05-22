@@ -1,5 +1,8 @@
 package de.robv.android.xposed;
 
+import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -56,9 +59,6 @@ public final class XposedBridge {
 	private static final SortedSet<Callback> initPackageResourcesCallbacks = new TreeSet<Callback>();
 	private static final Class<?>[] INIT_PACKAGE_RESOURCES_CALLBACK_PARAMS = new Class[] { String.class, XResources.class };
 	
-	// cached methods
-	private static Field field_LoadedApk_mApplication;
-	
 	/**
 	 * Called when native methods and other things are initialized, but before preloading classes etc.
 	 */
@@ -111,24 +111,15 @@ public final class XposedBridge {
 		Method getTopLevelResources = ActivityThread.class.getDeclaredMethod("getTopLevelResources", String.class, CompatibilityInfo.class);
 		hookMethod(getTopLevelResources, XposedBridge.class, "handleGetTopLevelResources", Callback.PRIORITY_HIGHEST - 10);
 
-		// Replace system resources 
-		Field systemResources = Resources.class.getDeclaredField("mSystem");
-		systemResources.setAccessible(true);
-		systemResources.set(null, new XResources(Resources.getSystem(), null));
-
-		// Get references to some methods and fields and make them accessible for later use
-		field_LoadedApk_mApplication = LoadedApk.class.getDeclaredField("mApplication");
-		
-		
-		AccessibleObject.setAccessible(new AccessibleObject[] {
-			field_LoadedApk_mApplication,
-		}, true);
+		// Replace system resources
+		Resources systemResources = new XResources(Resources.getSystem(), null);
+		setStaticObjectField(Resources.class, "mSystem", systemResources);
 		
 		XResources.init();
 	}
 	
 	/**
-	 * Try to load all modules defined in /data/xposed/modules.list
+	 * Try to load all modules defined in <code>/data/xposed/modules.list</code>
 	 */
 	private static void loadModules(String startClassName) throws IOException {
 		BufferedReader apks = new BufferedReader(new FileReader("/data/xposed/modules.list"));
@@ -141,7 +132,7 @@ public final class XposedBridge {
 	
 	/**
 	 * Load a module from an APK by calling the init(String) method for all classes defined
-	 * in assets/xposed_init.
+	 * in <code>assets/xposed_init</code>.
 	 * @see MethodSignatureGuide#init
 	 */
 	private static void loadModule(String apk, String startClassName) {
@@ -227,7 +218,7 @@ public final class XposedBridge {
 	}
 	
 	/**
-	 * Call the next handler in the list and return the result
+	 * Call the next handler in the list and return the result.
 	 * @param iterator Handler iterator
 	 * @param args arguments for the call (vary from hook to hook)
 	 * @return The result of the call (if any; null if it was the last one)
@@ -250,8 +241,8 @@ public final class XposedBridge {
 	
 	/**
 	 * Invokes all callbacks with the specified parameters.
-	 * In contrast to {@link #callNext}, this makes only sense for methods without return value
-	 * Any exceptions are caught, logged and ignored.
+	 * <p>In contrast to {@link #callNext}, this makes only sense for methods without return value.
+	 * <p>Any exceptions are caught, logged and ignored.
 	 * 
 	 * @param callbacks The set with the callbacks
 	 * @param args arguments for the call (vary from hook to hook)
@@ -269,15 +260,15 @@ public final class XposedBridge {
 		}
 	}
 	
-	private static void ensureMethodIsStatic(Method method) throws NoSuchMethodException {
+	public static void ensureMethodIsStatic(Method method) throws NoSuchMethodException {
 		if (!Modifier.isStatic(method.getModifiers()))
 			throw new NoSuchMethodException("Callback methods have to be static");
 	}
 		
 	
 	/**
-	 * Hook any method and call the specified handler method.<br/>
-	 * The handler methods has to have the signature described in {@link MethodSignatureGuide#handleHookedMethod}.
+	 * Hook any method and call the specified handler method.
+	 * <p>The handler method needs to have the signature described in {@link MethodSignatureGuide#handleHookedMethod}.
 	 * 
 	 * @param hookMethod The method to be hooked
 	 * @param handlerClass Class of the handler
@@ -327,6 +318,11 @@ public final class XposedBridge {
 		hookMethodNative(hookMethod);
 	}
 	
+	public static void hookAllConstructors(Class<?> hookClass, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		for (Member constructor : hookClass.getDeclaredConstructors())
+			hookMethod(constructor, handlerClass, handlerMethodName, priority);
+	}
+	
 	/**
 	 * This method is called as a replacement for hooked methods.
 	 * Use {@link #invokeOriginalMethod} to call the method that was hooked.
@@ -345,8 +341,8 @@ public final class XposedBridge {
 	}
 
 	/**
-	 * Get notified when a package is loaded. This is especially useful to hook some package-specific methods.<br/>
-	 * The handler methods has to have the signature described in {@link MethodSignatureGuide#handleLoadPackage}.
+	 * Get notified when a package is loaded. This is especially useful to hook some package-specific methods.
+	 * <p>The handler methods has to have the signature described in {@link MethodSignatureGuide#handleLoadPackage}.
 	 */
 	public synchronized static void hookLoadPackage(Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
 		Callback c = new Callback(handlerClass, handlerMethodName, priority, LOADED_PACKAGE_CALLBACK_PARAMS);
@@ -362,7 +358,7 @@ public final class XposedBridge {
 	private static Object handleMakeApplication(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable {
 		try {
 			LoadedApk loadedApk = (LoadedApk) thisObject;
-			boolean firstLoad = (field_LoadedApk_mApplication.get(loadedApk) == null);
+			boolean firstLoad = (getObjectField(loadedApk, "mApplication") == null);
 			if (firstLoad) {
 				String packageName = loadedApk.getPackageName();
 				XResources.setPackageNameForResDir(loadedApk.getResDir(), packageName);
@@ -375,8 +371,8 @@ public final class XposedBridge {
 	}
 	
 	/**
-	 * Get notified when the resources for a package are loaded. In callbacks, resource replacements can be created.<br/>
-	 * The handler methods has to have the signature described in {@link MethodSignatureGuide#handleInitPackageResources}.
+	 * Get notified when the resources for a package are loaded. In callbacks, resource replacements can be created.
+	 * <p>The handler methods has to have the signature described in {@link MethodSignatureGuide#handleInitPackageResources}.
 	 */
 	public synchronized static void hookInitPackageResources(Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {		
 		Callback c = new Callback(handlerClass, handlerMethodName, priority, INIT_PACKAGE_RESOURCES_CALLBACK_PARAMS);

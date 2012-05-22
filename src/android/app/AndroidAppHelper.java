@@ -1,9 +1,11 @@
 package android.app;
 
+import static de.robv.android.xposed.XposedHelpers.findField;
+import static de.robv.android.xposed.XposedHelpers.getBooleanField;
+import static de.robv.android.xposed.XposedHelpers.newInstance;
+
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import android.content.Context;
@@ -17,10 +19,16 @@ import de.robv.android.xposed.XposedBridge;
  * Accessor for package level methods/fields in package android.app
  */
 public class AndroidAppHelper {
-	private static Constructor<?> constructor_ResourcesKey;
-	private static Field field_CompatibilityInfo_isThemeable;
-	private static boolean searchIsThemeable = false;
-	private static boolean resourcesKeyCM9 = false;
+	private static boolean hasIsThemeable = false;
+	
+	static {
+		try {
+			// check if the field exists, preventing error messages
+			findField(true, CompatibilityInfo.class, "isThemeable");
+			hasIsThemeable = true;
+		} catch (NoSuchFieldError ignored) {
+		} catch (Throwable t) { XposedBridge.log(t); }
+	}
 	
 	public static HashMap<String, WeakReference<LoadedApk>> getActivityThread_mPackages(ActivityThread activityThread) {
 		return activityThread.mPackages;
@@ -33,21 +41,11 @@ public class AndroidAppHelper {
 	}
 	
 	public static Object createResourcesKey(String resDir, CompatibilityInfo compInfo) {
-		if (!searchIsThemeable) {
-			try {
-				field_CompatibilityInfo_isThemeable = CompatibilityInfo.class.getDeclaredField("isThemeable");
-				field_CompatibilityInfo_isThemeable.setAccessible(true);
-			} catch (NoSuchFieldException ignored) {}
-			searchIsThemeable = true;
-		}
-		
 		boolean isThemeable = false;
-		if (field_CompatibilityInfo_isThemeable != null) {
+		if (hasIsThemeable) {
 			try {
-				isThemeable = field_CompatibilityInfo_isThemeable.getBoolean(compInfo);
-			} catch (Exception e) {
-				XposedBridge.log(e);
-			}
+				isThemeable = getBooleanField(compInfo, "isThemeable");
+			} catch (Throwable t) { XposedBridge.log(t); }
 		}
 		
 		return createResourcesKey(resDir, compInfo.applicationScale, isThemeable);
@@ -55,23 +53,13 @@ public class AndroidAppHelper {
 	
 	public static Object createResourcesKey(String resDir, float scale, boolean isThemeable) {
 		try {
-			if (constructor_ResourcesKey == null) {
-				Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
-				try {
-				constructor_ResourcesKey = classResourcesKey.getDeclaredConstructor(String.class, float.class);
-				} catch (NoSuchMethodException ignored) {
-					resourcesKeyCM9 = true;
-					constructor_ResourcesKey = classResourcesKey.getDeclaredConstructor(String.class, float.class, boolean.class);					
-				}
-				constructor_ResourcesKey.setAccessible(true);
-			}
-			
-			if (!resourcesKeyCM9)
-				return constructor_ResourcesKey.newInstance(resDir, scale);
+			Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
+			if (hasIsThemeable)
+				return newInstance(classResourcesKey, resDir, scale, isThemeable);
 			else
-				return constructor_ResourcesKey.newInstance(resDir, scale, isThemeable);
-		} catch (Exception e) {
-			XposedBridge.log(e);
+				return newInstance(classResourcesKey, resDir, scale);
+		} catch (Throwable t) {
+			XposedBridge.log(t);
 			return null;
 		}
 	}

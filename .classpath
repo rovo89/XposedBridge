@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="src" path="lib/apache-commons-lang"/>
 	<classpathentry kind="lib" path="lib/full_framework_15.jar" sourcepath="lib/sdk_sources_15">
 		<accessrules>
 			<accessrule kind="nonaccessible" pattern="android/test/**"/>
