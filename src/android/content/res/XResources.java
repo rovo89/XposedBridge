@@ -551,7 +551,7 @@ public class XResources extends Resources {
 	}
 	
 	public static int getFakeResId(Resources res, int id) {
-		return getFakeResId(res.getResourceEntryName(id));
+		return getFakeResId(res.getResourceName(id));
 	}
 	
 	/**

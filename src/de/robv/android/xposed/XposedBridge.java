@@ -1,6 +1,8 @@
 package de.robv.android.xposed;
 
+import static de.robv.android.xposed.XposedHelpers.getNativeLibraryMemoryRange;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.getProcessPid;
 import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 import java.io.BufferedReader;
@@ -77,7 +79,6 @@ public final class XposedBridge {
 			} catch (IOException ignored) {}
 			
 			log("-----------------\nLoading Xposed...");
-			
 			if (startClassName == null) {
 				// Initializations for Zygote
 				log("Loading some internal stuff");
@@ -502,4 +503,39 @@ public final class XposedBridge {
 			throw e.getCause();
 		}
 	}
+	
+	/**
+	 * Patch a native library in the current process.
+	 * @param libraryPath The path to the library.
+	 * @param patch A patch created by bsdiff.
+	 * @return <code>true</code> if the file was successfully patched.
+	 */
+	public static boolean patchNativeLibrary(String libraryPath, byte[] patch) {
+		long[] memRange = getNativeLibraryMemoryRange("self", libraryPath);
+		if (memRange == null)
+			return false;
+		
+		return patchNativeLibrary(libraryPath, patch, 0, memRange[0], memRange[1] - memRange[0]);
+	}
+	
+	/**
+	 * Patch a native library in a foreign process.
+	 * @param libraryPath The path to the library.
+	 * @param patch A patch created by bsdiff.
+	 * @param process The name of the process to be patched (see {@link XposedHelpers#getProcessPid}).
+	 * @return <code>true</code> if the file was successfully patched.
+	 */
+	public static boolean patchNativeLibrary(String libraryPath, byte[] patch, String process) {
+		String pid = getProcessPid(process);
+		if (pid == null)
+			return false;
+		
+		long[] memRange = getNativeLibraryMemoryRange(pid, libraryPath);
+		if (memRange == null)
+			return false;
+		
+		return patchNativeLibrary(libraryPath, patch, Integer.parseInt(pid), memRange[0], memRange[1] - memRange[0]);
+	}
+	
+	private static native boolean patchNativeLibrary(String libraryPath, byte[] patch, int pid, long base, long size);
 }

@@ -1,15 +1,27 @@
 package de.robv.android.xposed;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.MemberUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+
+import android.content.res.Resources;
 
 public class XposedHelpers {
 	private static final HashMap<String, Field> fieldCache = new HashMap<String, Field>();
@@ -959,5 +971,94 @@ public class XposedHelpers {
 	
 	public static Object getAdditionalStaticField(Class<?> clazz, String key) {
 		return getAdditionalInstanceField(clazz, key);
+	}
+	
+	//#################################################################################################
+	/**
+	 * Load an asset from a resource and return the content as byte array.
+	 */
+	public static byte[] assetAsByteArray(Resources res, String path) throws IOException {
+		InputStream is = res.getAssets().open(path);
+		
+		ByteArrayOutputStream buf = new ByteArrayOutputStream();
+		byte[] temp = new byte[1024];
+		int read;
+		
+		while ((read = is.read(temp)) > 0) {
+			buf.write(temp, 0, read);
+		}
+		
+		return buf.toByteArray();
+	}
+	
+	/**
+	 * Returns the lowercase string representation of the file's MD5 sum.
+	 */
+	public static String getMD5Sum(File file) throws IOException {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("MD5");
+			InputStream is = new FileInputStream(file);				
+			byte[] buffer = new byte[8192];
+			int read = 0;
+			while ((read = is.read(buffer)) > 0) {
+				digest.update(buffer, 0, read);
+			}
+			is.close();
+			byte[] md5sum = digest.digest();
+			BigInteger bigInt = new BigInteger(1, md5sum);
+			return bigInt.toString(16);
+		} catch (NoSuchAlgorithmException e) {
+			return "";
+		}
+	}
+	
+	/**
+	 * Get the PID for a process.
+	 * @param Process name as defined in the first field of <code>/proc/[pid]/cmdline</code>. For apps, this is the package name.
+	 * @return PID, or <code>null</code> if it wasn't found.
+	 */
+	public static String getProcessPid(String name) {
+		String terminatedName = name + "\0";
+		String pids[] = new File("/proc/").list();
+		for (String pid : pids) {
+			try {
+				BufferedReader br = new BufferedReader(new FileReader("/proc/" + pid + "/cmdline"));
+				String cmdline = br.readLine();
+				br.close();
+				if (cmdline != null && cmdline.startsWith(terminatedName))
+					return pid;
+			} catch (IOException e) {
+				continue;
+			}
+		}
+		XposedBridge.log("Could not find process '" + name + "'");
+		return null;
+	}
+	
+	/**
+	 * Get the memory range in which the first part of the given library is located.
+	 * @param pid The PID of the process or "self".
+	 * @return A two-element array with the start and end of the allocated memory, or <code>null</code> if it wasn't found.
+	 */
+	/*package */ static long[] getNativeLibraryMemoryRange(String pid, String library) {
+		library = " " + library; 
+		try {
+			BufferedReader br = new BufferedReader(new FileReader("/proc/" + pid + "/maps"));
+			String line;
+			while ((line = br.readLine()) != null) {
+				if (line.endsWith(library)) {
+					br.close();
+					long start = Long.parseLong(line.substring(0, 8), 16);
+					long end = Long.parseLong(line.substring(9, 17), 16);
+					return new long[] { start, end };
+				}
+			}
+			br.close();
+			XposedBridge.log("Could not find library" + library + "in process " + pid);
+			return null;
+		} catch (Throwable t) {
+			XposedBridge.log(t);
+			return null;
+		}
 	}
 }
