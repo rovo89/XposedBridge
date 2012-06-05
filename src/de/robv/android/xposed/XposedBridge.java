@@ -48,6 +48,7 @@ public final class XposedBridge {
 	private static PrintWriter logWriter = null;
 	
 	private static final Object[] EMPTY_ARRAY = new Object[0];
+	private static final ClassLoader BOOTCLASSLOADER = XposedBridge.class.getClassLoader();
 	
 	// built-in handlers
 	private static final Map<Member, SortedSet<Callback>> hookedMethodCallbacks = new HashMap<Member, SortedSet<Callback>>();
@@ -111,6 +112,10 @@ public final class XposedBridge {
 		
 		Method getTopLevelResources = ActivityThread.class.getDeclaredMethod("getTopLevelResources", String.class, CompatibilityInfo.class);
 		hookMethod(getTopLevelResources, XposedBridge.class, "handleGetTopLevelResources", Callback.PRIORITY_HIGHEST - 10);
+		
+		Class<?> classApplicationLoaders = Class.forName("android.app.ApplicationLoaders", false, BOOTCLASSLOADER);
+		Method getClassLoader = classApplicationLoaders.getDeclaredMethod("getClassLoader", String.class, String.class, ClassLoader.class);
+		hookMethod(getClassLoader, XposedBridge.class, "handleGetClassLoader", Callback.PRIORITY_DEFAULT);
 
 		// Replace system resources
 		Resources systemResources = new XResources(Resources.getSystem(), null);
@@ -319,6 +324,12 @@ public final class XposedBridge {
 		hookMethodNative(hookMethod);
 	}
 	
+	public static void hookAllMethods(Class<?> hookClass, String methodName, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
+		for (Member method : hookClass.getDeclaredMethods())
+			if (method.getName().equals(methodName))
+				hookMethod(method, handlerClass, handlerMethodName, priority);
+	}
+	
 	public static void hookAllConstructors(Class<?> hookClass, Class<?> handlerClass, String handlerMethodName, int priority) throws NoSuchMethodException {
 		for (Member constructor : hookClass.getDeclaredConstructors())
 			hookMethod(constructor, handlerClass, handlerMethodName, priority);
@@ -362,7 +373,6 @@ public final class XposedBridge {
 			boolean firstLoad = (getObjectField(loadedApk, "mApplication") == null);
 			if (firstLoad) {
 				String packageName = loadedApk.getPackageName();
-				XResources.setPackageNameForResDir(loadedApk.getResDir(), packageName);
 				callAll(loadedPackageCallbacks, packageName, loadedApk.getClassLoader());
 			}
 		} catch (Exception e) {
@@ -389,10 +399,10 @@ public final class XposedBridge {
 	private static Object handleGetTopLevelResources(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable {
 		Object result = callNext(iterator, method, thisObject, args);
 		try {
-			XResources newRes;
+			XResources newRes = null;
 			if (result instanceof XResources) {
 				newRes = (XResources) result;
-			} else {
+			} else if (result != null) {
 				// replace the returned resources with our subclass
 				ActivityThread thisActivityThread = (ActivityThread) thisObject;
 				Resources origRes = (Resources) result;
@@ -416,12 +426,8 @@ public final class XposedBridge {
 				newRes.setInited(resDir == null || !newRes.checkFirstLoad());
 			}
 
-			if (!newRes.isInited()) {
+			if (newRes != null && !newRes.isInited()) {
 				try {
-					// the package name association will be set when the first Activity or Service
-					// of this package is started. There are some calls that get the Resources before
-					// that time, but it should be early enough to set the replacments when the
-					// app is really loaded
 					String packageName = newRes.getPackageName();
 					if (packageName != null) {
 						callAll(initPackageResourcesCallbacks, packageName, newRes);
@@ -538,4 +544,14 @@ public final class XposedBridge {
 	}
 	
 	private static native boolean patchNativeLibrary(String libraryPath, byte[] patch, int pid, long base, long size);
+	
+	/** Make Xposed classes available to other applications, so they can use the same logging and helper */
+	private static Object handleGetClassLoader(Iterator<Callback> iterator, Method method, Object thisObject, Object[] args) throws Throwable {
+		try {
+			args[0] = "/data/xposed/XposedBridge.jar:" + args[0];
+		} catch (Exception e) {
+			log(e);
+		}
+		return callNext(iterator, method, thisObject, args);
+	}
 }

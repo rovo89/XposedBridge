@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.res.CompatibilityInfo;
 import android.content.res.Resources;
 import android.os.Environment;
@@ -74,8 +75,22 @@ public class AndroidAppHelper {
 			new WeakReference<Resources>(resources));
 	}
 	
+	public static String currentProcessName() {
+		String processName = ActivityThread.currentPackageName();
+		if (processName == null)
+			return "android";
+		return processName;
+	}
+	
+	public static ApplicationInfo currentApplicationInfo() {
+        ActivityThread am = ActivityThread.currentActivityThread();
+        return (am != null && am.mBoundApplication != null)
+            ? am.mBoundApplication.appInfo : null;
+	}
+	
 	public static String currentPackageName() {
-		return ActivityThread.currentPackageName();
+		ApplicationInfo ai = currentApplicationInfo();
+        return (ai != null) ? ai.packageName : "android";
 	}
 	
 	public static Application currentApplication() {

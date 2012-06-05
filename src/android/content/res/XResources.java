@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import android.content.pm.PackageParser;
 import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -37,15 +38,16 @@ public class XResources extends Resources {
 	private static final WeakHashMap<XmlResourceParser, XMLInstanceDetails> xmlInstanceDetails
 		= new WeakHashMap<XmlResourceParser, XMLInstanceDetails>();
 	
-	private static final HashMap<String, String> resDirToPackage = new HashMap<String, String>();
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
 	private boolean inited = false;
 
 	private final String resDir;
+	private String packageName;
 	
 	public XResources(Resources parent, String resDir) {
-		super(parent.getAssets(), parent.getDisplayMetrics(), parent.getConfiguration(), parent.getCompatibilityInfo());
+		super(parent.getAssets(), null, null, null);
 		this.resDir = resDir;
+		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics(), parent.getCompatibilityInfo());
 	}
 	
 	public boolean checkFirstLoad() {
@@ -71,10 +73,6 @@ public class XResources extends Resources {
 		}
 	}
 
-	public static void setPackageNameForResDir(String resDir, String packageName) {
-		resDirToPackage.put(resDir, packageName);
-	}
-	
 	public String getResDir() {
 		return resDir;
 	}
@@ -82,7 +80,11 @@ public class XResources extends Resources {
 	public String getPackageName() {
 		if (resDir == null)
 			return "android";
-		return resDirToPackage.get(resDir);
+		if (packageName == null) {
+			PackageParser.PackageLite pi = PackageParser.parsePackageLite(resDir, 0);
+			packageName = pi.packageName;
+		}
+		return packageName;
 	}
 	
 	public boolean isInited() {

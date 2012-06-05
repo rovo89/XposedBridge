@@ -217,20 +217,20 @@ public class XposedHelpers {
 	}
 	
 	private static String getParametersString(Class<?>... clazzes) {
-		StringBuilder sb = new StringBuilder('(');
+		StringBuilder sb = new StringBuilder("(");
 		boolean first = true;
 		for (Class<?> clazz : clazzes) {
 			if (first)
 				first = false;
 			else
-				sb.append(',');
+				sb.append(",");
 			
 			if (clazz != null)
 				sb.append(clazz.getCanonicalName());
 			else
 				sb.append("null");
 		}
-		sb.append(')');
+		sb.append(")");
 		return sb.toString();
 	}
 	
@@ -463,6 +463,11 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw e;
 		}
+	}
+	
+	/** For inner classes, return the "this" reference of the surrounding class */
+	public static Object getSurroundingThis(Object obj) {
+		return getObjectField(obj, "this$0");
 	}
 	
 	public static boolean getBooleanField(Object obj, String fieldName) {
@@ -987,14 +992,14 @@ public class XposedHelpers {
 		while ((read = is.read(temp)) > 0) {
 			buf.write(temp, 0, read);
 		}
-		
+		is.close();
 		return buf.toByteArray();
 	}
 	
 	/**
 	 * Returns the lowercase string representation of the file's MD5 sum.
 	 */
-	public static String getMD5Sum(File file) throws IOException {
+	public static String getMD5Sum(String file) throws IOException {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			InputStream is = new FileInputStream(file);				
@@ -1061,4 +1066,15 @@ public class XposedHelpers {
 			return null;
 		}
 	}
+	
+	//#################################################################################################
+	/*To make it easier, I will try and implement some more helpers:
+	- add view before/after existing view (I already mentioned that I think)
+	- get index of view in its parent
+	- get next/previous sibling (maybe with an optional argument "type", that might be ImageView.class and gives you the next sibling that is an ImageView)?
+	- get next/previous element (similar to the above, but would also work if the next element has a different parent, it would just go up the hierarchy and then down again until it finds a matching element)
+	- find the first child that is an instance of a specified class
+	- find all (direct or indirect) children of a specified class
+	*/
+	
 }
