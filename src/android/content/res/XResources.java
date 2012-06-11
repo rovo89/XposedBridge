@@ -17,10 +17,10 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import de.robv.android.xposed.MethodHookXCallback;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.LayoutInflatedXCallback;
 import de.robv.android.xposed.callbacks.LayoutInflatedXCallback.LayoutInflatedParam;
-import de.robv.android.xposed.callbacks.MethodHookXCallback;
 import de.robv.android.xposed.callbacks.XCallback;
 
 /**
@@ -97,10 +97,11 @@ public class XResources extends Resources {
 		XposedBridge.hookMethod(Resources.class.getDeclaredMethod("getCachedStyledAttributes", int.class), new MethodHookXCallback() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				if (!(param.result instanceof XTypedArray) && param.thisObject instanceof XResources) {
-					TypedArray orig = (TypedArray) param.result;
+				final Object result = param.getResult();
+				if (!(result instanceof XTypedArray) && param.thisObject instanceof XResources) {
+					TypedArray orig = (TypedArray) result;
 					XResources xres = (XResources) param.thisObject;
-					param.result = xres.newXTypedArray(orig.mData, orig.mIndices, orig.mLength);
+					param.setResult(xres.newXTypedArray(orig.mData, orig.mIndices, orig.mLength));
 				}
 			}
 		});
@@ -115,7 +116,7 @@ public class XResources extends Resources {
 				}
 				if (details != null) {
 					LayoutInflatedParam liparam = new LayoutInflatedParam(details.callbacks);
-					liparam.view = (View) param.result;
+					liparam.view = (View) param.getResult();
 					liparam.resNames = details.resNames;
 					liparam.variant = details.variant;
 					liparam.res = details.res;

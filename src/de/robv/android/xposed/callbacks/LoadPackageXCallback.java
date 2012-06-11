@@ -10,7 +10,7 @@ public abstract class LoadPackageXCallback extends XCallback {
 		super(priority);
 	}
 	
-	public static class LoadPackageParam extends XCallback.Param<LoadPackageXCallback> {
+	public static class LoadPackageParam extends XCallback.Param {
 		public LoadPackageParam(TreeSet<LoadPackageXCallback> callbacks) {
 			super(callbacks);
 		}
@@ -19,7 +19,7 @@ public abstract class LoadPackageXCallback extends XCallback {
 	}
 	
 	@Override
-	protected void call(Param<?> param) throws Throwable {
+	protected void call(Param param) throws Throwable {
 		if (param instanceof LoadPackageParam)
 			handleLoadPackage((LoadPackageParam) param);
 	}

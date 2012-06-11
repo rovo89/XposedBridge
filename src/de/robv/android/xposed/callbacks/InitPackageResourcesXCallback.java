@@ -12,7 +12,7 @@ public abstract class InitPackageResourcesXCallback extends XCallback {
 		super(priority);
 	}
 	
-	public static class InitPackageResourcesParam extends XCallback.Param<InitPackageResourcesXCallback> {
+	public static class InitPackageResourcesParam extends XCallback.Param {
 		public InitPackageResourcesParam(TreeSet<InitPackageResourcesXCallback> callbacks) {
 			super(callbacks);
 		}
@@ -21,7 +21,7 @@ public abstract class InitPackageResourcesXCallback extends XCallback {
 	}
 	
 	@Override
-	protected void call(Param<?> param) throws Throwable {
+	protected void call(Param param) throws Throwable {
 		if (param instanceof InitPackageResourcesParam)
 			handleInitPackageResources((InitPackageResourcesParam) param);
 	}

@@ -15,54 +15,35 @@ public abstract class XCallback implements Comparable<XCallback> {
 		this.priority = priority;
 	}
 	
-	public static class Param<T extends XCallback> {
-		private final Iterator<T> callbackIt;
-		private final T first;
+	public static class Param {
+		public final TreeSet<? extends XCallback> callbacks;
 		public final Bundle extra = new Bundle();
 		
+		protected Param() {
+			callbacks = null;
+		}
+		
 		@SuppressWarnings("unchecked")
-		protected Param(TreeSet<T> callbacks) {
+		protected Param(TreeSet<? extends XCallback> callbacks) {
 			synchronized (callbacks) {
-				callbackIt = ((TreeSet<T>) callbacks.clone()).iterator();
+				this.callbacks = (TreeSet<? extends XCallback>) callbacks.clone();
 			}
-			first = callbackIt.hasNext() ? callbackIt.next() : null;
-		}
-		
-		public final T first() {
-			if (first == null) {
-				IllegalStateException e = new IllegalStateException("at least one callback is required");
-				XposedBridge.log(e);
-				throw(e);
-			}
-			return first;
-		}
-		
-		protected final T next() {
-			if (!callbackIt.hasNext()) {
-				IllegalStateException e = new IllegalStateException("unexpected end of chain, no callback was the final handler");
-				XposedBridge.log(e);
-				throw(e);
-			}
-			return callbackIt.next();
 		}
 	}
 	
-	public static final void callAll(Param<?> param) {
-		if (param.first == null)
-			return;
+	public static final void callAll(Param param) {
+		if (param.callbacks == null)
+			throw new IllegalStateException("This object was not created for use with callAll");
 		
-		try {
-			param.first.call(param);
-		} catch (Throwable t) { XposedBridge.log(t); }
-		
-		while (param.callbackIt.hasNext()) {
+		Iterator<? extends XCallback> it = param.callbacks.iterator();
+		while (it.hasNext()) {
 			try {
-				param.callbackIt.next().call(param);
+				it.next().call(param);
 			} catch (Throwable t) { XposedBridge.log(t); }
 		}
 	}
 	
-	protected void call(Param<?> param) throws Throwable {};
+	protected void call(Param param) throws Throwable {};
 	
 	@Override
 	public int compareTo(XCallback other) {

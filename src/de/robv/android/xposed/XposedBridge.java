@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -37,12 +38,11 @@ import com.android.internal.os.RuntimeInit;
 import com.android.internal.os.ZygoteInit;
 
 import dalvik.system.PathClassLoader;
+import de.robv.android.xposed.MethodHookXCallback.MethodHookParam;
 import de.robv.android.xposed.callbacks.InitPackageResourcesXCallback;
 import de.robv.android.xposed.callbacks.InitPackageResourcesXCallback.InitPackageResourcesParam;
 import de.robv.android.xposed.callbacks.LoadPackageXCallback;
 import de.robv.android.xposed.callbacks.LoadPackageXCallback.LoadPackageParam;
-import de.robv.android.xposed.callbacks.MethodHookXCallback;
-import de.robv.android.xposed.callbacks.MethodHookXCallback.MethodHookParam;
 import de.robv.android.xposed.callbacks.XCallback;
 
 public final class XposedBridge {
@@ -56,17 +56,6 @@ public final class XposedBridge {
 	// built-in handlers
 	private static final Map<Member, TreeSet<MethodHookXCallback>> hookedMethodCallbacks
 									= new HashMap<Member, TreeSet<MethodHookXCallback>>();
-	private static MethodHookXCallback ORIGINAL_METHOD_CALLBACK = new MethodHookXCallback(XCallback.PRIORITY_LOWEST*2) {
-		@Override
-		public Object handleHookedMethod(MethodHookParam param) throws Throwable {
-			try {
-				return invokeOriginalMethod(param.method, param.thisObject, param.args);
-			} catch (InvocationTargetException e) {
-				throw e.getCause();
-			}
-		};
-	};
-
 	private static final TreeSet<LoadPackageXCallback> loadedPackageCallbacks = new TreeSet<LoadPackageXCallback>();
 	private static final TreeSet<InitPackageResourcesXCallback> initPackageResourcesCallbacks = new TreeSet<InitPackageResourcesXCallback>();
 	
@@ -263,8 +252,6 @@ public final class XposedBridge {
 			callbacks = hookedMethodCallbacks.get(hookMethod);
 			if (callbacks == null) {
 				callbacks = new TreeSet<MethodHookXCallback>();
-				// add the original method always as the last one to be called
-				callbacks.add(ORIGINAL_METHOD_CALLBACK);
 				hookedMethodCallbacks.put(hookMethod, callbacks);
 			}
 		}
@@ -287,9 +274,10 @@ public final class XposedBridge {
 	
 	/**
 	 * This method is called as a replacement for hooked methods.
-	 * Use {@link #invokeOriginalMethod} to call the method that was hooked.
 	 */
+	@SuppressWarnings("unchecked")
 	private static Object handleHookedMethod(Member method, Object thisObject, Object[] args) throws Throwable {
+		// TODO maybe avoid the synchronization by storing a reference to the callbacks list with the native method object
 		TreeSet<MethodHookXCallback> callbacks;
 		synchronized (hookedMethodCallbacks) {
 			callbacks = hookedMethodCallbacks.get(method);
@@ -302,11 +290,54 @@ public final class XposedBridge {
 			}
 		}
 		
-		MethodHookParam param = new MethodHookParam(callbacks);
+		MethodHookParam param = new MethodHookParam();
 		param.method  = method;
 		param.thisObject = thisObject;
 		param.args = args;
-		return param.first().handleHookedMethod(param);
+		
+		callbacks = ((TreeSet<MethodHookXCallback>) callbacks.clone());
+		
+		Iterator<MethodHookXCallback> before = param.beforeIterator = callbacks.iterator();
+		Iterator<MethodHookXCallback> after  = param.afterIterator  = callbacks.descendingIterator();
+		
+		// call "before method" callbacks
+		while (before.hasNext()) {
+			try {
+				before.next().beforeHookedMethod(param);
+			} catch (Throwable t) { XposedBridge.log(t); }
+			
+	        if (param.returnEarly) {
+	        	// skip remaining "before" callbacks and corresponding "after" callbacks
+	        	while (before.hasNext() && after.hasNext()) {
+	        		before.next();
+	        		after.next();
+	        	}
+	        	break;
+	        }
+		}
+		
+		// call original method if not requested otherwise
+		// TODO move this part to C???
+		if (!param.returnEarly) {
+			try {
+				param.setResult(invokeOriginalMethod(method, param.thisObject, param.args));
+			} catch (InvocationTargetException e) {
+				param.setThrowable(e.getCause());
+			}
+		}
+		
+		// call "after method" callbacks
+		while (after.hasNext()) {
+			try {
+				after.next().afterHookedMethod(param);
+			} catch (Throwable t) { XposedBridge.log(t); }
+		}
+		
+		// return
+		if (param.hasThrowable())
+			throw param.getThrowable();
+		else
+			return param.getResult();
 	}
 
 	/**
@@ -334,18 +365,19 @@ public final class XposedBridge {
 	private static MethodHookXCallback callbackGetTopLevelResources = new MethodHookXCallback(XCallback.PRIORITY_HIGHEST - 10) {
 		protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 			XResources newRes = null;
-			if (param.result instanceof XResources) {
-				newRes = (XResources) param.result;
+			final Object result = param.getResult();
+			if (result instanceof XResources) {
+				newRes = (XResources) result;
 				
-			} else if (param.result != null) {
+			} else if (result != null) {
 				// replace the returned resources with our subclass
 				ActivityThread thisActivityThread = (ActivityThread) param.thisObject;
-				Resources origRes = (Resources) param.result;
+				Resources origRes = (Resources) result;
 				String resDir = (String) param.args[0];
 				CompatibilityInfo compInfo = (CompatibilityInfo) param.args[1];
 				
 				newRes = new XResources(origRes, resDir);
-				param.result = newRes;
+				param.setResult(newRes);
 				
 				Map<Object, WeakReference<Resources>> mActiveResources =
 						(Map<Object, WeakReference<Resources>>) AndroidAppHelper.getActivityThread_mActiveResources(thisActivityThread);

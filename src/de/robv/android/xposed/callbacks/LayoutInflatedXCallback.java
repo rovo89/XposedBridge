@@ -14,7 +14,7 @@ public abstract class LayoutInflatedXCallback extends XCallback {
 		super(priority);
 	}
 	
-	public static class LayoutInflatedParam extends XCallback.Param<LayoutInflatedXCallback> {
+	public static class LayoutInflatedParam extends XCallback.Param {
 		public LayoutInflatedParam(TreeSet<LayoutInflatedXCallback> callbacks) {
 			super(callbacks);
 		}
@@ -25,7 +25,7 @@ public abstract class LayoutInflatedXCallback extends XCallback {
 	}
 	
 	@Override
-	protected void call(Param<?> param) throws Throwable {
+	protected void call(Param param) throws Throwable {
 		if (param instanceof LayoutInflatedParam)
 			handleLayoutInflated((LayoutInflatedParam) param);
 	}
