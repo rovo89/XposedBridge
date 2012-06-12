@@ -6,21 +6,25 @@ import android.content.res.XResources;
 import android.content.res.XResources.ResourceNames;
 import android.view.View;
 
-public abstract class LayoutInflatedXCallback extends XCallback {
-	public LayoutInflatedXCallback() {
+public abstract class XC_LayoutInflated extends XCallback {
+	public XC_LayoutInflated() {
 		super();
 	}
-	public LayoutInflatedXCallback(int priority) {
+	public XC_LayoutInflated(int priority) {
 		super(priority);
 	}
 	
 	public static class LayoutInflatedParam extends XCallback.Param {
-		public LayoutInflatedParam(TreeSet<LayoutInflatedXCallback> callbacks) {
+		public LayoutInflatedParam(TreeSet<XC_LayoutInflated> callbacks) {
 			super(callbacks);
 		}
+		/** The view that has been created from the layout */
 		public View view;
+		/** Container with the id and name of the underlying resource */
 		public ResourceNames resNames;
+		/** Directory from which the layout was actually loaded (e.g. "layout-sw600dp") */
 		public String variant;
+		/** Resources containing the layout */
 		public XResources res;
 	}
 	

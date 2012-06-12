@@ -2,19 +2,21 @@ package de.robv.android.xposed.callbacks;
 
 import java.util.TreeSet;
 
-public abstract class LoadPackageXCallback extends XCallback {
-	public LoadPackageXCallback() {
+public abstract class XC_LoadPackage extends XCallback {
+	public XC_LoadPackage() {
 		super();
 	}
-	public LoadPackageXCallback(int priority) {
+	public XC_LoadPackage(int priority) {
 		super(priority);
 	}
 	
 	public static class LoadPackageParam extends XCallback.Param {
-		public LoadPackageParam(TreeSet<LoadPackageXCallback> callbacks) {
+		public LoadPackageParam(TreeSet<XC_LoadPackage> callbacks) {
 			super(callbacks);
 		}
+		/** The name of the package being loaded */
 		public String packageName;
+		/** The ClassLoader used for this package */
 		public ClassLoader classLoader;
 	}
 	

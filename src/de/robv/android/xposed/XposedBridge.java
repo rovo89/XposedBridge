@@ -38,11 +38,11 @@ import com.android.internal.os.RuntimeInit;
 import com.android.internal.os.ZygoteInit;
 
 import dalvik.system.PathClassLoader;
-import de.robv.android.xposed.MethodHookXCallback.MethodHookParam;
-import de.robv.android.xposed.callbacks.InitPackageResourcesXCallback;
-import de.robv.android.xposed.callbacks.InitPackageResourcesXCallback.InitPackageResourcesParam;
-import de.robv.android.xposed.callbacks.LoadPackageXCallback;
-import de.robv.android.xposed.callbacks.LoadPackageXCallback.LoadPackageParam;
+import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
+import de.robv.android.xposed.callbacks.XC_InitPackageResources;
+import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
+import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.callbacks.XCallback;
 
 public final class XposedBridge {
@@ -54,10 +54,10 @@ public final class XposedBridge {
 	private static final ClassLoader BOOTCLASSLOADER = XposedBridge.class.getClassLoader();
 	
 	// built-in handlers
-	private static final Map<Member, TreeSet<MethodHookXCallback>> hookedMethodCallbacks
-									= new HashMap<Member, TreeSet<MethodHookXCallback>>();
-	private static final TreeSet<LoadPackageXCallback> loadedPackageCallbacks = new TreeSet<LoadPackageXCallback>();
-	private static final TreeSet<InitPackageResourcesXCallback> initPackageResourcesCallbacks = new TreeSet<InitPackageResourcesXCallback>();
+	private static final Map<Member, TreeSet<XC_MethodHook>> hookedMethodCallbacks
+									= new HashMap<Member, TreeSet<XC_MethodHook>>();
+	private static final TreeSet<XC_LoadPackage> loadedPackageCallbacks = new TreeSet<XC_LoadPackage>();
+	private static final TreeSet<XC_InitPackageResources> initPackageResourcesCallbacks = new TreeSet<XC_InitPackageResources>();
 	
 	/**
 	 * Called when native methods and other things are initialized, but before preloading classes etc.
@@ -105,7 +105,7 @@ public final class XposedBridge {
 		// Built-in handler for the LoadedApk.makeApplication method that allows handlers to be registered
 		// for the first initialization of a package via {@link #hookLoadPackage}.
 		Method makeApplication = LoadedApk.class.getDeclaredMethod("makeApplication", boolean.class, Instrumentation.class);
-		hookMethod(makeApplication, new MethodHookXCallback() {
+		hookMethod(makeApplication, new XC_MethodHook() {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				LoadedApk loadedApk = (LoadedApk) param.thisObject;
 				boolean firstLoad = (getObjectField(loadedApk, "mApplication") == null);
@@ -113,7 +113,7 @@ public final class XposedBridge {
 					LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
 					lpparam.packageName = loadedApk.getPackageName();
 					lpparam.classLoader = loadedApk.getClassLoader();
-					LoadPackageXCallback.callAll(lpparam);
+					XC_LoadPackage.callAll(lpparam);
 				}
 			}
 		});
@@ -124,7 +124,7 @@ public final class XposedBridge {
 		// Make Xposed classes available to other applications, so they can use the same logging and helper
 		Class<?> classApplicationLoaders = Class.forName("android.app.ApplicationLoaders", false, BOOTCLASSLOADER);
 		Method getClassLoader = classApplicationLoaders.getDeclaredMethod("getClassLoader", String.class, String.class, ClassLoader.class);
-		hookMethod(getClassLoader, new MethodHookXCallback() {
+		hookMethod(getClassLoader, new XC_MethodHook() {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				param.args[0] = "/data/xposed/XposedBridge.jar:" + param.args[0];
 			}
@@ -242,16 +242,16 @@ public final class XposedBridge {
 	 * @param hookMethod The method to be hooked
 	 * @param callback 
 	 */
-	public static void hookMethod(Member hookMethod, MethodHookXCallback callback) {
+	public static void hookMethod(Member hookMethod, XC_MethodHook callback) {
 		if (!(hookMethod instanceof Method) && !(hookMethod instanceof Constructor<?>)) {
 			throw new IllegalArgumentException("only methods and constructors can be hooked");
 		}
 		
-		TreeSet<MethodHookXCallback> callbacks;
+		TreeSet<XC_MethodHook> callbacks;
 		synchronized (hookedMethodCallbacks) {
 			callbacks = hookedMethodCallbacks.get(hookMethod);
 			if (callbacks == null) {
-				callbacks = new TreeSet<MethodHookXCallback>();
+				callbacks = new TreeSet<XC_MethodHook>();
 				hookedMethodCallbacks.put(hookMethod, callbacks);
 			}
 		}
@@ -261,13 +261,13 @@ public final class XposedBridge {
 		hookMethodNative(hookMethod);
 	}
 	
-	public static void hookAllMethods(Class<?> hookClass, String methodName, MethodHookXCallback callback) {
+	public static void hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
 		for (Member method : hookClass.getDeclaredMethods())
 			if (method.getName().equals(methodName))
 				hookMethod(method, callback);
 	}
 	
-	public static void hookAllConstructors(Class<?> hookClass, MethodHookXCallback callback) {
+	public static void hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
 		for (Member constructor : hookClass.getDeclaredConstructors())
 			hookMethod(constructor, callback);
 	}
@@ -277,17 +277,19 @@ public final class XposedBridge {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Object handleHookedMethod(Member method, Object thisObject, Object[] args) throws Throwable {
-		// TODO maybe avoid the synchronization by storing a reference to the callbacks list with the native method object
-		TreeSet<MethodHookXCallback> callbacks;
+		TreeSet<XC_MethodHook> callbacks;
 		synchronized (hookedMethodCallbacks) {
 			callbacks = hookedMethodCallbacks.get(method);
 		}
-		if (callbacks == null) {
+		if (callbacks == null || callbacks.isEmpty()) {
 			try {
 				return invokeOriginalMethod(method, thisObject, args);
 			} catch (InvocationTargetException e) {
 				throw e.getCause();
 			}
+		}
+		synchronized (callbacks) {
+			callbacks = ((TreeSet<XC_MethodHook>) callbacks.clone());
 		}
 		
 		MethodHookParam param = new MethodHookParam();
@@ -295,10 +297,8 @@ public final class XposedBridge {
 		param.thisObject = thisObject;
 		param.args = args;
 		
-		callbacks = ((TreeSet<MethodHookXCallback>) callbacks.clone());
-		
-		Iterator<MethodHookXCallback> before = param.beforeIterator = callbacks.iterator();
-		Iterator<MethodHookXCallback> after  = param.afterIterator  = callbacks.descendingIterator();
+		Iterator<XC_MethodHook> before = callbacks.iterator();
+		Iterator<XC_MethodHook> after  = callbacks.descendingIterator();
 		
 		// call "before method" callbacks
 		while (before.hasNext()) {
@@ -317,7 +317,6 @@ public final class XposedBridge {
 		}
 		
 		// call original method if not requested otherwise
-		// TODO move this part to C???
 		if (!param.returnEarly) {
 			try {
 				param.setResult(invokeOriginalMethod(method, param.thisObject, param.args));
@@ -343,7 +342,7 @@ public final class XposedBridge {
 	/**
 	 * Get notified when a package is loaded. This is especially useful to hook some package-specific methods.
 	 */
-	public static void hookLoadPackage(LoadPackageXCallback callback) {
+	public static void hookLoadPackage(XC_LoadPackage callback) {
 		synchronized (loadedPackageCallbacks) {
 			loadedPackageCallbacks.add(callback);
 		}
@@ -352,7 +351,7 @@ public final class XposedBridge {
 	/**
 	 * Get notified when the resources for a package are loaded. In callbacks, resource replacements can be created.
 	 */
-	public static void hookInitPackageResources(InitPackageResourcesXCallback callback) {		
+	public static void hookInitPackageResources(XC_InitPackageResources callback) {		
 		synchronized (initPackageResourcesCallbacks) {
 			initPackageResourcesCallbacks.add(callback);
 		}
@@ -362,7 +361,7 @@ public final class XposedBridge {
 	/**
 	 * Called when the resources for a specific package are requested and instead returns an instance of {@link XResources}.
 	 */
-	private static MethodHookXCallback callbackGetTopLevelResources = new MethodHookXCallback(XCallback.PRIORITY_HIGHEST - 10) {
+	private static XC_MethodHook callbackGetTopLevelResources = new XC_MethodHook(XCallback.PRIORITY_HIGHEST - 10) {
 		protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 			XResources newRes = null;
 			final Object result = param.getResult();
