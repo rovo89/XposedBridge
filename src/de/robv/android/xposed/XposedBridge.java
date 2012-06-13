@@ -183,6 +183,11 @@ public final class XposedBridge {
 					log ("  Loading class " + moduleClassName);
 					Class<?> moduleClass = mcl.loadClass(moduleClassName);
 					
+					if (!IXposedMod.class.isAssignableFrom(moduleClass)) {
+						log ("    This class doesn't implement any sub-interface of IXposedMod, skipping it");
+						continue;
+					}
+					
 					// set the static field MODULE_PATH to the path of the module's APK if found
 					try {
 						Field modulePath = moduleClass.getDeclaredField("MODULE_PATH");
@@ -191,8 +196,33 @@ public final class XposedBridge {
 					} catch (Throwable ignored) {};
 					
 					// call the init(String) method of the module
-					Method moduleInit = moduleClass.getDeclaredMethod("init", String.class);
-					moduleInit.invoke(null, startClassName);
+					final Object moduleInstance = moduleClass.newInstance();
+					if (startClassName == null) {
+						if (moduleInstance instanceof IXposedHookZygoteInit)
+							((IXposedHookZygoteInit) moduleInstance).initZygote();
+						
+						if (moduleInstance instanceof IXposedHookLoadPackage) {
+							hookLoadPackage(new XC_LoadPackage() {
+								@Override
+								public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
+									((IXposedHookLoadPackage) moduleInstance).handleLoadPackage(lpparam);
+								}
+							});
+						}
+						
+						if (moduleInstance instanceof IXposedHookInitPackageResources) {
+							hookInitPackageResources(new XC_InitPackageResources() {
+								@Override
+								public void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable {
+									((IXposedHookInitPackageResources) moduleInstance).handleInitPackageResources(resparam);
+								}
+							});
+						}
+							
+					} else {
+						if (moduleInstance instanceof IXposedHookCmdInit)
+							((IXposedHookCmdInit) moduleInstance).initCmdApp(startClassName);
+					}
 				} catch (Throwable t) {
 					log(t);
 				}
