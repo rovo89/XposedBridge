@@ -201,24 +201,11 @@ public final class XposedBridge {
 						if (moduleInstance instanceof IXposedHookZygoteInit)
 							((IXposedHookZygoteInit) moduleInstance).initZygote();
 						
-						if (moduleInstance instanceof IXposedHookLoadPackage) {
-							hookLoadPackage(new XC_LoadPackage() {
-								@Override
-								public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
-									((IXposedHookLoadPackage) moduleInstance).handleLoadPackage(lpparam);
-								}
-							});
-						}
+						if (moduleInstance instanceof IXposedHookLoadPackage)
+							hookLoadPackage(new IXposedHookLoadPackage.Wrapper((IXposedHookLoadPackage) moduleInstance));
 						
-						if (moduleInstance instanceof IXposedHookInitPackageResources) {
-							hookInitPackageResources(new XC_InitPackageResources() {
-								@Override
-								public void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable {
-									((IXposedHookInitPackageResources) moduleInstance).handleInitPackageResources(resparam);
-								}
-							});
-						}
-							
+						if (moduleInstance instanceof IXposedHookInitPackageResources)
+							hookInitPackageResources(new IXposedHookInitPackageResources.Wrapper((IXposedHookInitPackageResources) moduleInstance));
 					} else {
 						if (moduleInstance instanceof IXposedHookCmdInit)
 							((IXposedHookCmdInit) moduleInstance).initCmdApp(startClassName);
