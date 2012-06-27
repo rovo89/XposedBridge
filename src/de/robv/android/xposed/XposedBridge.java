@@ -1,8 +1,6 @@
 package de.robv.android.xposed;
 
-import static de.robv.android.xposed.XposedHelpers.getNativeLibraryMemoryRange;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
-import static de.robv.android.xposed.XposedHelpers.getProcessPid;
 import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 import java.io.BufferedReader;
@@ -16,7 +14,6 @@ import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -46,8 +43,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.callbacks.XCallback;
 
 public final class XposedBridge {
-	public static boolean DEBUG = false;
-	
 	private static PrintWriter logWriter = null;
 	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
 	private static final int MAX_LOGFILE_SIZE = 20*1024; 
@@ -80,10 +75,9 @@ public final class XposedBridge {
 				logFile.setWritable(true, false);
 			} catch (IOException ignored) {}
 			
-			log("-----------------\nLoading Xposed...");
+			log("-----------------\nLoading Xposed (for " + (startClassName == null ? "Zygote" : startClassName) + ")...");
 			if (startClassName == null) {
 				// Initializations for Zygote
-				log("Loading some internal stuff");
 				initXbridgeZygote();
 			}
 				
@@ -162,7 +156,7 @@ public final class XposedBridge {
 		log("Loading modules from " + apk);
 		
 		if (!new File(apk).exists()) {
-			log("File does not exist");
+			log("  File does not exist");
 			return;
 		}
 		
@@ -192,18 +186,14 @@ public final class XposedBridge {
 						continue;
 					}
 					
-					// set the static field MODULE_PATH to the path of the module's APK if found
-					try {
-						Field modulePath = moduleClass.getDeclaredField("MODULE_PATH");
-						modulePath.setAccessible(true);
-						modulePath.set(null, apk);
-					} catch (Throwable ignored) {};
-					
 					// call the init(String) method of the module
 					final Object moduleInstance = moduleClass.newInstance();
 					if (startClassName == null) {
-						if (moduleInstance instanceof IXposedHookZygoteInit)
-							((IXposedHookZygoteInit) moduleInstance).initZygote();
+						if (moduleInstance instanceof IXposedHookZygoteInit) {
+							IXposedHookZygoteInit.StartupParam param = new IXposedHookZygoteInit.StartupParam();
+							param.modulePath = apk;
+							((IXposedHookZygoteInit) moduleInstance).initZygote(param);
+						}
 						
 						if (moduleInstance instanceof IXposedHookLoadPackage)
 							hookLoadPackage(new IXposedHookLoadPackage.Wrapper((IXposedHookLoadPackage) moduleInstance));
@@ -211,8 +201,12 @@ public final class XposedBridge {
 						if (moduleInstance instanceof IXposedHookInitPackageResources)
 							hookInitPackageResources(new IXposedHookInitPackageResources.Wrapper((IXposedHookInitPackageResources) moduleInstance));
 					} else {
-						if (moduleInstance instanceof IXposedHookCmdInit)
-							((IXposedHookCmdInit) moduleInstance).initCmdApp(startClassName);
+						if (moduleInstance instanceof IXposedHookCmdInit) {
+							IXposedHookCmdInit.StartupParam param = new IXposedHookCmdInit.StartupParam();
+							param.modulePath = apk;
+							param.startClassName = startClassName;
+							((IXposedHookCmdInit) moduleInstance).initCmdApp(param);
+						}
 					}
 				} catch (Throwable t) {
 					log(t);
@@ -225,11 +219,6 @@ public final class XposedBridge {
 				is.close();
 			} catch (IOException ignored) {}
 		}
-	}
-	
-	private static void onZygoteInit() throws Exception {
-		if (DEBUG)
-			log("onZygoteInit");
 	}
 	
 	/**
@@ -480,39 +469,4 @@ public final class XposedBridge {
         	
 		return invokeOriginalMethodNative(method, parameterTypes, returnType, thisObject, args);
 	}
-
-	/**
-	 * Patch a native library in the current process.
-	 * @param libraryPath The path to the library.
-	 * @param patch A patch created by bsdiff.
-	 * @return <code>true</code> if the file was successfully patched.
-	 */
-	public static boolean patchNativeLibrary(String libraryPath, byte[] patch) {
-		long[] memRange = getNativeLibraryMemoryRange("self", libraryPath);
-		if (memRange == null)
-			return false;
-		
-		return patchNativeLibrary(libraryPath, patch, 0, memRange[0], memRange[1] - memRange[0]);
-	}
-	
-	/**
-	 * Patch a native library in a foreign process.
-	 * @param libraryPath The path to the library.
-	 * @param patch A patch created by bsdiff.
-	 * @param process The name of the process to be patched (see {@link XposedHelpers#getProcessPid}).
-	 * @return <code>true</code> if the file was successfully patched.
-	 */
-	public static boolean patchNativeLibrary(String libraryPath, byte[] patch, String process) {
-		String pid = getProcessPid(process);
-		if (pid == null)
-			return false;
-		
-		long[] memRange = getNativeLibraryMemoryRange(pid, libraryPath);
-		if (memRange == null)
-			return false;
-		
-		return patchNativeLibrary(libraryPath, patch, Integer.parseInt(pid), memRange[0], memRange[1] - memRange[0]);
-	}
-	
-	private static native boolean patchNativeLibrary(String libraryPath, byte[] patch, int pid, long base, long size);
 }

@@ -1,5 +1,6 @@
 package de.robv.android.xposed.callbacks;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -17,6 +18,12 @@ public abstract class XCallback implements Comparable<XCallback> {
 	
 	public static class Param {
 		public final TreeSet<? extends XCallback> callbacks;
+		/**
+		 * This can be used to store anything for the scope of the callback.
+		 * Use this instead of instance variables.
+		 * @see #getObjectExtra
+		 * @see #setObjectExtra
+		 */
 		public final Bundle extra = new Bundle();
 		
 		protected Param() {
@@ -27,6 +34,27 @@ public abstract class XCallback implements Comparable<XCallback> {
 		protected Param(TreeSet<? extends XCallback> callbacks) {
 			synchronized (callbacks) {
 				this.callbacks = (TreeSet<? extends XCallback>) callbacks.clone();
+			}
+		}
+		
+		/** @see #setObjectExtra */
+		public Object getObjectExtra(String key) {
+			Serializable o = extra.getSerializable(key);
+			if (o instanceof SerializeWrapper)
+				return ((SerializeWrapper) o).object;
+			return null;
+		}
+		
+		/** Provides a wrapper to store <code>Object</code>s in <code>extra</code>. */
+		public void setObjectExtra(String key, Object o) {
+			extra.putSerializable(key, new SerializeWrapper(o));
+		}
+		
+		private static class SerializeWrapper implements Serializable {
+			private static final long serialVersionUID = 1L;
+			private Object object;
+			public SerializeWrapper(Object o) {
+				object = o;
 			}
 		}
 	}

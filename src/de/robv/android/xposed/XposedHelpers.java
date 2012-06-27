@@ -1,10 +1,7 @@
 package de.robv.android.xposed;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -1017,57 +1014,9 @@ public class XposedHelpers {
 		}
 	}
 	
-	/**
-	 * Get the PID for a process.
-	 * @param Process name as defined in the first field of <code>/proc/[pid]/cmdline</code>. For apps, this is the package name.
-	 * @return PID, or <code>null</code> if it wasn't found.
-	 */
-	public static String getProcessPid(String name) {
-		String terminatedName = name + "\0";
-		String pids[] = new File("/proc/").list();
-		for (String pid : pids) {
-			try {
-				BufferedReader br = new BufferedReader(new FileReader("/proc/" + pid + "/cmdline"));
-				String cmdline = br.readLine();
-				br.close();
-				if (cmdline != null && cmdline.startsWith(terminatedName))
-					return pid;
-			} catch (IOException e) {
-				continue;
-			}
-		}
-		XposedBridge.log("Could not find process '" + name + "'");
-		return null;
-	}
-	
-	/**
-	 * Get the memory range in which the first part of the given library is located.
-	 * @param pid The PID of the process or "self".
-	 * @return A two-element array with the start and end of the allocated memory, or <code>null</code> if it wasn't found.
-	 */
-	/*package */ static long[] getNativeLibraryMemoryRange(String pid, String library) {
-		library = " " + library; 
-		try {
-			BufferedReader br = new BufferedReader(new FileReader("/proc/" + pid + "/maps"));
-			String line;
-			while ((line = br.readLine()) != null) {
-				if (line.endsWith(library)) {
-					br.close();
-					long start = Long.parseLong(line.substring(0, 8), 16);
-					long end = Long.parseLong(line.substring(9, 17), 16);
-					return new long[] { start, end };
-				}
-			}
-			br.close();
-			XposedBridge.log("Could not find library" + library + "in process " + pid);
-			return null;
-		} catch (Throwable t) {
-			XposedBridge.log(t);
-			return null;
-		}
-	}
 	
 	//#################################################################################################
+	// TODO helpers for view traversing
 	/*To make it easier, I will try and implement some more helpers:
 	- add view before/after existing view (I already mentioned that I think)
 	- get index of view in its parent
