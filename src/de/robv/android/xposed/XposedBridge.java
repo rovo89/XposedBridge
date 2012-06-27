@@ -49,6 +49,8 @@ public final class XposedBridge {
 	public static boolean DEBUG = false;
 	
 	private static PrintWriter logWriter = null;
+	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
+	private static final int MAX_LOGFILE_SIZE = 20*1024; 
 	
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 	private static final ClassLoader BOOTCLASSLOADER = XposedBridge.class.getClassLoader();
@@ -71,6 +73,8 @@ public final class XposedBridge {
 			// initialize log file
 			try {
 				File logFile = new File("/data/xposed/debug.log");
+				if (logFile.length() > MAX_LOGFILE_SIZE)
+					logFile.renameTo(new File("/data/xposed/debug.log.old"));
 				logWriter = new PrintWriter(new FileWriter(logFile, true));
 				logFile.setReadable(true, false);
 				logFile.setWritable(true, false);
