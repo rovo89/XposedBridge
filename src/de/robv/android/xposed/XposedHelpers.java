@@ -125,6 +125,11 @@ public class XposedHelpers {
 			else
 				throw new ClassNotFoundError("parameter type must either be specified as Class or String", null);
 		}
+		
+		// if there are no arguments for the method
+		if (parameterClasses == null)
+			parameterClasses = new Class<?>[0];
+		
 		return findMethodExact(clazz, methodName, parameterClasses);
 	}
 	
