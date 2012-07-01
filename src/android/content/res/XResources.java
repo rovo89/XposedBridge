@@ -1,9 +1,9 @@
 package android.content.res;
 
+import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.WeakHashMap;
@@ -94,7 +94,7 @@ public class XResources extends Resources {
 	}
 	
 	public static void init() throws Exception {
-		XposedBridge.hookMethod(Resources.class.getDeclaredMethod("getCachedStyledAttributes", int.class), new XC_MethodHook() {
+		findAndHookMethod(Resources.class, "getCachedStyledAttributes", int.class, new XC_MethodHook() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 				final Object result = param.getResult();
@@ -106,8 +106,7 @@ public class XResources extends Resources {
 			}
 		});
 		
-		Method methodInflate = LayoutInflater.class.getDeclaredMethod("inflate", XmlPullParser.class, ViewGroup.class, boolean.class);
-		XposedBridge.hookMethod(methodInflate, new XC_MethodHook() {
+		findAndHookMethod(LayoutInflater.class, "inflate", XmlPullParser.class, ViewGroup.class, boolean.class, new XC_MethodHook() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 				XMLInstanceDetails details;

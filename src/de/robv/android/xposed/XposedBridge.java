@@ -1,5 +1,6 @@
 package de.robv.android.xposed;
 
+import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
@@ -80,7 +81,7 @@ public final class XposedBridge {
 				// Initializations for Zygote
 				initXbridgeZygote();
 			}
-				
+			
 			loadModules(startClassName);			
 		} catch (Throwable t) {
 			log("Errors during Xposed initialization");
@@ -102,8 +103,7 @@ public final class XposedBridge {
 	private static void initXbridgeZygote() throws Exception {
 		// Built-in handler for the LoadedApk.makeApplication method that allows handlers to be registered
 		// for the first initialization of a package via {@link #hookLoadPackage}.
-		Method makeApplication = LoadedApk.class.getDeclaredMethod("makeApplication", boolean.class, Instrumentation.class);
-		hookMethod(makeApplication, new XC_MethodHook() {
+		findAndHookMethod(LoadedApk.class, "makeApplication", boolean.class, Instrumentation.class, new XC_MethodHook() {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				LoadedApk loadedApk = (LoadedApk) param.thisObject;
 				boolean firstLoad = (getObjectField(loadedApk, "mApplication") == null);
@@ -116,13 +116,12 @@ public final class XposedBridge {
 			}
 		});
 		
-		Method getTopLevelResources = ActivityThread.class.getDeclaredMethod("getTopLevelResources", String.class, CompatibilityInfo.class);
-		hookMethod(getTopLevelResources, callbackGetTopLevelResources);
+		findAndHookMethod(ActivityThread.class, "getTopLevelResources", String.class, CompatibilityInfo.class, callbackGetTopLevelResources);
 		
-		// Make Xposed classes available to other applications, so they can use the same logging and helper
-		Class<?> classApplicationLoaders = Class.forName("android.app.ApplicationLoaders", false, BOOTCLASSLOADER);
-		Method getClassLoader = classApplicationLoaders.getDeclaredMethod("getClassLoader", String.class, String.class, ClassLoader.class);
-		hookMethod(getClassLoader, new XC_MethodHook() {
+		// Make Xposed classes available to other applications, so they can use
+		// the same logging and helper
+		findAndHookMethod("android.app.ApplicationLoaders", null, "getClassLoader",
+				String.class, String.class, ClassLoader.class, new XC_MethodHook() {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				param.args[0] = "/data/xposed/XposedBridge.jar:" + param.args[0];
 			}
@@ -160,9 +159,7 @@ public final class XposedBridge {
 			return;
 		}
 		
-		ClassLoader xbcl = XposedBridge.class.getClassLoader();
-		ClassLoader mcl = new PathClassLoader(apk, xbcl);
-		
+		ClassLoader mcl = new PathClassLoader(apk, BOOTCLASSLOADER);
 		InputStream is = mcl.getResourceAsStream("assets/xposed_init");
 		if (is == null) {
 			log("assets/xposed_init not found in the APK");
