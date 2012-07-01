@@ -27,6 +27,31 @@ public class XposedHelpers {
 	private static final WeakHashMap<Object, HashMap<String, Object>> additionalFields = new WeakHashMap<Object, HashMap<String, Object>>();
 	
 	/**
+	 * Look up a class with the specified class loader (or the boot class loader if
+	 * <code>classLoader</code> is <code>null</code>).
+	 * <p>Class names can be specified in different formats:
+	 * <ul><li>java.lang.Integer
+	 * <li>int
+	 * <li>int[]
+	 * <li>[I
+	 * <li>java.lang.String[]
+	 * <li>[Ljava.lang.String;
+	 * <li>android.app.ActivityThread.ResourcesKey
+	 * <li>android.app.ActivityThread$ResourcesKey
+	 * <li>android.app.ActivityThread$ResourcesKey[]</ul>
+	 * <p>A {@link ClassNotFoundError} is thrown in case the class was not found.
+	 */
+	public static Class<?> findClass(String className, ClassLoader classLoader) {
+		if (classLoader == null)
+			classLoader = XposedBridge.BOOTCLASSLOADER;
+		try {
+			return ClassUtils.getClass(classLoader, className, false);
+		} catch (ClassNotFoundException e) {
+			throw new ClassNotFoundError(e);
+		}
+	}
+	
+	/**
 	 * Look up a field in a class and set it to accessible. The result is cached.
 	 * If the field was not found, a {@link NoSuchFieldError} will be thrown.
 	 */
@@ -70,6 +95,63 @@ public class XposedHelpers {
 	public static Method findMethodExact(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
 		return findMethodExact(false, clazz, methodName, parameterTypes);
 	}
+	
+	/**
+	 * Look up a method in a class and set it to accessible. The result is cached.
+	 * If the method was not found, a {@link NoSuchMethodError} will be thrown.
+	 * 
+	 * <p>The parameter types may either be specified as <code>Class</code> or <code>String</code>
+	 * objects. In the latter case, the class is looked up using {@link #findClass} with the same
+	 * class loader as the method's class.
+	 */
+	public static Method findMethodExact(Class<?> clazz, String methodName, Object... parameterTypes) {
+		Class<?>[] parameterClasses = null;
+		for (int i = parameterTypes.length - 1; i >= 0; i--) {
+			Object type = parameterTypes[i];
+			if (type == null)
+				throw new ClassNotFoundError("parameter type must not be null", null);
+			
+			// ignore trailing callback
+			if (type instanceof XC_MethodHook)
+				continue;
+			
+			if (parameterClasses == null)
+				parameterClasses = new Class<?>[i+1];
+			
+			if (type instanceof Class)
+				parameterClasses[i] = (Class<?>) type;
+			else if (type instanceof String)
+				parameterClasses[i] = findClass((String) type, clazz.getClassLoader());
+			else
+				throw new ClassNotFoundError("parameter type must either be specified as Class or String", null);
+		}
+		return findMethodExact(clazz, methodName, parameterClasses);
+	}
+	
+	/**
+	 * Look up a method and place a hook on it. The last argument must be the callback for the hook.
+	 * @see #findMethodExact(Class, String, Object...)
+	 */
+	public static void findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypes) {
+		if (parameterTypes.length == 0 || !(parameterTypes[parameterTypes.length-1] instanceof XC_MethodHook))
+			throw new IllegalArgumentException("no callback defined");
+		
+		XC_MethodHook callback = (XC_MethodHook) parameterTypes[parameterTypes.length-1];
+		Method m = findMethodExact(clazz, methodName, parameterTypes);
+		
+		XposedBridge.hookMethod(m, callback);
+	}
+	
+	/** @see #findMethodExact(Class, String, Object...) */
+	public static Method findMethodExact(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
+		return findMethodExact(findClass(className, classLoader), methodName, parameterTypes);
+	}
+	
+	/** @see #findAndHookMethod(Class, String, Object...) */
+	public static void findAndHookMethod(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
+		findAndHookMethod(findClass(className, classLoader), methodName, parameterTypes);
+	}
+
 	
 	/**
 	 * @see #findMethodExact(Class, String, Class...)
@@ -328,6 +410,16 @@ public class XposedHelpers {
 			parameterTypes[i] = argsClasses[i];
 		}
 		return findConstructorBestMatch(false, clazz, parameterTypes);
+	}
+	
+	public static class ClassNotFoundError extends Error {
+		private static final long serialVersionUID = -1070936889459514628L;
+		public ClassNotFoundError(Throwable cause) {
+			super(cause);
+		}
+		public ClassNotFoundError(String detailMessage, Throwable cause) {
+			super(detailMessage, cause);
+		}
 	}
 	
 	//#################################################################################################
@@ -892,6 +984,9 @@ public class XposedHelpers {
 		private static final long serialVersionUID = -1070936889459514628L;
 		public InvocationTargetError(Throwable cause) {
 			super(cause);
+		}
+		public InvocationTargetError(String detailMessage, Throwable cause) {
+			super(detailMessage, cause);
 		}
 	}
 	

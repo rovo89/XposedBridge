@@ -48,7 +48,7 @@ public final class XposedBridge {
 	private static final int MAX_LOGFILE_SIZE = 20*1024; 
 	
 	private static final Object[] EMPTY_ARRAY = new Object[0];
-	private static final ClassLoader BOOTCLASSLOADER = XposedBridge.class.getClassLoader();
+	public static final ClassLoader BOOTCLASSLOADER = XposedBridge.class.getClassLoader();
 	
 	// built-in handlers
 	private static final Map<Member, TreeSet<XC_MethodHook>> hookedMethodCallbacks
