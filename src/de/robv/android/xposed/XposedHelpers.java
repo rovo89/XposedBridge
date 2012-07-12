@@ -76,7 +76,7 @@ public class XposedHelpers {
 		}
 		
 		try {
-			Field field = clazz.getDeclaredField(fieldName);
+			Field field = findFieldRecursiveImpl(clazz, fieldName);
 			field.setAccessible(true);
 			fieldCache.put(fullFieldName, field);
 			return field;
@@ -85,6 +85,23 @@ public class XposedHelpers {
 				XposedBridge.log(e);
 			fieldCache.put(fullFieldName, null);
 			throw new NoSuchFieldError(fullFieldName);
+		}
+	}
+	
+	private static Field findFieldRecursiveImpl(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+		try {
+			return clazz.getDeclaredField(fieldName);
+		} catch (NoSuchFieldException e) {
+			while (true) {
+				clazz = clazz.getSuperclass();
+				if (clazz == null || clazz.equals(Object.class))
+					break;
+				
+				try {
+					return clazz.getDeclaredField(fieldName);
+				} catch (NoSuchFieldException ignored) {}
+			}
+			throw e;
 		}
 	}
 	
