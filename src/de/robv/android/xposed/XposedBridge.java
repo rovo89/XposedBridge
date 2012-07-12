@@ -311,7 +311,14 @@ public final class XposedBridge {
 		while (before.hasNext()) {
 			try {
 				before.next().beforeHookedMethod(param);
-			} catch (Throwable t) { XposedBridge.log(t); }
+			} catch (Throwable t) {
+				XposedBridge.log(t);
+				
+				// reset result (ignoring what the unexpectedly exiting callback did)
+				param.setResult(null);
+				param.returnEarly = false;
+				continue;
+			}
 			
 	        if (param.returnEarly) {
 	        	// skip remaining "before" callbacks and corresponding "after" callbacks
@@ -334,9 +341,20 @@ public final class XposedBridge {
 		
 		// call "after method" callbacks
 		while (after.hasNext()) {
+			Object lastResult =  param.getResult();
+			Throwable lastThrowable = param.getThrowable();
+			
 			try {
 				after.next().afterHookedMethod(param);
-			} catch (Throwable t) { XposedBridge.log(t); }
+			} catch (Throwable t) {
+				XposedBridge.log(t);
+				
+				// reset to last result (ignoring what the unexpectedly exiting callback did)
+				if (lastThrowable == null)
+					param.setResult(lastResult);
+				else
+					param.setThrowable(lastThrowable);
+			}
 		}
 		
 		// return
@@ -383,7 +401,6 @@ public final class XposedBridge {
 				CompatibilityInfo compInfo = (CompatibilityInfo) param.args[1];
 				
 				newRes = new XResources(origRes, resDir);
-				param.setResult(newRes);
 				
 				Map<Object, WeakReference<Resources>> mActiveResources =
 						(Map<Object, WeakReference<Resources>>) AndroidAppHelper.getActivityThread_mActiveResources(thisActivityThread);
@@ -392,12 +409,13 @@ public final class XposedBridge {
 				Object key = AndroidAppHelper.createResourcesKey(resDir, compInfo);
 				synchronized (mPackages) {
 					WeakReference<Resources> existing = mActiveResources.get(key);
-					if (existing != null && existing.get().getAssets() != newRes.getAssets())
+					if (existing != null && existing.get() != null && existing.get().getAssets() != newRes.getAssets())
 						existing.get().getAssets().close();
 					mActiveResources.put(key, new WeakReference<Resources>(newRes));
 				}
 				
 				newRes.setInited(resDir == null || !newRes.checkFirstLoad());
+				param.setResult(newRes);
 				
 			} else {
 				return;
