@@ -14,9 +14,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
-import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.reflect.MemberUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
+
+import external.org.apache.commons.lang3.ClassUtils;
+import external.org.apache.commons.lang3.reflect.MemberUtils;
+import external.org.apache.commons.lang3.reflect.MethodUtils;
 
 import android.content.res.Resources;
 

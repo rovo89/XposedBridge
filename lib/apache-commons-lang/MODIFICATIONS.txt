@@ -3,3 +3,4 @@ as downloaded from http://commons.apache.org/lang/download_lang.cgi, except for
 these modifications:
 - Class MemberUtils changed to public
 - Method compareParameterTypes in MemberUtils changed to public
+- Prefix "external." for packages to avoid conflicts with other apps
