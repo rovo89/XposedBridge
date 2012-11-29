@@ -155,12 +155,12 @@ public class XposedHelpers {
 	 * Look up a method and place a hook on it. The last argument must be the callback for the hook.
 	 * @see #findMethodExact(Class, String, Object...)
 	 */
-	public static void findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypes) {
-		if (parameterTypes.length == 0 || !(parameterTypes[parameterTypes.length-1] instanceof XC_MethodHook))
+	public static void findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
+		if (parameterTypesAndCallback.length == 0 || !(parameterTypesAndCallback[parameterTypesAndCallback.length-1] instanceof XC_MethodHook))
 			throw new IllegalArgumentException("no callback defined");
 		
-		XC_MethodHook callback = (XC_MethodHook) parameterTypes[parameterTypes.length-1];
-		Method m = findMethodExact(clazz, methodName, parameterTypes);
+		XC_MethodHook callback = (XC_MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length-1];
+		Method m = findMethodExact(clazz, methodName, parameterTypesAndCallback);
 		
 		XposedBridge.hookMethod(m, callback);
 	}
@@ -171,8 +171,8 @@ public class XposedHelpers {
 	}
 	
 	/** @see #findAndHookMethod(Class, String, Object...) */
-	public static void findAndHookMethod(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
-		findAndHookMethod(findClass(className, classLoader), methodName, parameterTypes);
+	public static void findAndHookMethod(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
+		findAndHookMethod(findClass(className, classLoader), methodName, parameterTypesAndCallback);
 	}
 
 	
