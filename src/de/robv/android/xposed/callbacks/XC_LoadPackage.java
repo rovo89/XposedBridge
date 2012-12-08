@@ -3,6 +3,8 @@ package de.robv.android.xposed.callbacks;
 import java.util.TreeSet;
 
 public abstract class XC_LoadPackage extends XCallback {
+	private TreeSet<XC_LoadPackage> loadedPackageCallbacks;
+
 	public XC_LoadPackage() {
 		super();
 	}
@@ -27,4 +29,19 @@ public abstract class XC_LoadPackage extends XCallback {
 	}
 	
 	public abstract void handleLoadPackage(LoadPackageParam lpparam) throws Throwable;
+
+
+	public void setCallbacksCollection(TreeSet<XC_LoadPackage> loadedPackageCallbacks) {
+		this.loadedPackageCallbacks = loadedPackageCallbacks;
+	}
+
+	@Override
+	public void detachCallback() {
+		if (loadedPackageCallbacks != null) {
+			synchronized (loadedPackageCallbacks) {
+				loadedPackageCallbacks.remove(this);
+			}
+			loadedPackageCallbacks = null;
+		}
+	}
 }

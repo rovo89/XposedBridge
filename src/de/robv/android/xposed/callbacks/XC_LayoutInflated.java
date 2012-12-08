@@ -1,5 +1,6 @@
 package de.robv.android.xposed.callbacks;
 
+import java.util.HashSet;
 import java.util.TreeSet;
 
 import android.content.res.XResources;
@@ -7,6 +8,8 @@ import android.content.res.XResources.ResourceNames;
 import android.view.View;
 
 public abstract class XC_LayoutInflated extends XCallback {
+	private final HashSet<TreeSet<XC_LayoutInflated>> callbackSets = new HashSet<TreeSet<XC_LayoutInflated>>(3);
+
 	public XC_LayoutInflated() {
 		super();
 	}
@@ -35,4 +38,23 @@ public abstract class XC_LayoutInflated extends XCallback {
 	}
 	
 	public abstract void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable;
+
+
+	public void addCallbacksCollection(TreeSet<XC_LayoutInflated> layoutInflCallbacks) {
+		synchronized (callbackSets) {
+			callbackSets.add(layoutInflCallbacks);
+		}
+	}
+
+	@Override
+	public void detachCallback() {
+		synchronized (callbackSets) {
+			for (TreeSet<XC_LayoutInflated> layoutInflCallbacks : callbackSets) {
+				synchronized (layoutInflCallbacks) {
+					layoutInflCallbacks.remove(this);
+				}
+			}
+			callbackSets.clear();
+		}
+	}
 }
