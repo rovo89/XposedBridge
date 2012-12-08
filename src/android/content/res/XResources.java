@@ -601,6 +601,13 @@ public class XResources extends Resources {
 		return getFakeResId(res.getResourceName(id));
 	}
 	
+	public int addResource(Resources res, int id) {
+		int fakeId = getFakeResId(res, id);
+		if (!replacements.containsKey(fakeId))
+			setReplacement(fakeId, new XResForwarder(res, id));
+		return fakeId;
+	}
+
 	/**
 	 * Similar to {@link #translateResId}, but used to determine the original ID of attribute names
 	 */
