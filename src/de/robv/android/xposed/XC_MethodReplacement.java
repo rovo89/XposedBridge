@@ -1,5 +1,6 @@
 package de.robv.android.xposed;
 
+
 public abstract class XC_MethodReplacement extends XC_MethodHook {
 	public XC_MethodReplacement() {
 		super();
@@ -32,4 +33,24 @@ public abstract class XC_MethodReplacement extends XC_MethodHook {
     		return null;
     	};
 	};
+	
+	/**
+	 * Creates a callback which always returns a specific value
+	 */
+	public static XC_MethodReplacement returnConstant(final Object result) {
+		return returnConstant(PRIORITY_DEFAULT, result);
+	}
+	
+	/**
+	 * @see #returnConstant(Object)
+	 */
+	public static XC_MethodReplacement returnConstant(int priority, final Object result) {
+		return new XC_MethodReplacement() {
+			@Override
+			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+				return result;
+			}
+		};
+	}
+
 }
