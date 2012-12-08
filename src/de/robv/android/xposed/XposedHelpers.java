@@ -14,12 +14,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
-
+import android.content.res.Resources;
 import external.org.apache.commons.lang3.ClassUtils;
 import external.org.apache.commons.lang3.reflect.MemberUtils;
 import external.org.apache.commons.lang3.reflect.MethodUtils;
-
-import android.content.res.Resources;
 
 public class XposedHelpers {
 	private static final HashMap<String, Field> fieldCache = new HashMap<String, Field>();
@@ -966,19 +964,24 @@ public class XposedHelpers {
 	}
 	
 	//#################################################################################################	
-	public static void setAdditionalInstanceField(Object obj, String key, Object value) {
+	public static Object setAdditionalInstanceField(Object obj, String key, Object value) {
 		if (obj == null)
 			throw new NullPointerException("object must not be null");
 		if (key == null)
 			throw new NullPointerException("key must not be null");
 		
-		HashMap<String, Object> objectFields = additionalFields.get(obj);
-		if (objectFields == null) {
-			objectFields = new HashMap<String, Object>();
-			additionalFields.put(obj, objectFields);
+		HashMap<String, Object> objectFields;
+		synchronized (additionalFields) {
+			objectFields = additionalFields.get(obj);
+			if (objectFields == null) {
+				objectFields = new HashMap<String, Object>();
+				additionalFields.put(obj, objectFields);
+			}
 		}
 		
-		objectFields.put(key, value);
+		synchronized (objectFields) {
+			return objectFields.put(key, value);
+		}
 	}
 	
 	public static Object getAdditionalInstanceField(Object obj, String key) {
@@ -987,27 +990,58 @@ public class XposedHelpers {
 		if (key == null)
 			throw new NullPointerException("key must not be null");
 		
-		HashMap<String, Object> objectFields = additionalFields.get(obj);
-		if (objectFields == null)
-			return null;
+		HashMap<String, Object> objectFields;
+		synchronized (additionalFields) {
+			objectFields = additionalFields.get(obj);
+			if (objectFields == null)
+				return null;
+		}
 		
-		return objectFields.get(key);
+		synchronized (objectFields) {
+			return objectFields.get(key);
+		}
 	}
 	
-	public static void setAdditionalStaticField(Object obj, String key, Object value) {
-		setAdditionalInstanceField(obj.getClass(), key, value);
+	public static Object removeAdditionalInstanceField(Object obj, String key) {
+		if (obj == null)
+			throw new NullPointerException("object must not be null");
+		if (key == null)
+			throw new NullPointerException("key must not be null");
+		
+		HashMap<String, Object> objectFields;
+		synchronized (additionalFields) {
+			objectFields = additionalFields.get(obj);
+			if (objectFields == null)
+				return null;
+		}
+		
+		synchronized (objectFields) {
+			return objectFields.remove(key);
+		}
+	}
+	
+	public static Object setAdditionalStaticField(Object obj, String key, Object value) {
+		return setAdditionalInstanceField(obj.getClass(), key, value);
 	}
 	
 	public static Object getAdditionalStaticField(Object obj, String key) {
 		return getAdditionalInstanceField(obj.getClass(), key);
 	}
 	
-	public static void setAdditionalStaticField(Class<?> clazz, String key, Object value) {
-		setAdditionalInstanceField(clazz, key, value);
+	public static Object removeAdditionalStaticField(Object obj, String key) {
+		return removeAdditionalInstanceField(obj.getClass(), key);
+	}
+	
+	public static Object setAdditionalStaticField(Class<?> clazz, String key, Object value) {
+		return setAdditionalInstanceField(clazz, key, value);
 	}
 	
 	public static Object getAdditionalStaticField(Class<?> clazz, String key) {
 		return getAdditionalInstanceField(clazz, key);
+	}
+	
+	public static Object removeAdditionalStaticField(Class<?> clazz, String key) {
+		return removeAdditionalInstanceField(clazz, key);
 	}
 	
 	//#################################################################################################
