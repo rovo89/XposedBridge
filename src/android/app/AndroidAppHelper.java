@@ -24,8 +24,8 @@ public class AndroidAppHelper {
 	
 	static {
 		try {
-			// check if the field exists, preventing error messages
-			findField(true, CompatibilityInfo.class, "isThemeable");
+			// check if the field exists
+			findField(CompatibilityInfo.class, "isThemeable");
 			hasIsThemeable = true;
 		} catch (NoSuchFieldError ignored) {
 		} catch (Throwable t) { XposedBridge.log(t); }

@@ -57,13 +57,6 @@ public class XposedHelpers {
 	 * If the field was not found, a {@link NoSuchFieldError} will be thrown.
 	 */
 	public static Field findField(Class<?> clazz, String fieldName) {
-		return findField(false, clazz, fieldName);
-	}
-	
-	/**
-	 * @see #findField(Class, String)
-	 */
-	public static Field findField(boolean suppressErrorLogging, Class<?> clazz, String fieldName) {
 		StringBuilder sb = new StringBuilder(clazz.getName());
 		sb.append('#');
 		sb.append(fieldName);
@@ -82,8 +75,6 @@ public class XposedHelpers {
 			fieldCache.put(fullFieldName, field);
 			return field;
 		} catch (NoSuchFieldException e) {
-			if (!suppressErrorLogging)
-				XposedBridge.log(e);
 			fieldCache.put(fullFieldName, null);
 			throw new NoSuchFieldError(fullFieldName);
 		}
@@ -104,14 +95,6 @@ public class XposedHelpers {
 			}
 			throw e;
 		}
-	}
-	
-	/**
-	 * Look up a method in a class and set it to accessible. The result is cached.
-	 * If the method was not found, a {@link NoSuchMethodError} will be thrown.
-	 */
-	public static Method findMethodExact(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
-		return findMethodExact(false, clazz, methodName, parameterTypes);
 	}
 	
 	/**
@@ -175,11 +158,11 @@ public class XposedHelpers {
 		findAndHookMethod(findClass(className, classLoader), methodName, parameterTypesAndCallback);
 	}
 
-	
 	/**
-	 * @see #findMethodExact(Class, String, Class...)
+	 * Look up a method in a class and set it to accessible. The result is cached.
+	 * If the method was not found, a {@link NoSuchMethodError} will be thrown.
 	 */
-	public static Method findMethodExact(boolean suppressErrorLogging, Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+	public static Method findMethodExact(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
 		StringBuilder sb = new StringBuilder(clazz.getName());
 		sb.append('#');
 		sb.append(methodName);
@@ -200,8 +183,6 @@ public class XposedHelpers {
 			methodCache.put(fullMethodName, method);
 			return method;
 		} catch (NoSuchMethodException e) {
-			if (!suppressErrorLogging)
-				XposedBridge.log(e);
 			methodCache.put(fullMethodName, null);
 			throw new NoSuchMethodError(fullMethodName);
 		}
@@ -211,17 +192,9 @@ public class XposedHelpers {
 	 * Look up a method in a class and set it to accessible. The result is cached.
 	 * This does not only look for exact matches, but for the closest match. 
 	 * If the method was not found, a {@link NoSuchMethodError} will be thrown.
-	 */
-	public static Method findMethodBestMatch(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
-		return findMethodBestMatch(false, clazz, methodName, parameterTypes);
-	}
-	
-
-	/**
-	 * @see #findMethodBestMatch(Class, String, Class...)
 	 * @see MethodUtils#getMatchingAccessibleMethod
 	 */
-	public static Method findMethodBestMatch(boolean suppressErrorLogging, Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+	public static Method findMethodBestMatch(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
 		StringBuilder sb = new StringBuilder(clazz.getName());
 		sb.append('#');
 		sb.append(methodName);
@@ -237,7 +210,7 @@ public class XposedHelpers {
 		}
 		
 		try {
-			Method method = findMethodExact(true, clazz, methodName, parameterTypes);
+			Method method = findMethodExact(clazz, methodName, parameterTypes);
 			methodCache.put(fullMethodName, method);
 			return method;
 		} catch (NoSuchMethodError ignored) {}
@@ -263,8 +236,6 @@ public class XposedHelpers {
 			return bestMatch;
 		} else {
 			NoSuchMethodError e = new NoSuchMethodError(fullMethodName);
-			if (!suppressErrorLogging)
-				XposedBridge.log(e);
 			methodCache.put(fullMethodName, null);
 			throw e;
 		}
@@ -277,7 +248,7 @@ public class XposedHelpers {
 	 * If the method was not found, a {@link NoSuchMethodError} will be thrown.
 	 */
 	public static Method findMethodBestMatch(Class<?> clazz, String methodName, Object... args) {
-		return findMethodBestMatch(false, clazz, methodName, getParameterTypes(args));
+		return findMethodBestMatch(clazz, methodName, getParameterTypes(args));
 	}
 	
 	/**
@@ -297,7 +268,7 @@ public class XposedHelpers {
 				argsClasses = getParameterTypes(args);
 			parameterTypes[i] = argsClasses[i];
 		}
-		return findMethodBestMatch(false, clazz, methodName, parameterTypes);
+		return findMethodBestMatch(clazz, methodName, parameterTypes);
 	}
 	
 	/**
@@ -338,10 +309,6 @@ public class XposedHelpers {
 	
 	
 	public static Constructor<?> findConstructorExact(Class<?> clazz, Class<?>... parameterTypes) {
-		return findConstructorExact(false, clazz, parameterTypes);
-	}
-	
-	public static Constructor<?> findConstructorExact(boolean suppressErrorLogging, Class<?> clazz, Class<?>... parameterTypes) {
 		StringBuilder sb = new StringBuilder(clazz.getName());
 		sb.append(getParametersString(parameterTypes));
 		sb.append("#exact");
@@ -360,19 +327,13 @@ public class XposedHelpers {
 			constructorCache.put(fullConstructorName, constructor);
 			return constructor;
 		} catch (NoSuchMethodException e) {
-			if (!suppressErrorLogging)
-				XposedBridge.log(e);
 			constructorCache.put(fullConstructorName, null);
 			throw new NoSuchMethodError(fullConstructorName);
 		}
 	}
 	
-	public static Constructor<?> findConstructorBestMatch(Class<?> clazz, Class<?>... parameterTypes) {
-		return findConstructorBestMatch(false, clazz, parameterTypes);
-	}
-	
 
-	public static Constructor<?> findConstructorBestMatch(boolean suppressErrorLogging, Class<?> clazz, Class<?>... parameterTypes) {
+	public static Constructor<?> findConstructorBestMatch(Class<?> clazz, Class<?>... parameterTypes) {
 		StringBuilder sb = new StringBuilder(clazz.getName());
 		sb.append(getParametersString(parameterTypes));
 		sb.append("#bestmatch");
@@ -386,7 +347,7 @@ public class XposedHelpers {
 		}
 		
 		try {
-			Constructor<?> constructor = findConstructorExact(true, clazz, parameterTypes);
+			Constructor<?> constructor = findConstructorExact(clazz, parameterTypes);
 			constructorCache.put(fullConstructorName, constructor);
 			return constructor;
 		} catch (NoSuchMethodError ignored) {}
@@ -412,15 +373,13 @@ public class XposedHelpers {
 			return bestMatch;
 		} else {
 			NoSuchMethodError e = new NoSuchMethodError(fullConstructorName);
-			if (!suppressErrorLogging)
-				XposedBridge.log(e);
 			constructorCache.put(fullConstructorName, null);
 			throw e;
 		}
 	}
 	
 	public static Constructor<?> findConstructorBestMatch(Class<?> clazz, Object... args) {
-		return findConstructorBestMatch(false, clazz, getParameterTypes(args));
+		return findConstructorBestMatch(clazz, getParameterTypes(args));
 	}
 	
 	public static Constructor<?> findConstructorBestMatch(Class<?> clazz, Class<?>[] parameterTypes, Object[] args) {
@@ -432,7 +391,7 @@ public class XposedHelpers {
 				argsClasses = getParameterTypes(args);
 			parameterTypes[i] = argsClasses[i];
 		}
-		return findConstructorBestMatch(false, clazz, parameterTypes);
+		return findConstructorBestMatch(clazz, parameterTypes);
 	}
 	
 	public static class ClassNotFoundError extends Error {
@@ -454,7 +413,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -467,7 +425,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -480,7 +437,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -493,7 +449,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -506,7 +461,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -519,7 +473,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -532,7 +485,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -545,7 +497,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -558,7 +509,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -572,7 +522,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -590,7 +539,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -603,7 +551,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -616,7 +563,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -629,7 +575,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -642,7 +587,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -655,7 +599,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -668,7 +611,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -681,7 +623,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -695,7 +636,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -708,7 +648,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -721,7 +660,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -734,7 +672,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -747,7 +684,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -760,7 +696,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -773,7 +708,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -786,7 +720,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -799,7 +732,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -813,7 +745,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -826,7 +757,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -839,7 +769,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -852,7 +781,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -865,7 +793,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -878,7 +805,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -891,7 +817,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -904,7 +829,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -917,7 +841,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		}
 	}
@@ -935,7 +858,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		} catch (InvocationTargetException e) {
 			throw new InvocationTargetError(e.getCause());
@@ -956,7 +878,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		} catch (InvocationTargetException e) {
 			throw new InvocationTargetError(e.getCause());
@@ -975,7 +896,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		} catch (InvocationTargetException e) {
 			throw new InvocationTargetError(e.getCause());
@@ -996,7 +916,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		} catch (InvocationTargetException e) {
 			throw new InvocationTargetError(e.getCause());
@@ -1022,7 +941,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		} catch (InvocationTargetException e) {
 			throw new InvocationTargetError(e.getCause());
@@ -1039,7 +957,6 @@ public class XposedHelpers {
 			XposedBridge.log(e);
 			throw new IllegalAccessError(e.getMessage());
 		} catch (IllegalArgumentException e) {
-			XposedBridge.log(e);
 			throw e;
 		} catch (InvocationTargetException e) {
 			throw new InvocationTargetError(e.getCause());
