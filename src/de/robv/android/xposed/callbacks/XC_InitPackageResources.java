@@ -5,8 +5,6 @@ import java.util.TreeSet;
 import android.content.res.XResources;
 
 public abstract class XC_InitPackageResources extends XCallback {
-	private TreeSet<XC_InitPackageResources> initResourcesCallbacks;
-
 	public XC_InitPackageResources() {
 		super();
 	}
@@ -31,19 +29,4 @@ public abstract class XC_InitPackageResources extends XCallback {
 	}
 	
 	public abstract void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable;
-
-
-	public void setCallbacksCollection(TreeSet<XC_InitPackageResources> initResourcesCallbacks) {
-		this.initResourcesCallbacks = initResourcesCallbacks;
-	}
-
-	@Override
-	public void detachCallback() {
-		if (initResourcesCallbacks != null) {
-			synchronized (initResourcesCallbacks) {
-				initResourcesCallbacks.remove(this);
-			}
-			initResourcesCallbacks = null;
-		}
-	}
 }

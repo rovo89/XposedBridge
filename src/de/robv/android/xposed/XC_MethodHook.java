@@ -1,14 +1,10 @@
 package de.robv.android.xposed;
 
 import java.lang.reflect.Member;
-import java.util.HashSet;
-import java.util.TreeSet;
 
 import de.robv.android.xposed.callbacks.XCallback;
 
 public abstract class XC_MethodHook extends XCallback {
-	private final HashSet<TreeSet<XC_MethodHook>> callbackSets = new HashSet<TreeSet<XC_MethodHook>>(3);
-
 	public XC_MethodHook() {
 		super();
 	}
@@ -85,25 +81,6 @@ public abstract class XC_MethodHook extends XCallback {
 			if (throwable != null)
 				throw throwable;
 			return result;
-		}
-	}
-
-
-	public void addCallbacksCollection(TreeSet<XC_MethodHook> methodCallbacks) {
-		synchronized (callbackSets) {
-			callbackSets.add(methodCallbacks);
-		}
-	}
-
-	@Override
-	public void detachCallback() {
-		synchronized (callbackSets) {
-			for (TreeSet<XC_MethodHook> methodCallbacks : callbackSets) {
-				synchronized (methodCallbacks) {
-					methodCallbacks.remove(this);
-				}
-			}
-			callbackSets.clear();
 		}
 	}
 }

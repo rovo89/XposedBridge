@@ -244,49 +244,39 @@ public final class XposedBridge {
 	}
 
 	/**
-	 * Hook any method with the specified callback.
-	 * Returns the callback object which can later be used to be unhooked (possibly from multiple members)
+	 * Hook any method with the specified callback
 	 * 
 	 * @param hookMethod The method to be hooked
 	 * @param callback 
 	 */
-	public static XC_MethodHook hookMethod(Member hookMethod, XC_MethodHook callback) {
+	public static void hookMethod(Member hookMethod, XC_MethodHook callback) {
 		if (!(hookMethod instanceof Method) && !(hookMethod instanceof Constructor<?>)) {
 			throw new IllegalArgumentException("only methods and constructors can be hooked");
 		}
 		
-		boolean newMethod = false;
 		TreeSet<XC_MethodHook> callbacks;
 		synchronized (hookedMethodCallbacks) {
 			callbacks = hookedMethodCallbacks.get(hookMethod);
 			if (callbacks == null) {
 				callbacks = new TreeSet<XC_MethodHook>();
 				hookedMethodCallbacks.put(hookMethod, callbacks);
-				newMethod = true;
 			}
 		}
 		synchronized (callbacks) {
 			callbacks.add(callback);
 		}
-		if (newMethod)
-			hookMethodNative(hookMethod);
-
-		// Add info to the callback so it can later be unhooked
-		callback.addCallbacksCollection(callbacks);
-		return callback;
+		hookMethodNative(hookMethod);
 	}
 	
-	public static XC_MethodHook hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
+	public static void hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
 		for (Member method : hookClass.getDeclaredMethods())
 			if (method.getName().equals(methodName))
 				hookMethod(method, callback);
-		return callback;
 	}
 	
-	public static XC_MethodHook hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
+	public static void hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
 		for (Member constructor : hookClass.getDeclaredConstructors())
 			hookMethod(constructor, callback);
-		return callback;
 	}
 	
 	/**
@@ -320,9 +310,7 @@ public final class XposedBridge {
 		// call "before method" callbacks
 		while (before.hasNext()) {
 			try {
-				XC_MethodHook callback = before.next();
-				param.thisCallback = callback;
-				callback.beforeHookedMethod(param);
+				before.next().beforeHookedMethod(param);
 			} catch (Throwable t) {
 				XposedBridge.log(t);
 				
@@ -357,9 +345,7 @@ public final class XposedBridge {
 			Throwable lastThrowable = param.getThrowable();
 			
 			try {
-				XC_MethodHook callback = after.next();
-				param.thisCallback = callback;
-				callback.afterHookedMethod(param);
+				after.next().afterHookedMethod(param);
 			} catch (Throwable t) {
 				XposedBridge.log(t);
 				
@@ -381,25 +367,19 @@ public final class XposedBridge {
 	/**
 	 * Get notified when a package is loaded. This is especially useful to hook some package-specific methods.
 	 */
-	public static XC_LoadPackage hookLoadPackage(XC_LoadPackage callback) {
+	public static void hookLoadPackage(XC_LoadPackage callback) {
 		synchronized (loadedPackageCallbacks) {
 			loadedPackageCallbacks.add(callback);
 		}
-		// Add info to the callback so it can later be unhooked
-		callback.setCallbacksCollection(loadedPackageCallbacks);
-		return callback;
 	}
 	
 	/**
 	 * Get notified when the resources for a package are loaded. In callbacks, resource replacements can be created.
 	 */
-	public static XC_InitPackageResources hookInitPackageResources(XC_InitPackageResources callback) {
+	public static void hookInitPackageResources(XC_InitPackageResources callback) {		
 		synchronized (initPackageResourcesCallbacks) {
 			initPackageResourcesCallbacks.add(callback);
 		}
-		// Add info to the callback so it can later be unhooked
-		callback.setCallbacksCollection(initPackageResourcesCallbacks);
-		return callback;
 	}
 	
 	
