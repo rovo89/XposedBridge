@@ -19,8 +19,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import android.app.ActivityThread;
@@ -37,6 +39,7 @@ import com.android.internal.os.ZygoteInit;
 
 import dalvik.system.PathClassLoader;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
+import de.robv.android.xposed.callbacks.IXUnhook;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -249,34 +252,60 @@ public final class XposedBridge {
 	 * @param hookMethod The method to be hooked
 	 * @param callback 
 	 */
-	public static void hookMethod(Member hookMethod, XC_MethodHook callback) {
+	public static IXUnhook hookMethod(Member hookMethod, XC_MethodHook callback) {
 		if (!(hookMethod instanceof Method) && !(hookMethod instanceof Constructor<?>)) {
 			throw new IllegalArgumentException("only methods and constructors can be hooked");
 		}
 		
+		boolean newMethod = false;
 		TreeSet<XC_MethodHook> callbacks;
 		synchronized (hookedMethodCallbacks) {
 			callbacks = hookedMethodCallbacks.get(hookMethod);
 			if (callbacks == null) {
 				callbacks = new TreeSet<XC_MethodHook>();
 				hookedMethodCallbacks.put(hookMethod, callbacks);
+				newMethod = true;
 			}
 		}
 		synchronized (callbacks) {
 			callbacks.add(callback);
 		}
-		hookMethodNative(hookMethod);
+		if (newMethod)
+			hookMethodNative(hookMethod);
+		
+		return callback.new Unhook(hookMethod);
 	}
 	
-	public static void hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
+	/** 
+	 * Removes the callback for a hooked method
+	 * @param hookMethod The method for which the callback should be removed
+	 * @param callback The reference to the callback as specified in {@link #hookMethod}
+	 */
+	public static void unhookMethod(Member hookMethod, XC_MethodHook callback) {
+		TreeSet<XC_MethodHook> callbacks;
+		synchronized (hookedMethodCallbacks) {
+			callbacks = hookedMethodCallbacks.get(hookMethod);
+			if (callbacks == null)
+				return;
+		}	
+		synchronized (callbacks) {
+			callbacks.remove(callback);
+		}
+	}
+	
+	public static Set<IXUnhook> hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
+		Set<IXUnhook> unhooks = new HashSet<IXUnhook>();
 		for (Member method : hookClass.getDeclaredMethods())
 			if (method.getName().equals(methodName))
-				hookMethod(method, callback);
+				unhooks.add(hookMethod(method, callback));
+		return unhooks;
 	}
 	
-	public static void hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
+	public static Set<IXUnhook> hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
+		Set<IXUnhook> unhooks = new HashSet<IXUnhook>();
 		for (Member constructor : hookClass.getDeclaredConstructors())
-			hookMethod(constructor, callback);
+			unhooks.add(hookMethod(constructor, callback));
+		return unhooks;
 	}
 	
 	/**

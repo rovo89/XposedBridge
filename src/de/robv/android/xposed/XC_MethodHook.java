@@ -2,6 +2,7 @@ package de.robv.android.xposed;
 
 import java.lang.reflect.Member;
 
+import de.robv.android.xposed.callbacks.IXUnhook;
 import de.robv.android.xposed.callbacks.XCallback;
 
 public abstract class XC_MethodHook extends XCallback {
@@ -82,5 +83,19 @@ public abstract class XC_MethodHook extends XCallback {
 				throw throwable;
 			return result;
 		}
+	}
+
+	public class Unhook implements IXUnhook {
+		private final Member hookMethod;
+
+		public Unhook(Member hookMethod) {
+			this.hookMethod = hookMethod;
+		}
+
+		@Override
+		public void unhook() {
+			XposedBridge.unhookMethod(hookMethod, XC_MethodHook.this);
+		}
+
 	}
 }
