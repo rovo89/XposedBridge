@@ -82,7 +82,7 @@ public abstract class XCallback implements Comparable<XCallback> {
 		if (other.priority != this.priority)
 			return other.priority - this.priority;
 		// then randomly
-		else if (this.hashCode() < other.hashCode())
+		else if (System.identityHashCode(this) < System.identityHashCode(other))
 			return -1;
 		else
 			return 1;
