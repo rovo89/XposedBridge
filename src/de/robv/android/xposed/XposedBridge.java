@@ -28,8 +28,10 @@ import android.app.AndroidAppHelper;
 import android.app.Instrumentation;
 import android.app.LoadedApk;
 import android.content.res.CompatibilityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.XResources;
+import android.os.Build;
 import android.util.Log;
 
 import com.android.internal.os.RuntimeInit;
@@ -115,8 +117,15 @@ public final class XposedBridge {
 				}
 			}
 		});
-		
-		findAndHookMethod(ActivityThread.class, "getTopLevelResources", String.class, CompatibilityInfo.class, callbackGetTopLevelResources);
+
+		if (Build.VERSION.SDK_INT <= 16)
+			findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+					String.class, CompatibilityInfo.class,
+					callbackGetTopLevelResources);
+		else
+			findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+					String.class, int.class, Configuration.class, CompatibilityInfo.class,
+					callbackGetTopLevelResources);
 		
 		// Make Xposed classes available to other applications, so they can use
 		// the same logging and helper
@@ -418,7 +427,8 @@ public final class XposedBridge {
 				ActivityThread thisActivityThread = (ActivityThread) param.thisObject;
 				Resources origRes = (Resources) result;
 				String resDir = (String) param.args[0];
-				CompatibilityInfo compInfo = (CompatibilityInfo) param.args[1];
+				CompatibilityInfo compInfo = (CompatibilityInfo)
+						((Build.VERSION.SDK_INT <= 16) ? param.args[1] : param.args[3]);
 				
 				newRes = new XResources(origRes, resDir);
 				
@@ -426,7 +436,10 @@ public final class XposedBridge {
 						(Map<Object, WeakReference<Resources>>) AndroidAppHelper.getActivityThread_mActiveResources(thisActivityThread);
 				Object mPackages = AndroidAppHelper.getActivityThread_mPackages(thisActivityThread);
 				
-				Object key = AndroidAppHelper.createResourcesKey(resDir, compInfo);
+				Object key = (Build.VERSION.SDK_INT <= 16)
+					? AndroidAppHelper.createResourcesKey(resDir, compInfo)
+					: AndroidAppHelper.createResourcesKey(resDir, (Integer) param.args[1], (Configuration) param.args[2], compInfo);
+				
 				synchronized (mPackages) {
 					WeakReference<Resources> existing = mActiveResources.get(key);
 					if (existing != null && existing.get() != null && existing.get().getAssets() != newRes.getAssets())

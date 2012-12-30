@@ -12,7 +12,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.res.CompatibilityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Environment;
 import de.robv.android.xposed.XposedBridge;
 
@@ -65,14 +67,45 @@ public class AndroidAppHelper {
 		}
 	}
 	
+	/* For SDK 17 */
+	public static Object createResourcesKey(String resDir, int displayId, Configuration config, CompatibilityInfo compInfo) {
+		boolean isThemeable = false;
+		if (hasIsThemeable) {
+			try {
+				isThemeable = getBooleanField(compInfo, "isThemeable");
+			} catch (Throwable t) { XposedBridge.log(t); }
+		}
+		return createResourcesKey(resDir, displayId, config, compInfo.applicationScale, isThemeable);
+	}
+
+	/* For SDK 17 */
+	public static Object createResourcesKey(String resDir, int displayId, Configuration config, float scale, boolean isThemeable) {
+		try {
+			Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
+			if (hasIsThemeable)
+				return newInstance(classResourcesKey, resDir, displayId, config, scale, isThemeable);
+			else
+				return newInstance(classResourcesKey, resDir, displayId, config, scale);
+		} catch (Throwable t) {
+			XposedBridge.log(t);
+			return null;
+		}
+	}
+	
 	public static void addActiveResource(String resDir, float scale, boolean isThemeable, Resources resources) {
 		ActivityThread thread = ActivityThread.currentActivityThread();
 		if (thread == null)
 			return;
 		
-		getActivityThread_mActiveResources(thread).put(
-			createResourcesKey(resDir, scale, false),
-			new WeakReference<Resources>(resources));
+		if (Build.VERSION.SDK_INT <= 16)
+			getActivityThread_mActiveResources(thread).put(
+				createResourcesKey(resDir, scale, false),
+				new WeakReference<Resources>(resources));
+		else
+			// TODO Confirm displayId to use
+			getActivityThread_mActiveResources(thread).put(
+				createResourcesKey(resDir, 0, thread.mConfiguration, scale, false),
+				new WeakReference<Resources>(resources));
 	}
 	
 	public static String currentProcessName() {
