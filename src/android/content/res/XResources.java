@@ -594,7 +594,7 @@ public class XResources extends Resources {
 	}
 	
 	public static int getFakeResId(String resName) {
-		return 0x7e000000 + resName.hashCode() & 0x00ffffff;
+		return 0x7e000000 | (resName.hashCode() & 0x00ffffff);
 	}
 	
 	public static int getFakeResId(Resources res, int id) {
