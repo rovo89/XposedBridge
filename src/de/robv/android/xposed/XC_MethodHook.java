@@ -1,14 +1,11 @@
 package de.robv.android.xposed;
 
 import java.lang.reflect.Member;
-import java.util.HashSet;
-import java.util.TreeSet;
 
+import de.robv.android.xposed.callbacks.IXUnhook;
 import de.robv.android.xposed.callbacks.XCallback;
 
 public abstract class XC_MethodHook extends XCallback {
-	private final HashSet<TreeSet<XC_MethodHook>> callbackSets = new HashSet<TreeSet<XC_MethodHook>>(3);
-
 	public XC_MethodHook() {
 		super();
 	}
@@ -88,22 +85,17 @@ public abstract class XC_MethodHook extends XCallback {
 		}
 	}
 
+	public class Unhook implements IXUnhook {
+		private final Member hookMethod;
 
-	public void addCallbacksCollection(TreeSet<XC_MethodHook> methodCallbacks) {
-		synchronized (callbackSets) {
-			callbackSets.add(methodCallbacks);
+		public Unhook(Member hookMethod) {
+			this.hookMethod = hookMethod;
 		}
-	}
 
-	@Override
-	public void detachCallback() {
-		synchronized (callbackSets) {
-			for (TreeSet<XC_MethodHook> methodCallbacks : callbackSets) {
-				synchronized (methodCallbacks) {
-					methodCallbacks.remove(this);
-				}
-			}
-			callbackSets.clear();
+		@Override
+		public void unhook() {
+			XposedBridge.unhookMethod(hookMethod, XC_MethodHook.this);
 		}
+
 	}
 }

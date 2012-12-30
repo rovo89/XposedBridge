@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.WeakHashMap;
 
 import android.content.res.Resources;
+import de.robv.android.xposed.callbacks.IXUnhook;
 import external.org.apache.commons.lang3.ClassUtils;
 import external.org.apache.commons.lang3.reflect.MemberUtils;
 import external.org.apache.commons.lang3.reflect.MethodUtils;
@@ -136,7 +137,7 @@ public class XposedHelpers {
 	 * Look up a method and place a hook on it. The last argument must be the callback for the hook.
 	 * @see #findMethodExact(Class, String, Object...)
 	 */
-	public static XC_MethodHook findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
+	public static IXUnhook findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
 		if (parameterTypesAndCallback.length == 0 || !(parameterTypesAndCallback[parameterTypesAndCallback.length-1] instanceof XC_MethodHook))
 			throw new IllegalArgumentException("no callback defined");
 		
@@ -152,7 +153,7 @@ public class XposedHelpers {
 	}
 	
 	/** @see #findAndHookMethod(Class, String, Object...) */
-	public static XC_MethodHook findAndHookMethod(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
+	public static IXUnhook findAndHookMethod(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback) {
 		return findAndHookMethod(findClass(className, classLoader), methodName, parameterTypesAndCallback);
 	}
 

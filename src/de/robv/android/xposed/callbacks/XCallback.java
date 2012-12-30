@@ -18,8 +18,6 @@ public abstract class XCallback implements Comparable<XCallback> {
 	
 	public static class Param {
 		public final TreeSet<? extends XCallback> callbacks;
-		public XCallback thisCallback;
-
 		/**
 		 * This can be used to store anything for the scope of the callback.
 		 * Use this instead of instance variables.
@@ -68,17 +66,13 @@ public abstract class XCallback implements Comparable<XCallback> {
 		Iterator<? extends XCallback> it = param.callbacks.iterator();
 		while (it.hasNext()) {
 			try {
-				XCallback callback = it.next();
-				param.thisCallback = callback;
-				callback.call(param);
+				it.next().call(param);
 			} catch (Throwable t) { XposedBridge.log(t); }
 		}
 	}
 	
-	protected void call(Param param) throws Throwable {	};
-
-	public abstract void detachCallback();
-
+	protected void call(Param param) throws Throwable {};
+	
 	@Override
 	public int compareTo(XCallback other) {
 		if (this == other)
@@ -88,7 +82,7 @@ public abstract class XCallback implements Comparable<XCallback> {
 		if (other.priority != this.priority)
 			return other.priority - this.priority;
 		// then randomly
-		else if (System.identityHashCode(this.hashCode()) < System.identityHashCode(other.hashCode()))
+		else if (this.hashCode() < other.hashCode())
 			return -1;
 		else
 			return 1;
