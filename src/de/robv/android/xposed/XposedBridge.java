@@ -41,7 +41,6 @@ import com.android.internal.os.ZygoteInit;
 
 import dalvik.system.PathClassLoader;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
-import de.robv.android.xposed.callbacks.IXUnhook;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -261,7 +260,7 @@ public final class XposedBridge {
 	 * @param hookMethod The method to be hooked
 	 * @param callback 
 	 */
-	public static IXUnhook hookMethod(Member hookMethod, XC_MethodHook callback) {
+	public static XC_MethodHook.Unhook hookMethod(Member hookMethod, XC_MethodHook callback) {
 		if (!(hookMethod instanceof Method) && !(hookMethod instanceof Constructor<?>)) {
 			throw new IllegalArgumentException("only methods and constructors can be hooked");
 		}
@@ -302,16 +301,16 @@ public final class XposedBridge {
 		}
 	}
 	
-	public static Set<IXUnhook> hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
-		Set<IXUnhook> unhooks = new HashSet<IXUnhook>();
+	public static Set<XC_MethodHook.Unhook> hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
+		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
 		for (Member method : hookClass.getDeclaredMethods())
 			if (method.getName().equals(methodName))
 				unhooks.add(hookMethod(method, callback));
 		return unhooks;
 	}
 	
-	public static Set<IXUnhook> hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
-		Set<IXUnhook> unhooks = new HashSet<IXUnhook>();
+	public static Set<XC_MethodHook.Unhook> hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
+		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
 		for (Member constructor : hookClass.getDeclaredConstructors())
 			unhooks.add(hookMethod(constructor, callback));
 		return unhooks;
