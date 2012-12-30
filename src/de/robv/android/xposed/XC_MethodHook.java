@@ -91,6 +91,14 @@ public abstract class XC_MethodHook extends XCallback {
 		public Unhook(Member hookMethod) {
 			this.hookMethod = hookMethod;
 		}
+		
+		public Member getHookedMethod() {
+			return hookMethod;
+		}
+		
+		public XC_MethodHook getCallback() {
+			return XC_MethodHook.this;
+		}
 
 		@Override
 		public void unhook() {
