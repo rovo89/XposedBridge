@@ -35,4 +35,32 @@ public abstract class XC_LayoutInflated extends XCallback {
 	}
 	
 	public abstract void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable;
+	
+	public class Unhook implements IXUnhook {
+		private final String resDir;
+		private final int id;
+		
+		public Unhook(String resDir, int id) {
+			this.resDir = resDir;
+			this.id = id;
+        }
+
+		public String getResDir() {
+			return resDir;
+		}
+		
+		public int getId() {
+        	return id;
+        }
+
+		public XC_LayoutInflated getCallback() {
+			return XC_LayoutInflated.this;
+		}
+
+		@Override
+		public void unhook() {
+			XResources.unhookLayout(resDir, id, XC_LayoutInflated.this);
+		}
+
+	}
 }

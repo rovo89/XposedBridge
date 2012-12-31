@@ -822,16 +822,16 @@ public class XResources extends Resources {
 	}
 	
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
-	public void hookLayout(int id, XC_LayoutInflated callback) {
-		hookLayoutInternal(resDir, id, getResourceNames(id), callback);
+	public XC_LayoutInflated.Unhook hookLayout(int id, XC_LayoutInflated callback) {
+		return hookLayoutInternal(resDir, id, getResourceNames(id), callback);
 	}
 	
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
-	public void hookLayout(String fullName, XC_LayoutInflated callback) {
+	public XC_LayoutInflated.Unhook hookLayout(String fullName, XC_LayoutInflated callback) {
 		int id = getIdentifier(fullName, null, null);
 		if (id == 0)
 			throw new NotFoundException(fullName);
-		hookLayout(id, callback);
+		return hookLayout(id, callback);
 	}
 	
 	/**
@@ -841,37 +841,37 @@ public class XResources extends Resources {
 	 * @param name Name of the resource (e.g. <code>statusbar</code>)
 	 * @param callback Handler to be called  
 	 */
-	public void hookLayout(String pkg, String type, String name, XC_LayoutInflated callback) {
+	public XC_LayoutInflated.Unhook hookLayout(String pkg, String type, String name, XC_LayoutInflated callback) {
 		int id = getIdentifier(name, type, pkg);
 		if (id == 0)
 			throw new NotFoundException(pkg + ":" + type + "/" + name);
-		hookLayout(id, callback);
+		return hookLayout(id, callback);
 	}
 	
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
-	public static void hookSystemWideLayout(int id, XC_LayoutInflated callback) {
+	public static XC_LayoutInflated.Unhook hookSystemWideLayout(int id, XC_LayoutInflated callback) {
 		if (id >= 0x7f000000)
 			throw new IllegalArgumentException("ids >= 0x7f000000 are app specific and cannot be set for the framework");
-		hookLayoutInternal(null, id, getSystemResourceNames(id), callback);
+		return hookLayoutInternal(null, id, getSystemResourceNames(id), callback);
 	}
 	
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
-	public static void hookSystemWideLayout(String fullName, XC_LayoutInflated callback) {
+	public static XC_LayoutInflated.Unhook hookSystemWideLayout(String fullName, XC_LayoutInflated callback) {
 		int id = getSystem().getIdentifier(fullName, null, null);
 		if (id == 0)
 			throw new NotFoundException(fullName);
-		hookSystemWideLayout(id, callback);
+		return hookSystemWideLayout(id, callback);
 	}
 	
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
-	public static void hookSystemWideLayout(String pkg, String type, String name, XC_LayoutInflated callback) {
+	public static XC_LayoutInflated.Unhook hookSystemWideLayout(String pkg, String type, String name, XC_LayoutInflated callback) {
 		int id = getSystem().getIdentifier(name, type, pkg);
 		if (id == 0)
 			throw new NotFoundException(pkg + ":" + type + "/" + name);
-		hookSystemWideLayout(id, callback);
+		return hookSystemWideLayout(id, callback);
 	}
 	
-	private static void hookLayoutInternal(String resDir, int id, ResourceNames resNames, XC_LayoutInflated callback) {
+	private static XC_LayoutInflated.Unhook hookLayoutInternal(String resDir, int id, ResourceNames resNames, XC_LayoutInflated callback) {
 		if (id == 0)
 			throw new IllegalArgumentException("id 0 is not an allowed resource identifier");
 
@@ -898,5 +898,27 @@ public class XResources extends Resources {
 		}
 		
 		putResourceNames(resDir, resNames);
+		
+		return callback.new Unhook(resDir, id);
+	}
+	
+	public static void unhookLayout(String resDir, int id, XC_LayoutInflated callback) {
+		HashMap<String, TreeSet<XC_LayoutInflated>> inner;
+		synchronized (layoutCallbacks) {
+			inner = layoutCallbacks.get(id);
+			if (inner == null)
+				return;
+		}
+		
+		TreeSet<XC_LayoutInflated> callbacks;
+		synchronized (inner) {
+			callbacks = inner.get(resDir);
+			if (callbacks == null)
+				return;
+		} 
+		
+		synchronized (callbacks) {
+			callbacks.remove(callback);
+		}
 	}
 }
