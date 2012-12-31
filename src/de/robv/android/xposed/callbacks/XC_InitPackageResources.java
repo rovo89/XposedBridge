@@ -3,6 +3,7 @@ package de.robv.android.xposed.callbacks;
 import java.util.TreeSet;
 
 import android.content.res.XResources;
+import de.robv.android.xposed.XposedBridge;
 
 public abstract class XC_InitPackageResources extends XCallback {
 	public XC_InitPackageResources() {
@@ -29,4 +30,15 @@ public abstract class XC_InitPackageResources extends XCallback {
 	}
 	
 	public abstract void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable;
+	
+	public class Unhook implements IXUnhook {
+		public XC_InitPackageResources getCallback() {
+			return XC_InitPackageResources.this;
+		}
+
+		@Override
+		public void unhook() {
+			XposedBridge.unhookInitPackageResources(XC_InitPackageResources.this);
+		}
+	}
 }

@@ -2,6 +2,8 @@ package de.robv.android.xposed.callbacks;
 
 import java.util.TreeSet;
 
+import de.robv.android.xposed.XposedBridge;
+
 public abstract class XC_LoadPackage extends XCallback {
 	public XC_LoadPackage() {
 		super();
@@ -27,4 +29,15 @@ public abstract class XC_LoadPackage extends XCallback {
 	}
 	
 	public abstract void handleLoadPackage(LoadPackageParam lpparam) throws Throwable;
+	
+	public class Unhook implements IXUnhook {
+		public XC_LoadPackage getCallback() {
+			return XC_LoadPackage.this;
+		}
+
+		@Override
+		public void unhook() {
+			XposedBridge.unhookLoadPackage(XC_LoadPackage.this);
+		}
+	}
 }

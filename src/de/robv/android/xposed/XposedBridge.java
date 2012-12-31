@@ -404,18 +404,33 @@ public final class XposedBridge {
 	/**
 	 * Get notified when a package is loaded. This is especially useful to hook some package-specific methods.
 	 */
-	public static void hookLoadPackage(XC_LoadPackage callback) {
+	public static XC_LoadPackage.Unhook hookLoadPackage(XC_LoadPackage callback) {
 		synchronized (loadedPackageCallbacks) {
 			loadedPackageCallbacks.add(callback);
+		}
+		return callback.new Unhook();
+	}
+	
+	public static void unhookLoadPackage(XC_LoadPackage callback) {		
+		synchronized (loadedPackageCallbacks) {
+			loadedPackageCallbacks.remove(callback);
 		}
 	}
 	
 	/**
 	 * Get notified when the resources for a package are loaded. In callbacks, resource replacements can be created.
+	 * @return 
 	 */
-	public static void hookInitPackageResources(XC_InitPackageResources callback) {		
+	public static XC_InitPackageResources.Unhook hookInitPackageResources(XC_InitPackageResources callback) {		
 		synchronized (initPackageResourcesCallbacks) {
 			initPackageResourcesCallbacks.add(callback);
+		}
+		return callback.new Unhook();
+	}
+	
+	public static void unhookInitPackageResources(XC_InitPackageResources callback) {		
+		synchronized (initPackageResourcesCallbacks) {
+			initPackageResourcesCallbacks.remove(callback);
 		}
 	}
 	
