@@ -18,6 +18,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -80,7 +82,10 @@ public final class XposedBridge {
 				logFile.setWritable(true, false);
 			} catch (IOException ignored) {}
 			
-			log("-----------------\nLoading Xposed (for " + (startClassName == null ? "Zygote" : startClassName) + ")...");
+			String date = DateFormat.getDateTimeInstance().format(new Date());
+			log("-----------------\n" + date + " UTC\n"
+					+ "Loading Xposed (for " + (startClassName == null ? "Zygote" : startClassName) + ")...");
+			
 			if (startClassName == null) {
 				// Initializations for Zygote
 				initXbridgeZygote();
