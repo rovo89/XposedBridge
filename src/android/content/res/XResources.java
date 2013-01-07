@@ -324,8 +324,12 @@ public class XResources extends Resources {
 	@Override
 	public Drawable getDrawable(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
-		if (replacement instanceof Drawable) {
-			return (Drawable) replacement;
+		if (replacement instanceof DrawableLoader) {
+			try {
+				Drawable result = ((DrawableLoader) replacement).newDrawable(this, id);
+				if (result != null)
+					return result;
+			} catch (Throwable t) { XposedBridge.log(t); }
 		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
@@ -337,8 +341,12 @@ public class XResources extends Resources {
 	@Override
 	public Drawable getDrawableForDensity(int id, int density) throws NotFoundException {
 		Object replacement = getReplacement(id);
-		if (replacement instanceof Drawable) {
-			return (Drawable) replacement;
+		if (replacement instanceof DrawableLoader) {
+			try {
+				Drawable result = ((DrawableLoader) replacement).newDrawableForDensity(this, id, density);
+				if (result != null)
+					return result;
+			} catch (Throwable t) { XposedBridge.log(t); }
 		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
@@ -802,6 +810,21 @@ public class XResources extends Resources {
 		
 		// this is handled by XResources.loadXmlResourceParser:
 		// public ColorStateList getColorStateList(int index);
+	}
+	
+	
+	// =======================================================
+	//   DrawableLoader class
+	// =======================================================
+	/**
+	 * callback function for {@link #getDrawable} and {@link #getDrawableForDensity}
+	 */
+	public static abstract class DrawableLoader {
+		public abstract Drawable newDrawable(XResources res, int id) throws Throwable;
+		
+		public Drawable newDrawableForDensity(XResources res, int id, int density) throws Throwable {
+			return newDrawable(res, id);
+		}
 	}
 	
 	// =======================================================
