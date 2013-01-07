@@ -1,6 +1,7 @@
 package de.robv.android.xposed;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.getIntField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
@@ -283,8 +284,11 @@ public final class XposedBridge {
 		synchronized (callbacks) {
 			callbacks.add(callback);
 		}
-		if (newMethod)
-			hookMethodNative(hookMethod);
+		if (newMethod) {
+			Class<?> declaringClass = hookMethod.getDeclaringClass();
+			int slot = (int) getIntField(hookMethod, "slot");
+			hookMethodNative(declaringClass, slot);
+		}
 		
 		return callback.new Unhook(hookMethod);
 	}
@@ -500,7 +504,7 @@ public final class XposedBridge {
 	 * Intercept every call to the specified method and call a handler function instead.
 	 * @param method The method to intercept
 	 */
-	private native synchronized static void hookMethodNative(Member method);
+	private native synchronized static void hookMethodNative(Class<?> declaringClass, int slot);
 	
 	private native static Object invokeOriginalMethodNative(Member method, Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
     			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
