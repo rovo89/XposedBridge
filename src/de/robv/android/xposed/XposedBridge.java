@@ -79,7 +79,7 @@ public final class XposedBridge {
 			// initialize log file
 			try {
 				File logFile = new File("/data/xposed/debug.log");
-				if (logFile.length() > MAX_LOGFILE_SIZE)
+				if (startClassName == null && logFile.length() > MAX_LOGFILE_SIZE)
 					logFile.renameTo(new File("/data/xposed/debug.log.old"));
 				logWriter = new PrintWriter(new FileWriter(logFile, true));
 				logFile.setReadable(true, false);
