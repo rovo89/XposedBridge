@@ -3,8 +3,6 @@ package de.robv.android.xposed.callbacks;
 import java.util.TreeSet;
 
 import android.content.pm.ApplicationInfo;
-import android.content.res.CompatibilityInfo;
-import android.content.res.Configuration;
 import de.robv.android.xposed.XposedBridge;
 
 public abstract class XC_LoadPackage extends XCallback {
@@ -21,14 +19,14 @@ public abstract class XC_LoadPackage extends XCallback {
 		}
 		/** The name of the package being loaded */
 		public String packageName;
+		/** The process in which the package is executed */
+		public String processName;
 		/** The ClassLoader used for this package */
 		public ClassLoader classLoader;
 		/** More information about the application to be loaded */
 		public ApplicationInfo appInfo;
-		/** Configuration with which the configuration is initialized */
-		public Configuration config;
-		/** CompatibilityInfo with which the configuration is initialized */
-		public CompatibilityInfo compatInfo;
+		/** Set to true if this is the first (and main) application for this process */
+		public boolean isFirstApplication;
 	}
 	
 	@Override

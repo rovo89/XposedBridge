@@ -1,6 +1,7 @@
 package de.robv.android.xposed;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getIntField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
@@ -38,6 +39,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.XResources;
 import android.os.Build;
+import android.os.IBinder;
 import android.util.Log;
 
 import com.android.internal.os.RuntimeInit;
@@ -112,6 +114,9 @@ public final class XposedBridge {
 	 * Hook some methods which we want to create an easier interface for developers.
 	 */
 	private static void initXbridgeZygote() throws Exception {
+		final HashSet<String> loadedPackagesInProcess = new HashSet<String>(1);
+		
+		// normal process initialization (for new Activity, Service, BroadcastReceiver etc.) 
 		findAndHookMethod(ActivityThread.class, "handleBindApplication", "android.app.ActivityThread.AppBindData", new XC_MethodHook() {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				ActivityThread activityThread = (ActivityThread) param.thisObject;
@@ -121,28 +126,59 @@ public final class XposedBridge {
 					return;
 				
 				setObjectField(activityThread, "mBoundApplication", param.args[0]);
-				LoadedApk loadedApk =  activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
+				LoadedApk loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
+				loadedPackagesInProcess.add(appInfo.packageName);
 				
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
 				lpparam.packageName = appInfo.packageName;
+				lpparam.processName = (String) getObjectField(param.args[0], "processName");
 				lpparam.classLoader = loadedApk.getClassLoader();
 				lpparam.appInfo = appInfo;
-				lpparam.config = (Configuration) getObjectField(param.args[0], "config");
-				lpparam.compatInfo = compatInfo;
+				lpparam.isFirstApplication = true;
 				XC_LoadPackage.callAll(lpparam);
 			}
 		});
 		
+		// system thread initialization
 		findAndHookMethod("com.android.server.ServerThread", null, "run", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				loadedPackagesInProcess.add("android");
+				
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
 				lpparam.packageName = "android";
+				lpparam.processName = "android"; // it's actually system_server, but other functions return this as well
 				lpparam.classLoader = BOOTCLASSLOADER;
+				lpparam.appInfo = null;
+				lpparam.isFirstApplication = true;
 				XC_LoadPackage.callAll(lpparam);
 			}
 		});
+		
+		// when a package is loaded for an existing process, trigger the callbacks as well
+		// not handled: createPackageContext("xyz", CONTEXT_INCLUDE_CODE | CONTEXT_IGNORE_SECURITY).getClassLoader();
+		findAndHookMethod("android.app.ContextImpl", null, "init", LoadedApk.class, IBinder.class, ActivityThread.class, new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				LoadedApk loadedApk = (LoadedApk) param.args[0];
 
+				String packageName = loadedApk.getPackageName();
+				if (packageName.equals("android") || !loadedPackagesInProcess.add(packageName))
+					return;
+				
+				if ((Boolean) getBooleanField(loadedApk, "mIncludeCode") == false)
+					return;
+				
+				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
+				lpparam.packageName = packageName;
+				lpparam.processName = AndroidAppHelper.currentProcessName();
+				lpparam.classLoader = loadedApk.getClassLoader();
+				lpparam.appInfo = loadedApk.getApplicationInfo();
+				lpparam.isFirstApplication = false;
+				XC_LoadPackage.callAll(lpparam);
+			}
+		});
+		
 		if (Build.VERSION.SDK_INT <= 16)
 			findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 					String.class, CompatibilityInfo.class,
