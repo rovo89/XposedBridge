@@ -57,7 +57,7 @@ public final class XposedBridge {
 	private static final int MAX_LOGFILE_SIZE = 20*1024; 
 	
 	private static final Object[] EMPTY_ARRAY = new Object[0];
-	public static final ClassLoader BOOTCLASSLOADER = XposedBridge.class.getClassLoader();
+	public static final ClassLoader BOOTCLASSLOADER = ClassLoader.getSystemClassLoader();
 	
 	// built-in handlers
 	private static final Map<Member, TreeSet<XC_MethodHook>> hookedMethodCallbacks
@@ -138,7 +138,7 @@ public final class XposedBridge {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
 				lpparam.packageName = "android";
-				lpparam.classLoader = param.thisObject.getClass().getClassLoader();
+				lpparam.classLoader = BOOTCLASSLOADER;
 				XC_LoadPackage.callAll(lpparam);
 			}
 		});
