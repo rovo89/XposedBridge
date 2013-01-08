@@ -3,6 +3,7 @@ package de.robv.android.xposed;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getIntField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.setObjectField;
 import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 import java.io.BufferedReader;
@@ -30,8 +31,8 @@ import java.util.TreeSet;
 
 import android.app.ActivityThread;
 import android.app.AndroidAppHelper;
-import android.app.Instrumentation;
 import android.app.LoadedApk;
+import android.content.pm.ApplicationInfo;
 import android.content.res.CompatibilityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -111,18 +112,34 @@ public final class XposedBridge {
 	 * Hook some methods which we want to create an easier interface for developers.
 	 */
 	private static void initXbridgeZygote() throws Exception {
-		// Built-in handler for the LoadedApk.makeApplication method that allows handlers to be registered
-		// for the first initialization of a package via {@link #hookLoadPackage}.
-		findAndHookMethod(LoadedApk.class, "makeApplication", boolean.class, Instrumentation.class, new XC_MethodHook() {
+		findAndHookMethod(ActivityThread.class, "handleBindApplication", "android.app.ActivityThread.AppBindData", new XC_MethodHook() {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				LoadedApk loadedApk = (LoadedApk) param.thisObject;
-				boolean firstLoad = (getObjectField(loadedApk, "mApplication") == null);
-				if (firstLoad) {
-					LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
-					lpparam.packageName = loadedApk.getPackageName();
-					lpparam.classLoader = loadedApk.getClassLoader();
-					XC_LoadPackage.callAll(lpparam);
-				}
+				ActivityThread activityThread = (ActivityThread) param.thisObject;
+				ApplicationInfo appInfo = (ApplicationInfo) getObjectField(param.args[0], "appInfo");
+				CompatibilityInfo compatInfo = (CompatibilityInfo) getObjectField(param.args[0], "compatInfo");
+				if (appInfo.sourceDir == null)
+					return;
+				
+				setObjectField(activityThread, "mBoundApplication", param.args[0]);
+				LoadedApk loadedApk =  activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
+				
+				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
+				lpparam.packageName = appInfo.packageName;
+				lpparam.classLoader = loadedApk.getClassLoader();
+				lpparam.appInfo = appInfo;
+				lpparam.config = (Configuration) getObjectField(param.args[0], "config");
+				lpparam.compatInfo = compatInfo;
+				XC_LoadPackage.callAll(lpparam);
+			}
+		});
+		
+		findAndHookMethod("com.android.server.ServerThread", null, "run", new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
+				lpparam.packageName = "android";
+				lpparam.classLoader = param.thisObject.getClass().getClassLoader();
+				XC_LoadPackage.callAll(lpparam);
 			}
 		});
 
