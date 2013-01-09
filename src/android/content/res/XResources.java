@@ -228,6 +228,9 @@ public class XResources extends Resources {
 		else if (resDir == null && id >= 0x7f000000)
 			throw new IllegalArgumentException("ids >= 0x7f000000 are app specific and cannot be set for the framework");
 		
+		if (replacement instanceof Drawable)
+			throw new IllegalArgumentException("Drawable replacements are deprecated since Xposed 2.1. Use DrawableLoader instead.");
+		
 		synchronized (replacements) {
 			HashMap<String, Object> inner = replacements.get(id);
 			if (inner == null) {
