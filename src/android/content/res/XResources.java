@@ -10,7 +10,6 @@ import java.util.WeakHashMap;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import android.content.pm.PackageParser;
 import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -37,10 +36,10 @@ public class XResources extends Resources {
 		= new WeakHashMap<XmlResourceParser, XMLInstanceDetails>();
 	
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
+	private static final HashMap<String, String> resDirPackageNames = new HashMap<String, String>();
 	private boolean inited = false;
 
 	private final String resDir;
-	private String packageName;
 	
 	public XResources(Resources parent, String resDir) {
 		super(parent.getAssets(), null, null, null);
@@ -75,12 +74,18 @@ public class XResources extends Resources {
 		return resDir;
 	}
 	
+	public static void setPackageNameForResDir(String packageName, String resDir) {
+		resDirPackageNames.put(resDir, packageName);
+	}
+	
 	public String getPackageName() {
 		if (resDir == null)
 			return "android";
+		
+		String packageName = resDirPackageNames.get(resDir);
 		if (packageName == null) {
-			PackageParser.PackageLite pi = PackageParser.parsePackageLite(resDir, 0);
-			packageName = pi.packageName;
+			XposedBridge.log(new IllegalStateException("could not determined package name for " + resDir));
+			return "";
 		}
 		return packageName;
 	}

@@ -39,7 +39,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.XResources;
 import android.os.Build;
-import android.os.IBinder;
 import android.util.Log;
 
 import com.android.internal.os.RuntimeInit;
@@ -126,8 +125,9 @@ public final class XposedBridge {
 					return;
 				
 				setObjectField(activityThread, "mBoundApplication", param.args[0]);
-				LoadedApk loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
 				loadedPackagesInProcess.add(appInfo.packageName);
+				LoadedApk loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
+				XResources.setPackageNameForResDir(appInfo.packageName, loadedApk.getResDir());
 				
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
 				lpparam.packageName = appInfo.packageName;
@@ -156,15 +156,16 @@ public final class XposedBridge {
 		});
 		
 		// when a package is loaded for an existing process, trigger the callbacks as well
-		// not handled: createPackageContext("xyz", CONTEXT_INCLUDE_CODE | CONTEXT_IGNORE_SECURITY).getClassLoader();
-		findAndHookMethod("android.app.ContextImpl", null, "init", LoadedApk.class, IBinder.class, ActivityThread.class, new XC_MethodHook() {
+		hookAllConstructors(LoadedApk.class, new XC_MethodHook() {
 			@Override
-			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				LoadedApk loadedApk = (LoadedApk) param.args[0];
+			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				LoadedApk loadedApk = (LoadedApk) param.thisObject;
 
 				String packageName = loadedApk.getPackageName();
 				if (packageName.equals("android") || !loadedPackagesInProcess.add(packageName))
 					return;
+				
+				XResources.setPackageNameForResDir(packageName, loadedApk.getResDir());
 				
 				if ((Boolean) getBooleanField(loadedApk, "mIncludeCode") == false)
 					return;
