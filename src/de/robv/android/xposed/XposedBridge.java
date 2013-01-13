@@ -39,6 +39,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.XResources;
 import android.os.Build;
+import android.os.Process;
 import android.util.Log;
 
 import com.android.internal.os.RuntimeInit;
@@ -162,10 +163,9 @@ public final class XposedBridge {
 				LoadedApk loadedApk = (LoadedApk) param.thisObject;
 
 				String packageName = loadedApk.getPackageName();
+				XResources.setPackageNameForResDir(packageName, loadedApk.getResDir());
 				if (packageName.equals("android") || !loadedPackagesInProcess.add(packageName))
 					return;
-				
-				XResources.setPackageNameForResDir(packageName, loadedApk.getResDir());
 				
 				if ((Boolean) getBooleanField(loadedApk, "mIncludeCode") == false)
 					return;
@@ -177,6 +177,16 @@ public final class XposedBridge {
 				lpparam.appInfo = loadedApk.getApplicationInfo();
 				lpparam.isFirstApplication = false;
 				XC_LoadPackage.callAll(lpparam);
+			}
+		});
+		
+		findAndHookMethod("android.app.ApplicationPackageManager", null, "getResourcesForApplication",
+				ApplicationInfo.class, new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				ApplicationInfo app = (ApplicationInfo) param.args[0];
+				XResources.setPackageNameForResDir(app.packageName,
+					app.uid == Process.myUid() ? app.sourceDir : app.publicSourceDir);
 			}
 		});
 		
