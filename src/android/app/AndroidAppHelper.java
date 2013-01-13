@@ -4,18 +4,16 @@ import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.newInstance;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.res.CompatibilityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
-import android.os.Environment;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
 /**
@@ -130,19 +128,23 @@ public class AndroidAppHelper {
 		return ActivityThread.currentApplication();
 	}
 	
-	
+	/** use class {@link XSharedPreferences} instead */
+	@Deprecated
 	public static SharedPreferences getSharedPreferencesForPackage(String packageName, String prefFileName, int mode) {
-        File prefFile = new File(Environment.getDataDirectory(), "data/" + packageName + "/shared_prefs/" + prefFileName + ".xml");
-        return new SharedPreferencesImpl(prefFile, mode);
+		return new XSharedPreferences(packageName, prefFileName);
 	}
-	
+
+	/** use class {@link XSharedPreferences} instead */
+	@Deprecated
 	public static SharedPreferences getDefaultSharedPreferencesForPackage(String packageName) {
-		return getSharedPreferencesForPackage(packageName, packageName + "_preferences", Context.MODE_PRIVATE);
+		return new XSharedPreferences(packageName);
 	}
-	
+
+	/** use {@link XSharedPreferences#reload()}instead */
+	@Deprecated
 	public static void reloadSharedPreferencesIfNeeded(SharedPreferences pref) {
-		if (pref instanceof SharedPreferencesImpl) {
-			((SharedPreferencesImpl) pref).startReloadIfChangedUnexpectedly();
+		if (pref instanceof XSharedPreferences) {
+			((XSharedPreferences) pref).reload();
 		}
 	}
 }
