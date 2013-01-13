@@ -47,6 +47,7 @@ public class XResources extends Resources {
 		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics(), parent.getCompatibilityInfo());
 	}
 	
+	/** Framework only, don't call this from your module! */
 	public boolean checkFirstLoad() {
 		synchronized (replacements) {
 			if (resDir == null)
@@ -74,6 +75,7 @@ public class XResources extends Resources {
 		return resDir;
 	}
 	
+	/** Framework only, don't call this from your module! */
 	public static void setPackageNameForResDir(String packageName, String resDir) {
 		resDirPackageNames.put(resDir, packageName);
 	}
@@ -84,20 +86,23 @@ public class XResources extends Resources {
 		
 		String packageName = resDirPackageNames.get(resDir);
 		if (packageName == null) {
-			XposedBridge.log(new IllegalStateException("could not determined package name for " + resDir));
+			XposedBridge.log(new IllegalStateException("could not determine package name for " + resDir));
 			return "";
 		}
 		return packageName;
 	}
 	
+	/** Framework only, don't call this from your module! */
 	public boolean isInited() {
 		return inited;
 	}
 	
+	/** Framework only, don't call this from your module! */
 	public void setInited(boolean inited) {
 		this.inited = inited;
 	}
 	
+	/** Framework only, don't call this from your module! */
 	public static void init() throws Exception {
 		findAndHookMethod(Resources.class, "getCachedStyledAttributes", int.class, new XC_MethodHook() {
 			@Override
