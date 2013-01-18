@@ -12,6 +12,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,12 +27,12 @@ import de.robv.android.xposed.callbacks.XCallback;
  * Resources class that allows replacements for selected resources
  */
 public class XResources extends Resources {
-	private static final HashMap<Integer, HashMap<String, Object>> replacements = new HashMap<Integer, HashMap<String, Object>>();
-	private static final HashMap<Integer, HashMap<String, ResourceNames>> resourceNames
-		= new HashMap<Integer, HashMap<String, ResourceNames>>();
+	private static final SparseArray<HashMap<String, Object>> replacements = new SparseArray<HashMap<String, Object>>();
+	private static final SparseArray<HashMap<String, ResourceNames>> resourceNames
+		= new SparseArray<HashMap<String, ResourceNames>>();
 	
-	private static final HashMap<Integer, HashMap<String, TreeSet<XC_LayoutInflated>>> layoutCallbacks
-		= new HashMap<Integer, HashMap<String, TreeSet<XC_LayoutInflated>>>();
+	private static final SparseArray<HashMap<String, TreeSet<XC_LayoutInflated>>> layoutCallbacks
+		= new SparseArray<HashMap<String, TreeSet<XC_LayoutInflated>>>();
 	private static final WeakHashMap<XmlResourceParser, XMLInstanceDetails> xmlInstanceDetails
 		= new WeakHashMap<XmlResourceParser, XMLInstanceDetails>();
 	
@@ -64,8 +65,8 @@ public class XResources extends Resources {
 				return true;
 			
 			// file was changed meanwhile => remove old replacements 
-			for (HashMap<String, Object> inner : replacements.values()) {
-				inner.remove(resDir);
+			for(int i = 0; i < replacements.size(); i++) {
+				replacements.valueAt(i).remove(resDir);
 			}
 			return true;
 		}
@@ -624,7 +625,7 @@ public class XResources extends Resources {
 	
 	public int addResource(Resources res, int id) {
 		int fakeId = getFakeResId(res, id);
-		if (!replacements.containsKey(fakeId))
+		if (replacements.indexOfKey(fakeId) < 0)
 			setReplacement(fakeId, new XResForwarder(res, id));
 		return fakeId;
 	}
