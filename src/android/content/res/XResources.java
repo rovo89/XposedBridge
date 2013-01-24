@@ -722,9 +722,14 @@ public class XResources extends Resources {
 		
 		@Override
 		public Drawable getDrawable(int index) {
-			Object replacement = getReplacement(getResourceId(index, 0));
-			if (replacement instanceof Drawable) {
-				return (Drawable) replacement;
+			final int resId = getResourceId(index, 0);
+			Object replacement = getReplacement(resId);
+			if (replacement instanceof DrawableLoader) {
+				try {
+					Drawable result = ((DrawableLoader) replacement).newDrawable(XResources.this, resId);
+					if (result != null)
+						return result;
+				} catch (Throwable t) { XposedBridge.log(t); }
 			} else if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();
