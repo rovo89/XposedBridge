@@ -199,15 +199,6 @@ public final class XposedBridge {
 					String.class, int.class, Configuration.class, CompatibilityInfo.class,
 					callbackGetTopLevelResources);
 		
-		// Make Xposed classes available to other applications, so they can use
-		// the same logging and helper
-		findAndHookMethod("android.app.ApplicationLoaders", null, "getClassLoader",
-				String.class, String.class, ClassLoader.class, new XC_MethodHook() {
-			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				param.args[0] = "/data/xposed/XposedBridge.jar:" + param.args[0];
-			}
-		});
-
 		// Replace system resources
 		Resources systemResources = new XResources(Resources.getSystem(), null);
 		setStaticObjectField(Resources.class, "mSystem", systemResources);
