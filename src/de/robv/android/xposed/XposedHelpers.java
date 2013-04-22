@@ -185,6 +185,81 @@ public class XposedHelpers {
 			throw new NoSuchMethodError(fullMethodName);
 		}
 	}
+
+    /**
+     * Look up a method in a class and set it to accessible. The result is cached.
+     * This does not only look for exact matches, but for the closest match.
+     * Number of params need not match. Not overloaded method will be returned.
+     * (Assumed by the most number of params)
+     * If the method was not found, a {@link NoSuchMethodError} will be thrown.
+     * @see MethodUtils#getMatchingAccessibleMethod
+     */
+    public static Method findMethodBestMatchNotOverloaded(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+        StringBuilder sb = new StringBuilder(clazz.getName());
+        sb.append('#');
+        sb.append(methodName);
+        sb.append(getParametersString(parameterTypes));
+        sb.append("#bestmatchnotoverloaded");
+        String fullMethodName = sb.toString();
+
+        if (methodCache.containsKey(fullMethodName)) {
+            Method method = methodCache.get(fullMethodName);
+            if (method == null)
+                throw new NoSuchMethodError(fullMethodName);
+            return method;
+        }
+
+        Method bestMatch = null;
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            // compare name and parameters
+            if (method.getName().equals(methodName)) {
+                // DEBUG
+                //XposedBridge.log("Found method name: " + method.getName() + "/" + method.getParameterTypes().length);
+
+                if (parameterTypes.length == method.getParameterTypes().length
+                        && !ClassUtils.isAssignable(parameterTypes, method.getParameterTypes(), true)) {
+                    // DEBUG
+                    //XposedBridge.log("\tUnmatched because length is equal but param not assignable");
+                    //for (int i = 0; i < method.getParameterTypes().length; i++) {
+                    //    XposedBridge.log("\t\t" + method.getParameterTypes()[i].getName());
+                    //}
+                    continue;
+                } else if (parameterTypes.length < method.getParameterTypes().length) {
+                    Class<?>[] parameterTypesMinimum = new Class[parameterTypes.length];
+                    for (int i = 0; i < parameterTypes.length; i++) {
+                        parameterTypesMinimum[i] = method.getParameterTypes()[i];
+                    }
+
+                    if (!ClassUtils.isAssignable(parameterTypes, parameterTypesMinimum, true)) {
+                        // DEBUG
+                        //XposedBridge.log("\tUnmatched because length is NOT equal and minimum param not assignable");
+                        //for (int i = 0; i < parameterTypesMinimum.length; i++) {
+                        //    XposedBridge.log("\t\t" + parameterTypesMinimum[i].getName());
+                        //}
+                        continue;
+                    }
+                }
+
+                // get accessible version of method
+                if (bestMatch == null || method.getParameterTypes().length > bestMatch.getParameterTypes().length) {
+                    // DEBUG
+                    //XposedBridge.log("\t\tNew Best Match");
+                    bestMatch = method;
+                }
+            }
+        }
+
+        if (bestMatch != null) {
+            bestMatch.setAccessible(true);
+            methodCache.put(fullMethodName, bestMatch);
+            return bestMatch;
+        } else {
+            NoSuchMethodError e = new NoSuchMethodError(fullMethodName);
+            methodCache.put(fullMethodName, null);
+            throw e;
+        }
+    }
 	
 	/**
 	 * Look up a method in a class and set it to accessible. The result is cached.

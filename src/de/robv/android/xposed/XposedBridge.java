@@ -1,12 +1,5 @@
 package de.robv.android.xposed;
 
-import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
-import static de.robv.android.xposed.XposedHelpers.getBooleanField;
-import static de.robv.android.xposed.XposedHelpers.getIntField;
-import static de.robv.android.xposed.XposedHelpers.getObjectField;
-import static de.robv.android.xposed.XposedHelpers.setObjectField;
-import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -52,6 +45,8 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResou
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.callbacks.XCallback;
+
+import static de.robv.android.xposed.XposedHelpers.*;
 
 public final class XposedBridge {
 	private static PrintWriter logWriter = null;
@@ -190,14 +185,15 @@ public final class XposedBridge {
 			}
 		});
 		
-		if (Build.VERSION.SDK_INT <= 16)
-			findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-					String.class, CompatibilityInfo.class,
-					callbackGetTopLevelResources);
-		else
-			findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-					String.class, int.class, Configuration.class, CompatibilityInfo.class,
-					callbackGetTopLevelResources);
+		if (Build.VERSION.SDK_INT <= 16) {
+            XC_MethodHook callback = callbackGetTopLevelResources;
+            Method m = findMethodBestMatchNotOverloaded(ActivityThread.class, "getTopLevelResources", String.class, CompatibilityInfo.class);
+            XposedBridge.hookMethod(m, callback);
+        } else {
+            XC_MethodHook callback = callbackGetTopLevelResources;
+            Method m = findMethodBestMatchNotOverloaded(ActivityThread.class, "getTopLevelResources", String.class, int.class);
+            XposedBridge.hookMethod(m, callback);
+        }
 		
 		// Replace system resources
 		Resources systemResources = new XResources(Resources.getSystem(), null);
@@ -504,7 +500,7 @@ public final class XposedBridge {
 	 */
 	private static XC_MethodHook callbackGetTopLevelResources = new XC_MethodHook(XCallback.PRIORITY_HIGHEST - 10) {
 		protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-			XResources newRes = null;
+            XResources newRes = null;
 			final Object result = param.getResult();
 			if (result instanceof XResources) {
 				newRes = (XResources) result;
