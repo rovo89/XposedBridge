@@ -191,7 +191,7 @@ public final class XposedBridge {
             XposedBridge.hookMethod(m, callback);
         } else {
             XC_MethodHook callback = callbackGetTopLevelResources;
-            Method m = findMethodBestMatchNotOverloaded(ActivityThread.class, "getTopLevelResources", String.class, int.class);
+            Method m = findMethodBestMatchNotOverloaded(ActivityThread.class, "getTopLevelResources", String.class, int.class, Configuration.class, CompatibilityInfo.class);
             XposedBridge.hookMethod(m, callback);
         }
 		
