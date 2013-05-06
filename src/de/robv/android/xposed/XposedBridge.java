@@ -194,14 +194,28 @@ public final class XposedBridge {
 			}
 		});
 		
-		if (Build.VERSION.SDK_INT <= 16)
-			findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+		// more parameters with SDK17, one additional boolean for HTC (for theming)
+		if (Build.VERSION.SDK_INT <= 16) {
+			try {
+				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+					String.class, CompatibilityInfo.class, boolean.class,
+					callbackGetTopLevelResources);
+			} catch (NoSuchMethodError ignored) {
+				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 					String.class, CompatibilityInfo.class,
 					callbackGetTopLevelResources);
-		else
-			findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+			}
+		} else {
+			try {
+				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+					String.class, int.class, Configuration.class, CompatibilityInfo.class, boolean.class,
+					callbackGetTopLevelResources);
+			} catch (NoSuchMethodError ignored) {
+				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 					String.class, int.class, Configuration.class, CompatibilityInfo.class,
 					callbackGetTopLevelResources);
+			}
+		}
 		
 		// Replace system resources
 		Resources systemResources = new XResources(Resources.getSystem(), null);
