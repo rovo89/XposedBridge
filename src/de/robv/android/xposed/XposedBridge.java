@@ -90,12 +90,16 @@ public final class XposedBridge {
 			log("-----------------\n" + date + " UTC\n"
 					+ "Loading Xposed (for " + (startClassName == null ? "Zygote" : startClassName) + ")...");
 			
-			if (startClassName == null) {
-				// Initializations for Zygote
-				initXbridgeZygote();
+			if (initNative()) {
+				if (startClassName == null) {
+					// Initializations for Zygote
+					initXbridgeZygote();
+				}
+				
+				loadModules(startClassName);
+			} else {
+				log("Errors during native Xposed initialization");
 			}
-			
-			loadModules(startClassName);			
 		} catch (Throwable t) {
 			log("Errors during Xposed initialization");
 			log(t);
@@ -554,6 +558,7 @@ public final class XposedBridge {
 		}
 	};
 	
+	private native static boolean initNative();
 
 	/**
 	 * Intercept every call to the specified method and call a handler function instead.
