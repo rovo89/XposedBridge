@@ -156,9 +156,6 @@ public final class XposedBridge {
 		findAndHookMethod("com.android.server.ServerThread", null, "run", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				if (XposedBridge.disableHooks) {
-					return;
-				}
 				loadedPackagesInProcess.add("android");
 				
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
@@ -175,9 +172,6 @@ public final class XposedBridge {
 		hookAllConstructors(LoadedApk.class, new XC_MethodHook() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				if (XposedBridge.disableHooks) {
-					return;
-				}
 				LoadedApk loadedApk = (LoadedApk) param.thisObject;
 
 				String packageName = loadedApk.getPackageName();
@@ -202,9 +196,6 @@ public final class XposedBridge {
 				ApplicationInfo.class, new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				if (XposedBridge.disableHooks) {
-					return;
-				}
 				ApplicationInfo app = (ApplicationInfo) param.args[0];
 				XResources.setPackageNameForResDir(app.packageName,
 					app.uid == Process.myUid() ? app.sourceDir : app.publicSourceDir);
@@ -420,6 +411,9 @@ public final class XposedBridge {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Object handleHookedMethod(Member method, Object thisObject, Object[] args) throws Throwable {
+		if (XposedBridge.disableHooks) {
+			return invokeOriginalMethod(method, thisObject, args);
+		}
 		TreeSet<XC_MethodHook> callbacks;
 		synchronized (hookedMethodCallbacks) {
 			callbacks = hookedMethodCallbacks.get(method);
@@ -539,9 +533,6 @@ public final class XposedBridge {
 	 */
 	private static XC_MethodHook callbackGetTopLevelResources = new XC_MethodHook(XCallback.PRIORITY_HIGHEST - 10) {
 		protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-			if (XposedBridge.disableHooks) {
-				return;
-			}
 			XResources newRes = null;
 			final Object result = param.getResult();
 			if (result instanceof XResources) {
