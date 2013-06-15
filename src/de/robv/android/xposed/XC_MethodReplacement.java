@@ -45,7 +45,7 @@ public abstract class XC_MethodReplacement extends XC_MethodHook {
 	 * @see #returnConstant(Object)
 	 */
 	public static XC_MethodReplacement returnConstant(int priority, final Object result) {
-		return new XC_MethodReplacement() {
+		return new XC_MethodReplacement(priority) {
 			@Override
 			protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 				return result;
