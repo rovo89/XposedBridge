@@ -36,5 +36,10 @@
 			<type>2</type>
 			<locationURI>ANDROID_SDK/sources/android-15</locationURI>
 		</link>
+		<link>
+			<name>lib/sdk_sources_10</name>
+			<type>2</type>
+			<locationURI>ANDROID_SDK/sources/android-10</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>

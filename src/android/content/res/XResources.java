@@ -12,6 +12,8 @@ import org.xmlpull.v1.XmlPullParser;
 
 import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -45,7 +47,11 @@ public class XResources extends Resources {
 	public XResources(Resources parent, String resDir) {
 		super(parent.getAssets(), null, null, null);
 		this.resDir = resDir;
-		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics(), parent.getCompatibilityInfo());
+		if (Build.VERSION.SDK_INT > 10) {
+			updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics(), parent.getCompatibilityInfo());
+		} else {
+			updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics());
+		}
 	}
 	
 	/** Framework only, don't call this from your module! */
@@ -364,9 +370,17 @@ public class XResources extends Resources {
 		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
-			return repRes.getDrawableForDensity(repId, density);
+			if (Build.VERSION.SDK_INT > 10) {
+				return repRes.getDrawableForDensity(repId, density);
+			} else {
+				return repRes.getDrawable(repId);
+			}
 		}
-		return super.getDrawableForDensity(id, density);
+		if (Build.VERSION.SDK_INT > 10) {
+			return super.getDrawableForDensity(id, density);
+		} else {
+			return super.getDrawable(id);
+		}
 	}
 	
 	@Override

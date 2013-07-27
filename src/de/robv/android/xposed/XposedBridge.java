@@ -125,13 +125,18 @@ public final class XposedBridge {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				ActivityThread activityThread = (ActivityThread) param.thisObject;
 				ApplicationInfo appInfo = (ApplicationInfo) getObjectField(param.args[0], "appInfo");
-				CompatibilityInfo compatInfo = (CompatibilityInfo) getObjectField(param.args[0], "compatInfo");
 				if (appInfo.sourceDir == null)
 					return;
 				
 				setObjectField(activityThread, "mBoundApplication", param.args[0]);
 				loadedPackagesInProcess.add(appInfo.packageName);
-				LoadedApk loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
+				LoadedApk loadedApk;
+				if (Build.VERSION.SDK_INT > 10) {
+					CompatibilityInfo compatInfo = (CompatibilityInfo) getObjectField(param.args[0], "compatInfo");
+					loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
+				} else {
+					loadedApk = activityThread.getPackageInfoNoCheck(appInfo);
+				}
 				XResources.setPackageNameForResDir(appInfo.packageName, loadedApk.getResDir());
 				
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
@@ -184,6 +189,7 @@ public final class XposedBridge {
 			}
 		});
 		
+		if (Build.VERSION.SDK_INT > 10) {
 		findAndHookMethod("android.app.ApplicationPackageManager", null, "getResourcesForApplication",
 				ApplicationInfo.class, new XC_MethodHook() {
 			@Override
@@ -193,6 +199,7 @@ public final class XposedBridge {
 					app.uid == Process.myUid() ? app.sourceDir : app.publicSourceDir);
 			}
 		});
+		}
 		
 		// more parameters with SDK17, one additional boolean for HTC (for theming)
 		if (Build.VERSION.SDK_INT <= 16) {
