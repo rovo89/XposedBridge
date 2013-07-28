@@ -189,8 +189,11 @@ public final class XposedBridge {
 			}
 		});
 		
-		if (Build.VERSION.SDK_INT > 10) {
-		findAndHookMethod("android.app.ApplicationPackageManager", null, "getResourcesForApplication",
+		String packageManager = "android.app.ApplicationPackageManager";
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
+			packageManager = "android.app.ContextImpl$ApplicationPackageManager";
+		}
+		findAndHookMethod(packageManager, null, "getResourcesForApplication",
 				ApplicationInfo.class, new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -199,7 +202,6 @@ public final class XposedBridge {
 					app.uid == Process.myUid() ? app.sourceDir : app.publicSourceDir);
 			}
 		});
-		}
 		
 		// more parameters with SDK17, one additional boolean for HTC (for theming)
 		if (Build.VERSION.SDK_INT <= 16) {
