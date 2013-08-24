@@ -120,6 +120,9 @@ public class XResources extends Resources {
 		findAndHookMethod(LayoutInflater.class, "inflate", XmlPullParser.class, ViewGroup.class, boolean.class, new XC_MethodHook() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				if (param.hasThrowable())
+					return;
+
 				XMLInstanceDetails details;
 				synchronized (xmlInstanceDetails) {
 					details = xmlInstanceDetails.get(param.args[0]);
