@@ -2,6 +2,7 @@ package android.content.res;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 import java.io.File;
 import java.util.HashMap;
@@ -45,7 +46,8 @@ public class XResources extends Resources {
 	public XResources(Resources parent, String resDir) {
 		super(parent.getAssets(), null, null, null);
 		this.resDir = resDir;
-		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics(), parent.getCompatibilityInfo());
+		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics());
+		setObjectField(this, "mCompatibilityInfo", getObjectField(parent, "mCompatibilityInfo"));
 	}
 	
 	/** Framework only, don't call this from your module! */
