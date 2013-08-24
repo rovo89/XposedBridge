@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 import org.xmlpull.v1.XmlPullParser;
 
 import android.graphics.Movie;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -349,6 +350,8 @@ public class XResources extends Resources {
 				if (result != null)
 					return result;
 			} catch (Throwable t) { XposedBridge.log(t); }
+		} else if (replacement instanceof Integer) {
+			return new ColorDrawable((Integer) replacement);
 		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
@@ -366,6 +369,8 @@ public class XResources extends Resources {
 				if (result != null)
 					return result;
 			} catch (Throwable t) { XposedBridge.log(t); }
+		} else if (replacement instanceof Integer) {
+			return new ColorDrawable((Integer) replacement);
 		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
@@ -735,6 +740,8 @@ public class XResources extends Resources {
 					if (result != null)
 						return result;
 				} catch (Throwable t) { XposedBridge.log(t); }
+			} else if (replacement instanceof Integer) {
+				return new ColorDrawable((Integer) replacement);
 			} else if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();
