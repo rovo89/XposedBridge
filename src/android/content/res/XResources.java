@@ -2,6 +2,7 @@ package android.content.res;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 import java.io.File;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.WeakHashMap;
 import org.xmlpull.v1.XmlPullParser;
 
 import android.graphics.Movie;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -45,7 +47,8 @@ public class XResources extends Resources {
 	public XResources(Resources parent, String resDir) {
 		super(parent.getAssets(), null, null, null);
 		this.resDir = resDir;
-		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics(), parent.getCompatibilityInfo());
+		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics());
+		setObjectField(this, "mCompatibilityInfo", getObjectField(parent, "mCompatibilityInfo"));
 	}
 	
 	/** Framework only, don't call this from your module! */
@@ -120,6 +123,9 @@ public class XResources extends Resources {
 		findAndHookMethod(LayoutInflater.class, "inflate", XmlPullParser.class, ViewGroup.class, boolean.class, new XC_MethodHook() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				if (param.hasThrowable())
+					return;
+
 				XMLInstanceDetails details;
 				synchronized (xmlInstanceDetails) {
 					details = xmlInstanceDetails.get(param.args[0]);
@@ -344,6 +350,8 @@ public class XResources extends Resources {
 				if (result != null)
 					return result;
 			} catch (Throwable t) { XposedBridge.log(t); }
+		} else if (replacement instanceof Integer) {
+			return new ColorDrawable((Integer) replacement);
 		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
@@ -361,6 +369,8 @@ public class XResources extends Resources {
 				if (result != null)
 					return result;
 			} catch (Throwable t) { XposedBridge.log(t); }
+		} else if (replacement instanceof Integer) {
+			return new ColorDrawable((Integer) replacement);
 		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
@@ -730,6 +740,8 @@ public class XResources extends Resources {
 					if (result != null)
 						return result;
 				} catch (Throwable t) { XposedBridge.log(t); }
+			} else if (replacement instanceof Integer) {
+				return new ColorDrawable((Integer) replacement);
 			} else if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();

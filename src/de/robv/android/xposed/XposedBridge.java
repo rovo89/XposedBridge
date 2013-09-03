@@ -33,6 +33,7 @@ import java.util.TreeSet;
 import android.app.ActivityThread;
 import android.app.AndroidAppHelper;
 import android.app.LoadedApk;
+import android.content.ComponentName;
 import android.content.pm.ApplicationInfo;
 import android.content.res.CompatibilityInfo;
 import android.content.res.Configuration;
@@ -57,6 +58,7 @@ public final class XposedBridge {
 	private static PrintWriter logWriter = null;
 	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
 	private static final int MAX_LOGFILE_SIZE = 20*1024; 
+	private static boolean disableHooks = false;
 	
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final ClassLoader BOOTCLASSLOADER = ClassLoader.getSystemClassLoader();
@@ -125,6 +127,12 @@ public final class XposedBridge {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				ActivityThread activityThread = (ActivityThread) param.thisObject;
 				ApplicationInfo appInfo = (ApplicationInfo) getObjectField(param.args[0], "appInfo");
+				ComponentName instrumentationName = (ComponentName) getObjectField(param.args[0], "instrumentationName");
+				if (instrumentationName != null) {
+					XposedBridge.log("Instrumentation detected, disabling framework for " + appInfo.packageName);
+					disableHooks = true;
+					return;
+				}
 				CompatibilityInfo compatInfo = (CompatibilityInfo) getObjectField(param.args[0], "compatInfo");
 				if (appInfo.sourceDir == null)
 					return;
@@ -403,6 +411,14 @@ public final class XposedBridge {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Object handleHookedMethod(Member method, Object thisObject, Object[] args) throws Throwable {
+		if (disableHooks) {
+			try {
+				return invokeOriginalMethod(method, thisObject, args);
+			} catch (InvocationTargetException e) {
+				throw e.getCause();
+			}
+		}
+
 		TreeSet<XC_MethodHook> callbacks;
 		synchronized (hookedMethodCallbacks) {
 			callbacks = hookedMethodCallbacks.get(method);

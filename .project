@@ -36,5 +36,10 @@
 			<type>2</type>
 			<locationURI>ANDROID_SDK/sources/android-15</locationURI>
 		</link>
+		<link>
+			<name>src/NOTICE.txt</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/NOTICE.txt</locationURI>
+		</link>
 	</linkedResources>
 </projectDescription>
