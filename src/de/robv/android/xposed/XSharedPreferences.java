@@ -43,6 +43,13 @@ public final class XSharedPreferences implements SharedPreferences {
 		startLoadFromDisk();
     }
 	
+	public boolean makeWorldReadable() {
+		if (!mFile.exists()) // just in case - the file should never be created if it doesn'e exist
+			return false;
+		
+		return mFile.setReadable(true, false);
+	}
+	
     private void startLoadFromDisk() {
         synchronized (this) {
             mLoaded = false;

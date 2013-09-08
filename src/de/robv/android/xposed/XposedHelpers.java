@@ -214,18 +214,20 @@ public class XposedHelpers {
 		} catch (NoSuchMethodError ignored) {}
 		
 		Method bestMatch = null;
-		Method[] methods = clazz.getDeclaredMethods();
-		for (Method method : methods) {
-		    // compare name and parameters
-			if (method.getName().equals(methodName) && ClassUtils.isAssignable(parameterTypes, method.getParameterTypes(), true)) {
-			    // get accessible version of method
-	            if (bestMatch == null || MemberUtils.compareParameterTypes(
-						method.getParameterTypes(),
-						bestMatch.getParameterTypes(),
-						parameterTypes) < 0) {
-            		bestMatch = method;
-	            }
-		    }
+		for (int i = 0; i < 2; i++) {
+			Method[] methods = (i == 0) ? clazz.getDeclaredMethods() : clazz.getMethods();
+			for (Method method : methods) {
+				// compare name and parameters
+				if (method.getName().equals(methodName) && ClassUtils.isAssignable(parameterTypes, method.getParameterTypes(), true)) {
+					// get accessible version of method
+					if (bestMatch == null || MemberUtils.compareParameterTypes(
+							method.getParameterTypes(),
+							bestMatch.getParameterTypes(),
+							parameterTypes) < 0) {
+						bestMatch = method;
+					}
+				}
+			}
 		}
 		
 		if (bestMatch != null) {
