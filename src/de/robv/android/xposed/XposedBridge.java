@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityThread;
 import android.app.AndroidAppHelper;
 import android.app.LoadedApk;
@@ -59,10 +60,12 @@ public final class XposedBridge {
 	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
 	private static final int MAX_LOGFILE_SIZE = 20*1024; 
 	private static boolean disableHooks = false;
-	
+
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final ClassLoader BOOTCLASSLOADER = ClassLoader.getSystemClassLoader();
-	
+	@SuppressLint("SdCardPath")
+	public static final String BASE_DIR = "/data/data/de.robv.android.xposed.installer/";
+
 	// built-in handlers
 	private static final Map<Member, TreeSet<XC_MethodHook>> hookedMethodCallbacks
 									= new HashMap<Member, TreeSet<XC_MethodHook>>();
@@ -80,9 +83,9 @@ public final class XposedBridge {
 		try {
 			// initialize log file
 			try {
-				File logFile = new File("/data/xposed/debug.log");
+				File logFile = new File(BASE_DIR + "log/debug.log");
 				if (startClassName == null && logFile.length() > MAX_LOGFILE_SIZE)
-					logFile.renameTo(new File("/data/xposed/debug.log.old"));
+					logFile.renameTo(new File(BASE_DIR + "log/debug.log.old"));
 				logWriter = new PrintWriter(new FileWriter(logFile, true));
 				logFile.setReadable(true, false);
 				logFile.setWritable(true, false);
@@ -233,10 +236,10 @@ public final class XposedBridge {
 	}
 	
 	/**
-	 * Try to load all modules defined in <code>/data/xposed/modules.list</code>
+	 * Try to load all modules defined in <code>BASE_DIR/conf/modules.list</code>
 	 */
 	private static void loadModules(String startClassName) throws IOException {
-		BufferedReader apks = new BufferedReader(new FileReader("/data/xposed/modules.list"));
+		BufferedReader apks = new BufferedReader(new FileReader(BASE_DIR + "conf/modules.list"));
 		String apk;
 		while ((apk = apks.readLine()) != null) {
 			loadModule(apk, startClassName);
@@ -247,7 +250,6 @@ public final class XposedBridge {
 	/**
 	 * Load a module from an APK by calling the init(String) method for all classes defined
 	 * in <code>assets/xposed_init</code>.
-	 * @see MethodSignatureGuide#init
 	 */
 	private static void loadModule(String apk, String startClassName) {
 		log("Loading modules from " + apk);
@@ -317,7 +319,7 @@ public final class XposedBridge {
 	}
 	
 	/**
-	 * Writes a message to /data/xposed/debug.log (needs to have chmod 777)
+	 * Writes a message to BASE_DIR/log/debug.log (needs to have chmod 777)
 	 * @param text log message
 	 */
 	public synchronized static void log(String text) {
