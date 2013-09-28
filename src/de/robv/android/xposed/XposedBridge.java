@@ -136,13 +136,18 @@ public final class XposedBridge {
 					disableHooks = true;
 					return;
 				}
-				CompatibilityInfo compatInfo = (CompatibilityInfo) getObjectField(param.args[0], "compatInfo");
 				if (appInfo.sourceDir == null)
 					return;
 				
 				setObjectField(activityThread, "mBoundApplication", param.args[0]);
 				loadedPackagesInProcess.add(appInfo.packageName);
-				LoadedApk loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
+				LoadedApk loadedApk;
+				if (Build.VERSION.SDK_INT > 10) {
+					CompatibilityInfo compatInfo = (CompatibilityInfo) getObjectField(param.args[0], "compatInfo");
+					loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
+				} else {
+					loadedApk = activityThread.getPackageInfoNoCheck(appInfo);
+				}
 				XResources.setPackageNameForResDir(appInfo.packageName, loadedApk.getResDir());
 				
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
@@ -195,7 +200,11 @@ public final class XposedBridge {
 			}
 		});
 		
-		findAndHookMethod("android.app.ApplicationPackageManager", null, "getResourcesForApplication",
+		String packageManager = "android.app.ApplicationPackageManager";
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
+			packageManager = "android.app.ContextImpl$ApplicationPackageManager";
+		}
+		findAndHookMethod(packageManager, null, "getResourcesForApplication",
 				ApplicationInfo.class, new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {

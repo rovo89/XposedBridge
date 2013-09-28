@@ -1,0 +1,93 @@
+diff --git a/core/java/android/app/ActivityThread.java b/core/java/android/app/ActivityThread.java
+index 162d9eb..3cb33c3 100644
+--- a/core/java/android/app/ActivityThread.java
++++ b/core/java/android/app/ActivityThread.java
+@@ -146,7 +146,7 @@ public final class ActivityThread {
+     int mNumVisibleActivities = 0;
+     final HashMap<IBinder, Service> mServices
+             = new HashMap<IBinder, Service>();
+-    AppBindData mBoundApplication;
++    public AppBindData mBoundApplication;
+     Configuration mConfiguration;
+     Configuration mResConfiguration;
+     Application mInitialApplication;
+@@ -320,7 +320,7 @@ public final class ActivityThread {
+         }
+     }
+ 
+-    private static final class AppBindData {
++    public static final class AppBindData {
+         LoadedApk info;
+         String processName;
+         ApplicationInfo appInfo;
+@@ -3692,4 +3692,8 @@ public final class ActivityThread {
+             : "<unknown>";
+         Slog.i(TAG, "Main thread of " + name + " is now exiting");
+     }
++
++    public final LoadedApk getPackageInfoNoCheck(ApplicationInfo ai, CompatibilityInfo compatInfo) {
++        return null;
++    }
+ }
+diff --git a/core/java/android/app/ContextImpl.java b/core/java/android/app/ContextImpl.java
+index df377a0..e090a89 100644
+--- a/core/java/android/app/ContextImpl.java
++++ b/core/java/android/app/ContextImpl.java
+@@ -3216,5 +3216,9 @@ class ContextImpl extends Context {
+             }
+             mcr.setDiskWriteResult(false);
+         }
++
++	public Set<String> getStringSet(String key, Set<String> defValues) {
++                return null;
++        }
+     }
+ }
+diff --git a/core/java/android/app/LoadedApk.java b/core/java/android/app/LoadedApk.java
+index 0644f96..4bef39d 100644
+--- a/core/java/android/app/LoadedApk.java
++++ b/core/java/android/app/LoadedApk.java
+@@ -63,7 +63,7 @@ final class ServiceConnectionLeaked extends AndroidRuntimeException {
+  * Local state maintained about a currently loaded .apk.
+  * @hide
+  */
+-final class LoadedApk {
++public final class LoadedApk {
+ 
+     private final ActivityThread mActivityThread;
+     private final ApplicationInfo mApplicationInfo;
+diff --git a/core/java/android/content/SharedPreferences.java b/core/java/android/content/SharedPreferences.java
+index 3221afa..cf899e4 100644
+--- a/core/java/android/content/SharedPreferences.java
++++ b/core/java/android/content/SharedPreferences.java
+@@ -17,6 +17,7 @@
+ package android.content;
+ 
+ import java.util.Map;
++import java.util.Set;
+ 
+ /**
+  * Interface for accessing and modifying preference data returned by {@link
+@@ -323,4 +324,6 @@ public interface SharedPreferences {
+      * @see #registerOnSharedPreferenceChangeListener
+      */
+     void unregisterOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener);
++
++    Set<String> getStringSet(String key, Set<String> defValues);
+ }
+diff --git a/core/java/android/content/res/Resources.java b/core/java/android/content/res/Resources.java
+index 9bb3b75..816c23d 100644
+--- a/core/java/android/content/res/Resources.java
++++ b/core/java/android/content/res/Resources.java
+@@ -1976,4 +1976,11 @@ public class Resources {
+         mAssets.ensureStringBlocks();
+         mCompatibilityInfo = CompatibilityInfo.DEFAULT_COMPATIBILITY_INFO;
+     }
++
++    public void updateConfiguration(Configuration config, DisplayMetrics metrics, CompatibilityInfo compat) {
++    }
++
++    public Drawable getDrawableForDensity(int id, int density) throws NotFoundException {
++        return null;
++    }
+ }
