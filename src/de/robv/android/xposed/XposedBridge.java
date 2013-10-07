@@ -60,7 +60,6 @@ public final class XposedBridge {
 	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
 	private static final int MAX_LOGFILE_SIZE = 20*1024; 
 	private static boolean disableHooks = false;
-	public static boolean NO_RESOURCE_HOOK = false; 
 
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final ClassLoader BOOTCLASSLOADER = ClassLoader.getSystemClassLoader();
@@ -97,7 +96,6 @@ public final class XposedBridge {
 					+ "Loading Xposed (for " + (startClassName == null ? "Zygote" : startClassName) + ")...");
 			
 			if (initNative()) {
-				detectLimitations();
 				if (startClassName == null) {
 					// Initializations for Zygote
 					initXbridgeZygote();
@@ -118,15 +116,7 @@ public final class XposedBridge {
 		else
 			RuntimeInit.main(args);
 	}
-
-	private static void detectLimitations() {
-		try {
-			Class.forName("android.content.res.MiuiResources");
-			log("Detected MIUI ROM, disabling resource-related hooks");
-			NO_RESOURCE_HOOK = true;
-		} catch (ClassNotFoundException ignored) {}
-	}
-
+	
 	private static native String getStartClassName();
 	
 	/**
@@ -214,46 +204,44 @@ public final class XposedBridge {
 					app.uid == Process.myUid() ? app.sourceDir : app.publicSourceDir);
 			}
 		});
-
-		if (!NO_RESOURCE_HOOK) {
-			// more parameters with SDK17, one additional boolean for HTC (for theming)
-			if (Build.VERSION.SDK_INT <= 16) {
-				try {
-					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-							String.class, CompatibilityInfo.class, boolean.class,
-							callbackGetTopLevelResources);
-				} catch (NoSuchMethodError ignored) {
-					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-							String.class, CompatibilityInfo.class,
-							callbackGetTopLevelResources);
-				}
-			} else {
-				try {
-					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-							String.class, int.class, Configuration.class, CompatibilityInfo.class, boolean.class,
-							callbackGetTopLevelResources);
-				} catch (NoSuchMethodError ignored) {
-					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-							String.class, int.class, Configuration.class, CompatibilityInfo.class,
-							callbackGetTopLevelResources);
-				}
-			}
-
-			// Replace system resources
-			XC_MethodHook.Unhook paranoidWorkaround = null;
+		
+		// more parameters with SDK17, one additional boolean for HTC (for theming)
+		if (Build.VERSION.SDK_INT <= 16) {
 			try {
-				// so early in the process, there shouldn't be other threads we could interfere with
-				paranoidWorkaround = findAndHookMethod(Resources.class, "paranoidHook", XC_MethodReplacement.DO_NOTHING);
-			} catch (NoSuchMethodError ignored) {}
-
-			Resources systemResources = new XResources(Resources.getSystem(), null);
-			setStaticObjectField(Resources.class, "mSystem", systemResources);
-
-			if (paranoidWorkaround != null)
-				paranoidWorkaround.unhook();
-
-			XResources.init();
+				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+					String.class, CompatibilityInfo.class, boolean.class,
+					callbackGetTopLevelResources);
+			} catch (NoSuchMethodError ignored) {
+				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+					String.class, CompatibilityInfo.class,
+					callbackGetTopLevelResources);
+			}
+		} else {
+			try {
+				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+					String.class, int.class, Configuration.class, CompatibilityInfo.class, boolean.class,
+					callbackGetTopLevelResources);
+			} catch (NoSuchMethodError ignored) {
+				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+					String.class, int.class, Configuration.class, CompatibilityInfo.class,
+					callbackGetTopLevelResources);
+			}
 		}
+
+		// Replace system resources
+		XC_MethodHook.Unhook paranoidWorkaround = null;
+		try {
+			// so early in the process, there shouldn't be other threads we could interfere with
+			paranoidWorkaround = findAndHookMethod(Resources.class, "paranoidHook", XC_MethodReplacement.DO_NOTHING);
+		} catch (NoSuchMethodError ignored) {}
+
+		Resources systemResources = new XResources(Resources.getSystem(), null);
+		setStaticObjectField(Resources.class, "mSystem", systemResources);
+
+		if (paranoidWorkaround != null)
+			paranoidWorkaround.unhook();
+
+		XResources.init();
 	}
 	
 	/**
@@ -306,11 +294,6 @@ public final class XposedBridge {
 					
 					// call the init(String) method of the module
 					final Object moduleInstance = moduleClass.newInstance();
-					if (NO_RESOURCE_HOOK && IXposedHookInitPackageResources.class.isAssignableFrom(moduleClass)) {
-						log("    Rejecting class because it uses IXposedHookInitPackageResources (not supported on this ROM)");
-						continue;
-					}
-
 					if (startClassName == null) {
 						if (moduleInstance instanceof IXposedHookZygoteInit) {
 							IXposedHookZygoteInit.StartupParam param = new IXposedHookZygoteInit.StartupParam();
