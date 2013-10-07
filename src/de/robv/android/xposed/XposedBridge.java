@@ -240,8 +240,17 @@ public final class XposedBridge {
 			}
 
 			// Replace system resources
+			XC_MethodHook.Unhook paranoidWorkaround = null;
+			try {
+				// so early in the process, there shouldn't be other threads we could interfere with
+				paranoidWorkaround = findAndHookMethod(Resources.class, "paranoidHook", XC_MethodReplacement.DO_NOTHING);
+			} catch (NoSuchMethodError ignored) {}
+
 			Resources systemResources = new XResources(Resources.getSystem(), null);
 			setStaticObjectField(Resources.class, "mSystem", systemResources);
+
+			if (paranoidWorkaround != null)
+				paranoidWorkaround.unhook();
 
 			XResources.init();
 		}
