@@ -28,7 +28,7 @@ import de.robv.android.xposed.callbacks.XCallback;
 /**
  * Resources class that allows replacements for selected resources
  */
-public class XResources extends Resources {
+public class XResources extends MiuiResources {
 	private static final SparseArray<HashMap<String, Object>> replacements = new SparseArray<HashMap<String, Object>>();
 	private static final SparseArray<HashMap<String, ResourceNames>> resourceNames
 		= new SparseArray<HashMap<String, ResourceNames>>();
