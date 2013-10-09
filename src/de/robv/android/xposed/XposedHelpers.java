@@ -12,6 +12,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.WeakHashMap;
 
 import android.content.res.Resources;
@@ -185,7 +187,40 @@ public class XposedHelpers {
 			throw new NoSuchMethodError(fullMethodName);
 		}
 	}
-	
+
+	/**
+	 * Returns an array of all methods in a class with the specified parameter types.
+	 *
+	 * The return type is optional, it will not be compared if it is {@code null}.
+	 * Use {@code void.class} if you want to search for methods returning nothing.
+	 */
+	public static Method[] findMethodsByExactParameters(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
+		List<Method> result = new LinkedList<Method>();
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (returnType != null && returnType != method.getReturnType())
+				continue;
+
+			Class<?>[] methodParameterTypes = method.getParameterTypes();
+			if (parameterTypes.length != methodParameterTypes.length)
+				continue;
+
+			boolean match = true;
+			for (int i = 0; i < parameterTypes.length; i++) {
+				if (parameterTypes[i] != methodParameterTypes[i]) {
+					match = false;
+					break;
+				}
+			}
+
+			if (!match)
+				continue;
+
+			method.setAccessible(true);
+			result.add(method);
+		}
+		return result.toArray(new Method[result.size()]);
+	}
+
 	/**
 	 * Look up a method in a class and set it to accessible. The result is cached.
 	 * This does not only look for exact matches, but for the closest match. 
