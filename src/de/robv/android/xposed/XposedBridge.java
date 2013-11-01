@@ -9,6 +9,7 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,6 +30,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityThread;
@@ -56,6 +59,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.callbacks.XCallback;
 
 public final class XposedBridge {
+	public static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
+	public static int XPOSED_BRIDGE_VERSION;
+
 	private static PrintWriter logWriter = null;
 	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
 	private static final int MAX_LOGFILE_SIZE = 20*1024; 
@@ -64,7 +70,7 @@ public final class XposedBridge {
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final ClassLoader BOOTCLASSLOADER = ClassLoader.getSystemClassLoader();
 	@SuppressLint("SdCardPath")
-	public static final String BASE_DIR = "/data/data/de.robv.android.xposed.installer/";
+	public static final String BASE_DIR = "/data/data/" + INSTALLER_PACKAGE_NAME + "/";
 
 	// built-in handlers
 	private static final Map<Member, TreeSet<XC_MethodHook>> hookedMethodCallbacks
@@ -92,8 +98,10 @@ public final class XposedBridge {
 			} catch (IOException ignored) {}
 			
 			String date = DateFormat.getDateTimeInstance().format(new Date());
+			determineXposedVersion();
 			log("-----------------\n" + date + " UTC\n"
-					+ "Loading Xposed (for " + (startClassName == null ? "Zygote" : startClassName) + ")...");
+					+ "Loading Xposed v" + XPOSED_BRIDGE_VERSION
+					+ " (for " + (startClassName == null ? "Zygote" : startClassName) + ")...");
 			
 			if (initNative()) {
 				if (startClassName == null) {
@@ -118,6 +126,43 @@ public final class XposedBridge {
 	}
 	
 	private static native String getStartClassName();
+
+	private static void determineXposedVersion() throws IOException {
+		ZipInputStream is = new ZipInputStream(new FileInputStream(BASE_DIR + "bin/XposedBridge.jar"));
+		ZipEntry entry;
+		try {
+			while ((entry = is.getNextEntry()) != null) {
+				if (!entry.getName().equals("assets/VERSION"))
+					continue;
+
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
+				String version = br.readLine();
+				br.close();
+
+				XPOSED_BRIDGE_VERSION = extractIntPart(version);
+				if (XPOSED_BRIDGE_VERSION == 0)
+					throw new RuntimeException("could not parse XposedBridge version from \"" + version + "\"");
+				return;
+			}
+			throw new RuntimeException("could not find assets/VERSION in " + BASE_DIR + "bin/XposedBridge.jar");
+		} finally {
+			try {
+				is.close();
+			} catch (Exception e) { }
+		}
+	}
+
+	private static int extractIntPart(String str) {
+		int result = 0, length = str.length();
+		for (int offset = 0; offset < length; offset++) {
+			char c = str.charAt(offset);
+			if ('0' <= c && c <= '9')
+				result = result * 10 + (c - '0');
+			else
+				break;
+		}
+		return result;
+	}
 	
 	/**
 	 * Hook some methods which we want to create an easier interface for developers.
@@ -139,12 +184,12 @@ public final class XposedBridge {
 				CompatibilityInfo compatInfo = (CompatibilityInfo) getObjectField(param.args[0], "compatInfo");
 				if (appInfo.sourceDir == null)
 					return;
-				
+
 				setObjectField(activityThread, "mBoundApplication", param.args[0]);
 				loadedPackagesInProcess.add(appInfo.packageName);
 				LoadedApk loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
 				XResources.setPackageNameForResDir(appInfo.packageName, loadedApk.getResDir());
-				
+
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
 				lpparam.packageName = appInfo.packageName;
 				lpparam.processName = (String) getObjectField(param.args[0], "processName");
@@ -152,6 +197,9 @@ public final class XposedBridge {
 				lpparam.appInfo = appInfo;
 				lpparam.isFirstApplication = true;
 				XC_LoadPackage.callAll(lpparam);
+
+				if (appInfo.packageName.equals(INSTALLER_PACKAGE_NAME))
+					hookXposedInstaller(lpparam.classLoader);
 			}
 		});
 		
@@ -243,7 +291,14 @@ public final class XposedBridge {
 
 		XResources.init();
 	}
-	
+
+	private static void hookXposedInstaller(ClassLoader classLoader) {
+		try {
+			findAndHookMethod(INSTALLER_PACKAGE_NAME + ".XposedApp", classLoader, "getActiveXposedVersion",
+				XC_MethodReplacement.returnConstant(XPOSED_BRIDGE_VERSION));
+		} catch (Throwable t) { XposedBridge.log(t); }
+	}
+
 	/**
 	 * Try to load all modules defined in <code>BASE_DIR/conf/modules.list</code>
 	 */
