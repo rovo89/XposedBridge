@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -249,9 +250,14 @@ public class XposedHelpers {
 		} catch (NoSuchMethodError ignored) {}
 		
 		Method bestMatch = null;
-		for (int i = 0; i < 2; i++) {
-			Method[] methods = (i == 0) ? clazz.getDeclaredMethods() : clazz.getMethods();
-			for (Method method : methods) {
+		Class<?> clz = clazz;
+		boolean considerPrivateMethods = true;
+		do {
+			for (Method method : clz.getDeclaredMethods()) {
+				// don't consider private methods of superclasses
+				if (!considerPrivateMethods && Modifier.isPrivate(method.getModifiers()))
+					continue;
+
 				// compare name and parameters
 				if (method.getName().equals(methodName) && ClassUtils.isAssignable(parameterTypes, method.getParameterTypes(), true)) {
 					// get accessible version of method
@@ -263,7 +269,8 @@ public class XposedHelpers {
 					}
 				}
 			}
-		}
+			considerPrivateMethods = false;
+		} while ((clz = clz.getSuperclass()) != null);
 		
 		if (bestMatch != null) {
 			bestMatch.setAccessible(true);
