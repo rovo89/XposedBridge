@@ -18,13 +18,7 @@ public abstract class XCallback implements Comparable<XCallback> {
 	
 	public static class Param {
 		public final TreeSet<? extends XCallback> callbacks;
-		/**
-		 * This can be used to store anything for the scope of the callback.
-		 * Use this instead of instance variables.
-		 * @see #getObjectExtra
-		 * @see #setObjectExtra
-		 */
-		public final Bundle extra = new Bundle();
+		private Bundle extra;
 		
 		protected Param() {
 			callbacks = null;
@@ -37,9 +31,21 @@ public abstract class XCallback implements Comparable<XCallback> {
 			}
 		}
 		
+		/**
+		 * This can be used to store anything for the scope of the callback.
+		 * Use this instead of instance variables.
+		 * @see #getObjectExtra
+		 * @see #setObjectExtra
+		 */
+		public synchronized Bundle getExtra() {
+			if (extra == null)
+				extra = new Bundle();
+			return extra;
+		}
+		
 		/** @see #setObjectExtra */
 		public Object getObjectExtra(String key) {
-			Serializable o = extra.getSerializable(key);
+			Serializable o = getExtra().getSerializable(key);
 			if (o instanceof SerializeWrapper)
 				return ((SerializeWrapper) o).object;
 			return null;
@@ -47,7 +53,7 @@ public abstract class XCallback implements Comparable<XCallback> {
 		
 		/** Provides a wrapper to store <code>Object</code>s in <code>extra</code>. */
 		public void setObjectExtra(String key, Object o) {
-			extra.putSerializable(key, new SerializeWrapper(o));
+			getExtra().putSerializable(key, new SerializeWrapper(o));
 		}
 		
 		private static class SerializeWrapper implements Serializable {
