@@ -6,7 +6,6 @@ import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.TreeSet;
 import java.util.WeakHashMap;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -21,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated.LayoutInflatedParam;
 import de.robv.android.xposed.callbacks.XCallback;
@@ -33,8 +33,8 @@ public class XResources extends MiuiResources {
 	private static final SparseArray<HashMap<String, ResourceNames>> resourceNames
 		= new SparseArray<HashMap<String, ResourceNames>>();
 	
-	private static final SparseArray<HashMap<String, TreeSet<XC_LayoutInflated>>> layoutCallbacks
-		= new SparseArray<HashMap<String, TreeSet<XC_LayoutInflated>>>();
+	private static final SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>> layoutCallbacks
+		= new SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>>();
 	private static final WeakHashMap<XmlResourceParser, XMLInstanceDetails> xmlInstanceDetails
 		= new WeakHashMap<XmlResourceParser, XMLInstanceDetails>();
 	
@@ -526,12 +526,12 @@ public class XResources extends MiuiResources {
 		}
 		
 		if (type.equals("layout")) {
-			HashMap<String, TreeSet<XC_LayoutInflated>> inner;
+			HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>> inner;
 			synchronized (layoutCallbacks) {
 				inner = layoutCallbacks.get(id);
 			}
 			if (inner != null) {
-				TreeSet<XC_LayoutInflated> callbacks;
+				CopyOnWriteSortedSet<XC_LayoutInflated> callbacks;
 				synchronized (inner) {
 					callbacks = inner.get(resDir);
 					if (callbacks == null && resDir != null)
@@ -865,10 +865,10 @@ public class XResources extends MiuiResources {
 	private class XMLInstanceDetails {
 		public final ResourceNames resNames;
 		public final String variant;
-		public final TreeSet<XC_LayoutInflated> callbacks;
+		public final CopyOnWriteSortedSet<XC_LayoutInflated> callbacks;
 		public final XResources res = XResources.this;
 		
-		private XMLInstanceDetails(ResourceNames resNames, String variant, TreeSet<XC_LayoutInflated> callbacks) {
+		private XMLInstanceDetails(ResourceNames resNames, String variant, CopyOnWriteSortedSet<XC_LayoutInflated> callbacks) {
 			this.resNames = resNames;
 			this.variant = variant;
 			this.callbacks = callbacks;
@@ -929,27 +929,25 @@ public class XResources extends MiuiResources {
 		if (id == 0)
 			throw new IllegalArgumentException("id 0 is not an allowed resource identifier");
 
-		HashMap<String, TreeSet<XC_LayoutInflated>> inner;
+		HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>> inner;
 		synchronized (layoutCallbacks) {
 			inner = layoutCallbacks.get(id);
 			if (inner == null) {
-				inner = new HashMap<String, TreeSet<XC_LayoutInflated>>();
+				inner = new HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>();
 				layoutCallbacks.put(id, inner);
 			}
 		}
 		
-		TreeSet<XC_LayoutInflated> callbacks;
+		CopyOnWriteSortedSet<XC_LayoutInflated> callbacks;
 		synchronized (inner) {
 			callbacks = inner.get(resDir);
 			if (callbacks == null) {
-				callbacks = new TreeSet<XC_LayoutInflated>();
+				callbacks = new CopyOnWriteSortedSet<XC_LayoutInflated>();
 				inner.put(resDir, callbacks);
 			}
 		} 
 		
-		synchronized (callbacks) {
-			callbacks.add(callback);
-		}
+		callbacks.add(callback);
 		
 		putResourceNames(resDir, resNames);
 		
@@ -957,22 +955,20 @@ public class XResources extends MiuiResources {
 	}
 	
 	public static void unhookLayout(String resDir, int id, XC_LayoutInflated callback) {
-		HashMap<String, TreeSet<XC_LayoutInflated>> inner;
+		HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>> inner;
 		synchronized (layoutCallbacks) {
 			inner = layoutCallbacks.get(id);
 			if (inner == null)
 				return;
 		}
 		
-		TreeSet<XC_LayoutInflated> callbacks;
+		CopyOnWriteSortedSet<XC_LayoutInflated> callbacks;
 		synchronized (inner) {
 			callbacks = inner.get(resDir);
 			if (callbacks == null)
 				return;
 		} 
 		
-		synchronized (callbacks) {
-			callbacks.remove(callback);
-		}
+		callbacks.remove(callback);
 	}
 }

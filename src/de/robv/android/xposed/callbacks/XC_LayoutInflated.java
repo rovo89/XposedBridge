@@ -1,10 +1,9 @@
 package de.robv.android.xposed.callbacks;
 
-import java.util.TreeSet;
-
 import android.content.res.XResources;
 import android.content.res.XResources.ResourceNames;
 import android.view.View;
+import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XC_LayoutInflated extends XCallback {
 	public XC_LayoutInflated() {
@@ -15,7 +14,7 @@ public abstract class XC_LayoutInflated extends XCallback {
 	}
 	
 	public static class LayoutInflatedParam extends XCallback.Param {
-		public LayoutInflatedParam(TreeSet<XC_LayoutInflated> callbacks) {
+		public LayoutInflatedParam(CopyOnWriteSortedSet<XC_LayoutInflated> callbacks) {
 			super(callbacks);
 		}
 		/** The view that has been created from the layout */

@@ -1,11 +1,10 @@
 package de.robv.android.xposed.callbacks;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.TreeSet;
 
 import android.os.Bundle;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XCallback implements Comparable<XCallback> {
 	public final int priority;
@@ -17,7 +16,7 @@ public abstract class XCallback implements Comparable<XCallback> {
 	}
 	
 	public static class Param {
-		public final TreeSet<? extends XCallback> callbacks;
+		public final Object[] callbacks;
 		private Bundle extra;
 		
 		protected Param() {
@@ -25,10 +24,8 @@ public abstract class XCallback implements Comparable<XCallback> {
 		}
 		
 		@SuppressWarnings("unchecked")
-		protected Param(TreeSet<? extends XCallback> callbacks) {
-			synchronized (callbacks) {
-				this.callbacks = (TreeSet<? extends XCallback>) callbacks.clone();
-			}
+		protected Param(CopyOnWriteSortedSet<? extends XCallback> callbacks) {
+			this.callbacks = callbacks.getSnapshot();
 		}
 		
 		/**
@@ -69,10 +66,9 @@ public abstract class XCallback implements Comparable<XCallback> {
 		if (param.callbacks == null)
 			throw new IllegalStateException("This object was not created for use with callAll");
 		
-		Iterator<? extends XCallback> it = param.callbacks.iterator();
-		while (it.hasNext()) {
+		for (int i = 0; i < param.callbacks.length; i++) {
 			try {
-				it.next().call(param);
+				((XCallback) param.callbacks[i]).call(param);
 			} catch (Throwable t) { XposedBridge.log(t); }
 		}
 	}

@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -75,8 +74,10 @@ public final class XposedBridge {
 	// built-in handlers
 	private static final Map<Member, CopyOnWriteSortedSet<XC_MethodHook>> hookedMethodCallbacks
 									= new HashMap<Member, CopyOnWriteSortedSet<XC_MethodHook>>();
-	private static final TreeSet<XC_LoadPackage> loadedPackageCallbacks = new TreeSet<XC_LoadPackage>();
-	private static final TreeSet<XC_InitPackageResources> initPackageResourcesCallbacks = new TreeSet<XC_InitPackageResources>();
+	private static final CopyOnWriteSortedSet<XC_LoadPackage> loadedPackageCallbacks
+									= new CopyOnWriteSortedSet<XC_LoadPackage>();
+	private static final CopyOnWriteSortedSet<XC_InitPackageResources> initPackageResourcesCallbacks
+									= new CopyOnWriteSortedSet<XC_InitPackageResources>();
 
 	/**
 	 * Called when native methods and other things are initialized, but before preloading classes etc.
@@ -711,7 +712,7 @@ public final class XposedBridge {
 		return invokeOriginalMethodNative(method, parameterTypes, returnType, thisObject, args);
 	}
 
-	private static class CopyOnWriteSortedSet<E> {
+	public static class CopyOnWriteSortedSet<E> {
 		private transient volatile Object[] elements = EMPTY_ARRAY;
 
 		public synchronized boolean add(E e) {

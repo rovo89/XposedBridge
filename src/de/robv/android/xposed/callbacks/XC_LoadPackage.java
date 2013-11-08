@@ -1,9 +1,8 @@
 package de.robv.android.xposed.callbacks;
 
-import java.util.TreeSet;
-
 import android.content.pm.ApplicationInfo;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XC_LoadPackage extends XCallback {
 	public XC_LoadPackage() {
@@ -14,7 +13,7 @@ public abstract class XC_LoadPackage extends XCallback {
 	}
 	
 	public static class LoadPackageParam extends XCallback.Param {
-		public LoadPackageParam(TreeSet<XC_LoadPackage> callbacks) {
+		public LoadPackageParam(CopyOnWriteSortedSet<XC_LoadPackage> callbacks) {
 			super(callbacks);
 		}
 		/** The name of the package being loaded */

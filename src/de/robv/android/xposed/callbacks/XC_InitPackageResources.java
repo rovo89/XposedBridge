@@ -1,9 +1,8 @@
 package de.robv.android.xposed.callbacks;
 
-import java.util.TreeSet;
-
 import android.content.res.XResources;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XC_InitPackageResources extends XCallback {
 	public XC_InitPackageResources() {
@@ -14,7 +13,7 @@ public abstract class XC_InitPackageResources extends XCallback {
 	}
 	
 	public static class InitPackageResourcesParam extends XCallback.Param {
-		public InitPackageResourcesParam(TreeSet<XC_InitPackageResources> callbacks) {
+		public InitPackageResourcesParam(CopyOnWriteSortedSet<XC_InitPackageResources> callbacks) {
 			super(callbacks);
 		}
 		/** The name of the package for which resources are being loaded */
