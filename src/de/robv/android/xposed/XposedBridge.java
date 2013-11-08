@@ -663,6 +663,10 @@ public final class XposedBridge {
 	 */
 	private native synchronized static void hookMethodNative(Member method, Class<?> declaringClass, int slot, Object additionalInfo);
 
+	/** Old method signature to avoid crashes if only XposedBridge.jar is updated, will be removed in the next version */
+	@Deprecated
+	private native synchronized static void hookMethodNative(Class<?> declaringClass, int slot);
+
 	private native static Object invokeOriginalMethodNative(Member method, Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
