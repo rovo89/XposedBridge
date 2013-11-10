@@ -6,6 +6,7 @@ import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.WeakHashMap;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -13,12 +14,14 @@ import org.xmlpull.v1.XmlPullParser;
 import android.graphics.Movie;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
@@ -37,7 +40,13 @@ public class XResources extends MiuiResources {
 		= new SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>>();
 	private static final WeakHashMap<XmlResourceParser, XMLInstanceDetails> xmlInstanceDetails
 		= new WeakHashMap<XmlResourceParser, XMLInstanceDetails>();
-	
+
+	private static final String EXTRA_XML_INSTANCE_DETAILS = "xmlInstanceDetails";
+	private static final ThreadLocal<LinkedList<MethodHookParam>> sIncludedLayouts = new ThreadLocal<LinkedList<MethodHookParam>>();
+	static {
+		sIncludedLayouts.set(new LinkedList<MethodHookParam>());
+	}
+
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
 	private static final HashMap<String, String> resDirPackageNames = new HashMap<String, String>();
 	private boolean inited = false;
@@ -133,6 +142,33 @@ public class XResources extends MiuiResources {
 				if (details != null) {
 					LayoutInflatedParam liparam = new LayoutInflatedParam(details.callbacks);
 					liparam.view = (View) param.getResult();
+					liparam.resNames = details.resNames;
+					liparam.variant = details.variant;
+					liparam.res = details.res;
+					XCallback.callAll(liparam);
+				}
+			}
+		});
+
+		findAndHookMethod(LayoutInflater.class, "parseInclude", XmlPullParser.class, View.class, AttributeSet.class, new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				sIncludedLayouts.get().push(param);
+			}
+
+			@Override
+			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				sIncludedLayouts.get().pop();
+
+				if (param.hasThrowable())
+					return;
+
+				// filled in by our implementation of loadXmlResourceParser
+				XMLInstanceDetails details = (XMLInstanceDetails) param.getObjectExtra(EXTRA_XML_INSTANCE_DETAILS);
+				if (details != null) {
+					LayoutInflatedParam liparam = new LayoutInflatedParam(details.callbacks);
+					ViewGroup group = (ViewGroup) param.args[1];
+					liparam.view = group.getChildAt(group.getChildCount() - 1);
 					liparam.resNames = details.resNames;
 					liparam.variant = details.variant;
 					liparam.res = details.res;
@@ -551,13 +587,19 @@ public class XResources extends MiuiResources {
 					} else {
 						XposedBridge.log(new NotFoundException("Could not find file name for resource id 0x") + Integer.toHexString(id));
 					}
-					
+
 					synchronized (xmlInstanceDetails) {
 						synchronized (resourceNames) {
 							HashMap<String, ResourceNames> resNamesInner = resourceNames.get(id);
 							if (resNamesInner != null) {
 								synchronized (resNamesInner) {
-									xmlInstanceDetails.put(result, new XMLInstanceDetails(resNamesInner.get(resDir), variant, callbacks));
+									XMLInstanceDetails details = new XMLInstanceDetails(resNamesInner.get(resDir), variant, callbacks);
+									xmlInstanceDetails.put(result, details);
+
+									// if we were called inside LayoutInflater.parseInclude, store the details for it
+									MethodHookParam top = sIncludedLayouts.get().peek();
+									if (top != null)
+										top.setObjectExtra(EXTRA_XML_INSTANCE_DETAILS, details);
 								}
 							}
 						}
