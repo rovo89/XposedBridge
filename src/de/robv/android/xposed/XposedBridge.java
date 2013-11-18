@@ -484,12 +484,14 @@ public final class XposedBridge {
 	/**
 	 * This method is called as a replacement for hooked methods.
 	 */
-	private static Object handleHookedMethod(Member method, Object additionalInfoObj, Object thisObject, Object[] args) throws Throwable {
+	private static Object handleHookedMethod(Member method, int originalMethodId, Object additionalInfoObj,
+			Object thisObject, Object[] args) throws Throwable {
 		AdditionalHookInfo additionalInfo = (AdditionalHookInfo) additionalInfoObj;
 
 		if (disableHooks) {
 			try {
-				return invokeOriginalMethodNative(method, additionalInfo.parameterTypes, additionalInfo.returnType, thisObject, args);
+				return invokeOriginalMethodNative(method, originalMethodId, additionalInfo.parameterTypes,
+						additionalInfo.returnType, thisObject, args);
 			} catch (InvocationTargetException e) {
 				throw e.getCause();
 			}
@@ -499,7 +501,8 @@ public final class XposedBridge {
 		final int callbacksLength = callbacksSnapshot.length;
 		if (callbacksLength == 0) {
 			try {
-				return invokeOriginalMethodNative(method, additionalInfo.parameterTypes, additionalInfo.returnType, thisObject, args);
+				return invokeOriginalMethodNative(method, originalMethodId, additionalInfo.parameterTypes,
+						additionalInfo.returnType, thisObject, args);
 			} catch (InvocationTargetException e) {
 				throw e.getCause();
 			}
@@ -534,8 +537,8 @@ public final class XposedBridge {
 		// call original method if not requested otherwise
 		if (!param.returnEarly) {
 			try {
-				param.setResult(invokeOriginalMethodNative(method, additionalInfo.parameterTypes,
-						additionalInfo.returnType, param.thisObject, param.args));
+				param.setResult(invokeOriginalMethodNative(method, originalMethodId,
+						additionalInfo.parameterTypes, additionalInfo.returnType, param.thisObject, param.args));
 			} catch (InvocationTargetException e) {
 				param.setThrowable(e.getCause());
 			}
@@ -664,10 +667,15 @@ public final class XposedBridge {
 	 */
 	private native synchronized static void hookMethodNative(Member method, Class<?> declaringClass, int slot, Object additionalInfo);
 
+	private native static Object invokeOriginalMethodNative(Member method, int methodId,
+			Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+
 	/** Old method signature to avoid crashes if only XposedBridge.jar is updated, will be removed in the next version */
 	@Deprecated
 	private native synchronized static void hookMethodNative(Class<?> declaringClass, int slot);
 
+	@Deprecated
 	private native static Object invokeOriginalMethodNative(Member method, Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
@@ -709,7 +717,7 @@ public final class XposedBridge {
 			throw new IllegalArgumentException("method must be of type Method or Constructor");
 		}
 
-		return invokeOriginalMethodNative(method, parameterTypes, returnType, thisObject, args);
+		return invokeOriginalMethodNative(method, 0, parameterTypes, returnType, thisObject, args);
 	}
 
 	public static class CopyOnWriteSortedSet<E> {
