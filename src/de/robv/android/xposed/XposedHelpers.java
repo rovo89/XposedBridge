@@ -54,6 +54,22 @@ public class XposedHelpers {
 	}
 	
 	/**
+	 * Returns an array of all fields in a class with the specified type.
+	 */
+	public static Field[] findFieldsByExactType(Class<?> clazz, Class<?> type) {
+        List<Field> result = new LinkedList<Field>();
+        for (Field field : clazz.getDeclaredFields()) {
+                if (type != null && type != field.getType())
+                        continue;
+                if (!type.isAssignableFrom(field.getType())) 
+                	continue;
+                field.setAccessible(true);
+                result.add(field);
+        }
+        return result.toArray(new Field[result.size()]);
+	}
+	
+	/**
 	 * Look up a field in a class and set it to accessible. The result is cached.
 	 * If the field was not found, a {@link NoSuchFieldError} will be thrown.
 	 */
