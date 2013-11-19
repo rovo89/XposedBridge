@@ -42,10 +42,12 @@ public class XResources extends MiuiResources {
 		= new WeakHashMap<XmlResourceParser, XMLInstanceDetails>();
 
 	private static final String EXTRA_XML_INSTANCE_DETAILS = "xmlInstanceDetails";
-	private static final ThreadLocal<LinkedList<MethodHookParam>> sIncludedLayouts = new ThreadLocal<LinkedList<MethodHookParam>>();
-	static {
-		sIncludedLayouts.set(new LinkedList<MethodHookParam>());
-	}
+	private static final ThreadLocal<LinkedList<MethodHookParam>> sIncludedLayouts = new ThreadLocal<LinkedList<MethodHookParam>>() {
+		@Override
+		protected LinkedList<MethodHookParam> initialValue() {
+			return new LinkedList<MethodHookParam>();
+		}
+	};
 
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
 	private static final HashMap<String, String> resDirPackageNames = new HashMap<String, String>();
