@@ -206,7 +206,8 @@ public final class XposedBridge {
 		});
 		
 		// system thread initialization
-		findAndHookMethod("com.android.server.ServerThread", null, "run", new XC_MethodHook() {
+		findAndHookMethod("com.android.server.ServerThread", null,
+				Build.VERSION.SDK_INT < 19 ? "run" : "initAndLoop", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				loadedPackagesInProcess.add("android");
