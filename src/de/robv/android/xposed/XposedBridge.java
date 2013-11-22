@@ -117,6 +117,7 @@ public final class XposedBridge {
 		} catch (Throwable t) {
 			log("Errors during Xposed initialization");
 			log(t);
+			disableHooks = true;
 		}
 		
 		// call the original startup code
