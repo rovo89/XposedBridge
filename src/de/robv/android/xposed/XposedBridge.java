@@ -43,6 +43,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.XResources;
 import android.os.Build;
+import android.os.IBinder;
 import android.os.Process;
 import android.util.Log;
 
@@ -267,7 +268,7 @@ public final class XposedBridge {
 					String.class, CompatibilityInfo.class,
 					callbackGetTopLevelResources);
 			}
-		} else {
+		} else if (Build.VERSION.SDK_INT <= 18) {
 			try {
 				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 					String.class, int.class, Configuration.class, CompatibilityInfo.class, boolean.class,
@@ -277,6 +278,10 @@ public final class XposedBridge {
 					String.class, int.class, Configuration.class, CompatibilityInfo.class,
 					callbackGetTopLevelResources);
 			}
+		} else {
+			findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
+					String.class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
+					callbackGetTopLevelResources);
 		}
 
 		// Replace system resources
@@ -618,7 +623,6 @@ public final class XposedBridge {
 				
 			} else if (result != null) {
 				// replace the returned resources with our subclass
-				ActivityThread thisActivityThread = (ActivityThread) param.thisObject;
 				Resources origRes = (Resources) result;
 				String resDir = (String) param.args[0];
 				CompatibilityInfo compInfo = (CompatibilityInfo)
@@ -626,15 +630,22 @@ public final class XposedBridge {
 				
 				newRes = new XResources(origRes, resDir);
 				
+				@SuppressWarnings("unchecked")
 				Map<Object, WeakReference<Resources>> mActiveResources =
-						(Map<Object, WeakReference<Resources>>) AndroidAppHelper.getActivityThread_mActiveResources(thisActivityThread);
-				Object mPackages = AndroidAppHelper.getActivityThread_mPackages(thisActivityThread);
-				
-				Object key = (Build.VERSION.SDK_INT <= 16)
-					? AndroidAppHelper.createResourcesKey(resDir, compInfo)
-					: AndroidAppHelper.createResourcesKey(resDir, (Integer) param.args[1], (Configuration) param.args[2], compInfo);
-				
-				synchronized (mPackages) {
+						(Map<Object, WeakReference<Resources>>) getObjectField(param.thisObject, "mActiveResources");
+				Object lockObject = (Build.VERSION.SDK_INT <= 18)
+						? getObjectField(param.thisObject, "mPackages") : param.thisObject;
+
+				Object key;
+				if (Build.VERSION.SDK_INT <= 16)
+					key = AndroidAppHelper.createResourcesKey(resDir, compInfo);
+				else if (Build.VERSION.SDK_INT <= 18)
+					key = AndroidAppHelper.createResourcesKey(resDir, (Integer) param.args[1], (Configuration) param.args[2], compInfo);
+				else
+					key = AndroidAppHelper.createResourcesKey(resDir, (Integer) param.args[1],
+							(Configuration) param.args[2], compInfo, (IBinder) param.args[4]);
+
+				synchronized (lockObject) {
 					WeakReference<Resources> existing = mActiveResources.get(key);
 					if (existing != null && existing.get() != null && existing.get().getAssets() != newRes.getAssets())
 						existing.get().getAssets().close();

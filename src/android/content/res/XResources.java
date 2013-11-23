@@ -14,6 +14,7 @@ import org.xmlpull.v1.XmlPullParser;
 import android.graphics.Movie;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -56,10 +57,12 @@ public class XResources extends MiuiResources {
 	private final String resDir;
 	
 	public XResources(Resources parent, String resDir) {
-		super(parent.getAssets(), null, null, null);
+		super(parent.getAssets(), null, null);
 		this.resDir = resDir;
 		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics());
 		setObjectField(this, "mCompatibilityInfo", getObjectField(parent, "mCompatibilityInfo"));
+		if (Build.VERSION.SDK_INT >= 19)
+			setObjectField(this, "mToken", getObjectField(parent, "mToken"));
 	}
 	
 	/** Framework only, don't call this from your module! */
