@@ -112,7 +112,7 @@ public class AndroidAppHelper {
 		try {
 			Class<?> classResourcesKey = Class.forName("android.content.res.ResourcesKey");
 			if (hasIsThemeable)
-				return newInstance(classResourcesKey, resDir, displayId, config, scale, token, isThemeable);
+				return newInstance(classResourcesKey, resDir, displayId, config, scale, isThemeable, token);
 			else
 				return newInstance(classResourcesKey, resDir, displayId, config, scale, token);
 		} catch (Throwable t) {
