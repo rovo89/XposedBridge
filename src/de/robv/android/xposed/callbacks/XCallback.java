@@ -23,7 +23,6 @@ public abstract class XCallback implements Comparable<XCallback> {
 			callbacks = null;
 		}
 		
-		@SuppressWarnings("unchecked")
 		protected Param(CopyOnWriteSortedSet<? extends XCallback> callbacks) {
 			this.callbacks = callbacks.getSnapshot();
 		}
