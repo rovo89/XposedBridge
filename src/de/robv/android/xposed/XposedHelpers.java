@@ -97,6 +97,26 @@ public class XposedHelpers {
 			throw e;
 		}
 	}
+
+	/**
+	 * Returns the first field of the given type in a class.
+	 * Might be useful for Proguard'ed classes to identify fields with unique types.
+	 * If no matching field was not found, a {@link NoSuchFieldError} will be thrown.
+	 */
+	public static Field findFirstFieldByExactType(Class<?> clazz, Class<?> type) {
+		Class<?> clz = clazz;
+		do {
+			for (Field field : clz.getDeclaredFields()) {
+				if (field.getType() == type) {
+					field.setAccessible(true);
+					return field;
+				}
+			}
+		} while ((clz = clz.getSuperclass()) != null);
+
+		throw new NoSuchFieldError("Field of type " + type.getName() + " in class " + clazz.getName());
+	}
+
 	
 	/**
 	 * Look up a method in a class and set it to accessible. The result is cached.
