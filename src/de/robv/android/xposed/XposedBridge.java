@@ -79,6 +79,7 @@ public final class XposedBridge {
 									= new CopyOnWriteSortedSet<XC_LoadPackage>();
 	private static final CopyOnWriteSortedSet<XC_InitPackageResources> initPackageResourcesCallbacks
 									= new CopyOnWriteSortedSet<XC_InitPackageResources>();
+	private static ThreadLocal<Boolean> nestCallProtection = new ThreadLocal<Boolean>();
 
 	/**
 	 * Called when native methods and other things are initialized, but before preloading classes etc.
@@ -494,8 +495,13 @@ public final class XposedBridge {
 	private static Object handleHookedMethod(Member method, int originalMethodId, Object additionalInfoObj,
 			Object thisObject, Object[] args) throws Throwable {
 		AdditionalHookInfo additionalInfo = (AdditionalHookInfo) additionalInfoObj;
-
-		if (disableHooks) {
+		
+		Boolean bInHook = nestCallProtection.get();
+		if (bInHook == null) {
+			bInHook = false;
+		}
+		
+		if (disableHooks || bInHook) {
 			try {
 				return invokeOriginalMethodNative(method, originalMethodId, additionalInfo.parameterTypes,
 						additionalInfo.returnType, thisObject, args);
@@ -515,6 +521,7 @@ public final class XposedBridge {
 			}
 		}
 
+		nestCallProtection.set(true);
 		MethodHookParam param = new MethodHookParam();
 		param.method  = method;
 		param.thisObject = thisObject;
@@ -541,6 +548,8 @@ public final class XposedBridge {
 			}
 		} while (++beforeIdx < callbacksLength);
 
+		nestCallProtection.set(false);
+		
 		// call original method if not requested otherwise
 		if (!param.returnEarly) {
 			try {
@@ -551,6 +560,7 @@ public final class XposedBridge {
 			}
 		}
 
+		nestCallProtection.set(true);
 		// call "after method" callbacks
 		int afterIdx = beforeIdx - 1;
 		do {
@@ -570,6 +580,7 @@ public final class XposedBridge {
 			}
 		} while (--afterIdx >= 0);
 
+		nestCallProtection.set(false);
 		// return
 		if (param.hasThrowable())
 			throw param.getThrowable();
