@@ -256,9 +256,10 @@ public final class XposedBridge {
 					app.uid == Process.myUid() ? app.sourceDir : app.publicSourceDir);
 			}
 		});
-		
+
 		// more parameters with SDK17, one additional boolean for HTC (for theming)
 		if (Build.VERSION.SDK_INT <= 16) {
+			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 1;
 			try {
 				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 					String.class, CompatibilityInfo.class, boolean.class,
@@ -269,16 +270,33 @@ public final class XposedBridge {
 					callbackGetTopLevelResources);
 			}
 		} else if (Build.VERSION.SDK_INT <= 18) {
+			GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 1;
+			GET_TOP_LEVEL_RES_PARAM_CONFIG = 2;
+			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 3;
 			try {
 				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 					String.class, int.class, Configuration.class, CompatibilityInfo.class, boolean.class,
 					callbackGetTopLevelResources);
 			} catch (NoSuchMethodError ignored) {
-				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-					String.class, int.class, Configuration.class, CompatibilityInfo.class,
-					callbackGetTopLevelResources);
+				try {
+					// Xperia
+					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+						String.class, String[].class, int.class, Configuration.class, CompatibilityInfo.class,
+						callbackGetTopLevelResources);
+					GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 2;
+					GET_TOP_LEVEL_RES_PARAM_CONFIG = 3;
+					GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 4;
+				} catch (NoSuchMethodError ignored2) {
+					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+						String.class, int.class, Configuration.class, CompatibilityInfo.class,
+						callbackGetTopLevelResources);
+				}
 			}
 		} else {
+			GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 1;
+			GET_TOP_LEVEL_RES_PARAM_CONFIG = 2;
+			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 3;
+			GET_TOP_LEVEL_RES_PARAM_BINDER = 4;
 			findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
 					String.class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
 					callbackGetTopLevelResources);
@@ -609,8 +627,8 @@ public final class XposedBridge {
 			initPackageResourcesCallbacks.remove(callback);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Called when the resources for a specific package are requested and instead returns an instance of {@link XResources}.
 	 */
@@ -620,16 +638,18 @@ public final class XposedBridge {
 			final Object result = param.getResult();
 			if (result instanceof XResources) {
 				newRes = (XResources) result;
-				
+
 			} else if (result != null) {
 				// replace the returned resources with our subclass
 				Resources origRes = (Resources) result;
 				String resDir = (String) param.args[0];
-				CompatibilityInfo compInfo = (CompatibilityInfo)
-						((Build.VERSION.SDK_INT <= 16) ? param.args[1] : param.args[3]);
-				
+				CompatibilityInfo compInfo = (CompatibilityInfo) param.args[GET_TOP_LEVEL_RES_PARAM_COMP_INFO];
+				int displayId = (Build.VERSION.SDK_INT >= 18) ? (Integer) param.args[GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID] : 0;
+				Configuration config = (Build.VERSION.SDK_INT >= 18) ? (Configuration) param.args[GET_TOP_LEVEL_RES_PARAM_CONFIG] : null;
+				IBinder binder = (Build.VERSION.SDK_INT >= 19) ? (IBinder) param.args[GET_TOP_LEVEL_RES_PARAM_BINDER] : null;
+
 				newRes = new XResources(origRes, resDir);
-				
+
 				@SuppressWarnings("unchecked")
 				Map<Object, WeakReference<Resources>> mActiveResources =
 						(Map<Object, WeakReference<Resources>>) getObjectField(param.thisObject, "mActiveResources");
@@ -640,10 +660,9 @@ public final class XposedBridge {
 				if (Build.VERSION.SDK_INT <= 16)
 					key = AndroidAppHelper.createResourcesKey(resDir, compInfo);
 				else if (Build.VERSION.SDK_INT <= 18)
-					key = AndroidAppHelper.createResourcesKey(resDir, (Integer) param.args[1], (Configuration) param.args[2], compInfo);
+					key = AndroidAppHelper.createResourcesKey(resDir, displayId, config, compInfo);
 				else
-					key = AndroidAppHelper.createResourcesKey(resDir, (Integer) param.args[1],
-							(Configuration) param.args[2], compInfo, (IBinder) param.args[4]);
+					key = AndroidAppHelper.createResourcesKey(resDir, displayId, config, compInfo, binder);
 
 				synchronized (lockObject) {
 					WeakReference<Resources> existing = mActiveResources.get(key);
@@ -651,10 +670,10 @@ public final class XposedBridge {
 						existing.get().getAssets().close();
 					mActiveResources.put(key, new WeakReference<Resources>(newRes));
 				}
-				
+
 				newRes.setInited(resDir == null || !newRes.checkFirstLoad());
 				param.setResult(newRes);
-				
+
 			} else {
 				return;
 			}
@@ -671,7 +690,11 @@ public final class XposedBridge {
 			}
 		}
 	};
-	
+	private static int GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = -1;
+	private static int GET_TOP_LEVEL_RES_PARAM_CONFIG = -1;
+	private static int GET_TOP_LEVEL_RES_PARAM_COMP_INFO = -1;
+	private static int GET_TOP_LEVEL_RES_PARAM_BINDER = -1;
+
 	private native static boolean initNative();
 
 	/**
