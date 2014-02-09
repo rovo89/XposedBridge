@@ -66,6 +66,7 @@ public final class XposedBridge {
 	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
 	private static final int MAX_LOGFILE_SIZE = 20*1024; 
 	private static boolean disableHooks = false;
+	public static boolean disableResources = false;
 
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final ClassLoader BOOTCLASSLOADER = ClassLoader.getSystemClassLoader();
@@ -257,6 +258,14 @@ public final class XposedBridge {
 			}
 		});
 
+		if (!new File(BASE_DIR + "conf/disable_resources").exists()) {
+			hookResources();
+		} else {
+			disableResources = true;
+		}
+	}
+
+	private static void hookResources() throws Exception {
 		// lots of different variants due to theming engines
 		if (Build.VERSION.SDK_INT <= 16) {
 			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 1;
@@ -393,6 +402,9 @@ public final class XposedBridge {
 					
 					if (!IXposedMod.class.isAssignableFrom(moduleClass)) {
 						log ("    This class doesn't implement any sub-interface of IXposedMod, skipping it");
+						continue;
+					} else if (disableResources && IXposedHookInitPackageResources.class.isAssignableFrom(moduleClass)) {
+						log ("    This class requires resource-related hooks (which are disabled), skipping it.");
 						continue;
 					}
 					
