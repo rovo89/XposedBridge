@@ -290,10 +290,17 @@ public final class XposedBridge {
 					GET_TOP_LEVEL_RES_PARAM_CONFIG = 3;
 					GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 4;
 				} catch (NoSuchMethodError ignored2) {
-					// AOSP
-					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-						String.class, int.class, Configuration.class, CompatibilityInfo.class,
-						callbackGetTopLevelResources);
+					try {
+						// Meizu
+						findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+								String.class, int.class, Configuration.class, CompatibilityInfo.class, String.class, boolean.class,
+								callbackGetTopLevelResources);
+					} catch (NoSuchMethodError ignored3) {
+						// AOSP
+						findAndHookMethod(ActivityThread.class, "getTopLevelResources",
+							String.class, int.class, Configuration.class, CompatibilityInfo.class,
+							callbackGetTopLevelResources);
+					}
 				}
 			}
 		} else {
