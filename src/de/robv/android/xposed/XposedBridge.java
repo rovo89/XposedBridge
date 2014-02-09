@@ -257,14 +257,16 @@ public final class XposedBridge {
 			}
 		});
 
-		// more parameters with SDK17, one additional boolean for HTC (for theming)
+		// lots of different variants due to theming engines
 		if (Build.VERSION.SDK_INT <= 16) {
 			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 1;
 			try {
+				// HTC
 				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 					String.class, CompatibilityInfo.class, boolean.class,
 					callbackGetTopLevelResources);
 			} catch (NoSuchMethodError ignored) {
+				// AOSP
 				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 					String.class, CompatibilityInfo.class,
 					callbackGetTopLevelResources);
@@ -274,12 +276,13 @@ public final class XposedBridge {
 			GET_TOP_LEVEL_RES_PARAM_CONFIG = 2;
 			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 3;
 			try {
+				// HTC
 				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 					String.class, int.class, Configuration.class, CompatibilityInfo.class, boolean.class,
 					callbackGetTopLevelResources);
 			} catch (NoSuchMethodError ignored) {
 				try {
-					// Xperia
+					// Sony Xperia/LG
 					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 						String.class, String[].class, int.class, Configuration.class, CompatibilityInfo.class,
 						callbackGetTopLevelResources);
@@ -287,6 +290,7 @@ public final class XposedBridge {
 					GET_TOP_LEVEL_RES_PARAM_CONFIG = 3;
 					GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 4;
 				} catch (NoSuchMethodError ignored2) {
+					// AOSP
 					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
 						String.class, int.class, Configuration.class, CompatibilityInfo.class,
 						callbackGetTopLevelResources);
@@ -297,9 +301,21 @@ public final class XposedBridge {
 			GET_TOP_LEVEL_RES_PARAM_CONFIG = 2;
 			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 3;
 			GET_TOP_LEVEL_RES_PARAM_BINDER = 4;
-			findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
-					String.class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
+			try {
+				// Sony Xperia/LG
+				findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
+					String.class, String[].class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
 					callbackGetTopLevelResources);
+				GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 2;
+				GET_TOP_LEVEL_RES_PARAM_CONFIG = 3;
+				GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 4;
+				GET_TOP_LEVEL_RES_PARAM_BINDER = 5;
+			} catch (NoSuchMethodError ignored) {
+				// AOSP
+				findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
+						String.class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
+						callbackGetTopLevelResources);
+			}
 		}
 
 		// Replace system resources
