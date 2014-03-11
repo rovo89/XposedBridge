@@ -1,6 +1,7 @@
 package de.robv.android.xposed;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getIntField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
@@ -263,7 +264,13 @@ public final class XposedBridge {
 		});
 
 		if (!new File(BASE_DIR + "conf/disable_resources").exists()) {
-			hookResources();
+			try {
+				hookResources();
+			} catch (Exception e) {
+				log("Errors during resources initialization");
+				logResourcesDebugInfo();
+				throw e;
+			}
 		} else {
 			disableResources = true;
 		}
@@ -352,6 +359,23 @@ public final class XposedBridge {
 			paranoidWorkaround.unhook();
 
 		XResources.init();
+	}
+
+	private static void logResourcesDebugInfo() {
+		logClassMethods(ActivityThread.class, "getTopLevelResources");
+		if (Build.VERSION.SDK_INT >= 19) {
+			try {
+				logClassMethods(findClass("android.app.ResourcesManager", null), "getTopLevelResources");
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	private static void logClassMethods(Class<?> cls, String pattern) {
+		for (Method m : cls.getDeclaredMethods()) {
+			if (pattern == null || pattern.length() == 0 || m.getName().matches(pattern))
+				log(" - " + m.toString());
+		}
 	}
 
 	private static void hookXposedInstaller(ClassLoader classLoader) {
