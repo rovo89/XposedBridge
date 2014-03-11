@@ -105,6 +105,10 @@ public final class XposedBridge {
 			log("-----------------\n" + date + " UTC\n"
 					+ "Loading Xposed v" + XPOSED_BRIDGE_VERSION
 					+ " (for " + (startClassName == null ? "Zygote" : startClassName) + ")...");
+			if (startClassName == null) {
+				// Zygote
+				log("Running ROM '" + Build.DISPLAY + "' with fingerprint '" + Build.FINGERPRINT + "'");
+			}
 			
 			if (initNative()) {
 				if (startClassName == null) {
