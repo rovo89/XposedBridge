@@ -36,7 +36,7 @@ public class AndroidAppHelper {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Map<Object, WeakReference<Resources>> getActivityThread_mActiveResources(ActivityThread activityThread) {
 		if (Build.VERSION.SDK_INT <= 18) {
-			return (Map) activityThread.mActiveResources;
+			return (Map) getObjectField(activityThread, "mActiveResources");
 		} else {
 			Object resourcesManager = getObjectField(activityThread, "mResourcesManager");
 			return (Map) getObjectField(resourcesManager, "mActiveResources");
