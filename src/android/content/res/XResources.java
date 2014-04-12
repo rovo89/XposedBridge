@@ -1,6 +1,7 @@
 package android.content.res;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
@@ -36,7 +37,7 @@ public class XResources extends MiuiResources {
 	private static final SparseArray<HashMap<String, Object>> replacements = new SparseArray<HashMap<String, Object>>();
 	private static final SparseArray<HashMap<String, ResourceNames>> resourceNames
 		= new SparseArray<HashMap<String, ResourceNames>>();
-	
+
 	private static final SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>> layoutCallbacks
 		= new SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>>();
 	private static final WeakHashMap<XmlResourceParser, XMLInstanceDetails> xmlInstanceDetails
@@ -50,21 +51,35 @@ public class XResources extends MiuiResources {
 		}
 	};
 
+	private static boolean HAS_THEME_ICON_MANAGER;
+	static {
+		try {
+			// seen on LG G2 ROMs
+			findField(Resources.class, "mThemeIconManager");
+			HAS_THEME_ICON_MANAGER = true;
+		} catch (NoSuchFieldError ignored) {
+		} catch (Throwable t) { XposedBridge.log(t); }
+	}
+
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
 	private static final HashMap<String, String> resDirPackageNames = new HashMap<String, String>();
 	private boolean inited = false;
-
 	private final String resDir;
-	
+
 	public XResources(Resources parent, String resDir) {
 		super(parent.getAssets(), null, null);
 		this.resDir = resDir;
 		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics());
+
 		setObjectField(this, "mCompatibilityInfo", getObjectField(parent, "mCompatibilityInfo"));
+
 		if (Build.VERSION.SDK_INT >= 19)
 			setObjectField(this, "mToken", getObjectField(parent, "mToken"));
+
+		if (HAS_THEME_ICON_MANAGER)
+			setObjectField(this, "mThemeIconManager", getObjectField(parent, "mThemeIconManager"));
 	}
-	
+
 	/** Framework only, don't call this from your module! */
 	public boolean checkFirstLoad() {
 		synchronized (replacements) {
