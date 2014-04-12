@@ -52,11 +52,19 @@ public class XResources extends MiuiResources {
 	};
 
 	private static boolean HAS_THEME_ICON_MANAGER;
+	private static boolean HAS_ICONS;
 	static {
 		try {
 			// seen on LG G2 ROMs
 			findField(Resources.class, "mThemeIconManager");
 			HAS_THEME_ICON_MANAGER = true;
+		} catch (NoSuchFieldError ignored) {
+		} catch (Throwable t) { XposedBridge.log(t); }
+
+		try {
+			// CyanogenMod 11
+			findField(Resources.class, "mIcons");
+			HAS_ICONS = true;
 		} catch (NoSuchFieldError ignored) {
 		} catch (Throwable t) { XposedBridge.log(t); }
 	}
@@ -78,6 +86,9 @@ public class XResources extends MiuiResources {
 
 		if (HAS_THEME_ICON_MANAGER)
 			setObjectField(this, "mThemeIconManager", getObjectField(parent, "mThemeIconManager"));
+
+		if (HAS_ICONS)
+			setObjectField(this, "mIcons", getObjectField(parent, "mIcons"));
 	}
 
 	/** Framework only, don't call this from your module! */

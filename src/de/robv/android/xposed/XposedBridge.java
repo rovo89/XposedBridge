@@ -38,6 +38,7 @@ import android.app.ActivityThread;
 import android.app.AndroidAppHelper;
 import android.app.LoadedApk;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.res.CompatibilityInfo;
 import android.content.res.Configuration;
@@ -329,7 +330,7 @@ public final class XposedBridge {
 			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 3;
 			GET_TOP_LEVEL_RES_PARAM_BINDER = 4;
 			try {
-				// Sony Xperia/LG
+				// Sony Xperia/LG, AOSP with SDK20+
 				findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
 					String.class, String[].class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
 					callbackGetTopLevelResources);
@@ -338,10 +339,22 @@ public final class XposedBridge {
 				GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 4;
 				GET_TOP_LEVEL_RES_PARAM_BINDER = 5;
 			} catch (NoSuchMethodError ignored) {
-				// AOSP
-				findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
-						String.class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
+				try {
+					// CyanogenMod 11
+					findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
+						String.class, String[].class, int.class, String.class, Configuration.class,
+						CompatibilityInfo.class, IBinder.class, Context.class,
 						callbackGetTopLevelResources);
+					GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 2;
+					GET_TOP_LEVEL_RES_PARAM_CONFIG = 4;
+					GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 5;
+					GET_TOP_LEVEL_RES_PARAM_BINDER = 6;
+				} catch (NoSuchMethodError ignored2) {
+					// AOSP
+					findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
+							String.class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
+							callbackGetTopLevelResources);
+				}
 			}
 		}
 
