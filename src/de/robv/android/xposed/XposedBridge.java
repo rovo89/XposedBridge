@@ -334,22 +334,16 @@ public final class XposedBridge {
 						mActiveResources.put(key, new WeakReference<Resources>(newRes));
 					}
 
-					newRes.setInited(resDir == null || !newRes.checkFirstLoad());
-					param.setResult(newRes);
-
-				} else {
-					return;
-				}
-
-				if (!newRes.isInited()) {
-					String packageName = newRes.getPackageName();
-					if (packageName != null) {
+					// Invoke handleInitPackageResources()
+					if (newRes.isFirstLoad()) {
+						String packageName = newRes.getPackageName();
 						InitPackageResourcesParam resparam = new InitPackageResourcesParam(initPackageResourcesCallbacks);
 						resparam.packageName = packageName;
 						resparam.res = newRes;
 						XCallback.callAll(resparam);
-						newRes.setInited(true);
 					}
+
+					param.setResult(newRes);
 				}
 			}
 		});

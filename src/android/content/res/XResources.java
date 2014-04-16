@@ -71,7 +71,6 @@ public class XResources extends MiuiResources {
 
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
 	private static final HashMap<String, String> resDirPackageNames = new HashMap<String, String>();
-	private boolean inited = false;
 	private final String resDir;
 
 	public XResources(Resources parent, String resDir) {
@@ -92,7 +91,7 @@ public class XResources extends MiuiResources {
 	}
 
 	/** Framework only, don't call this from your module! */
-	public boolean checkFirstLoad() {
+	public boolean isFirstLoad() {
 		synchronized (replacements) {
 			if (resDir == null)
 				return false;
@@ -123,29 +122,18 @@ public class XResources extends MiuiResources {
 	public static void setPackageNameForResDir(String packageName, String resDir) {
 		resDirPackageNames.put(resDir, packageName);
 	}
-	
+
 	public String getPackageName() {
 		if (resDir == null)
 			return "android";
 		
 		String packageName = resDirPackageNames.get(resDir);
-		if (packageName == null) {
-			XposedBridge.log(new IllegalStateException("could not determine package name for " + resDir));
-			return "";
-		}
-		return packageName;
+		if (packageName != null)
+			return packageName;
+		else
+			throw new IllegalStateException("Could not determine package name for " + resDir);
 	}
-	
-	/** Framework only, don't call this from your module! */
-	public boolean isInited() {
-		return inited;
-	}
-	
-	/** Framework only, don't call this from your module! */
-	public void setInited(boolean inited) {
-		this.inited = inited;
-	}
-	
+
 	/** Framework only, don't call this from your module! */
 	public static void init() throws Exception {
 		findAndHookMethod(Resources.class, "getCachedStyledAttributes", int.class, new XC_MethodHook() {
