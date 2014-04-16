@@ -38,14 +38,11 @@ import android.app.ActivityThread;
 import android.app.AndroidAppHelper;
 import android.app.LoadedApk;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.res.CompatibilityInfo;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.XResources;
 import android.os.Build;
-import android.os.IBinder;
 import android.os.Process;
 import android.util.Log;
 
@@ -278,85 +275,91 @@ public final class XposedBridge {
 	}
 
 	private static void hookResources() throws Throwable {
-		// lots of different variants due to theming engines
-		if (Build.VERSION.SDK_INT <= 16) {
-			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 1;
-			try {
-				// HTC
-				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-					String.class, CompatibilityInfo.class, boolean.class,
-					callbackGetTopLevelResources);
-			} catch (NoSuchMethodError ignored) {
-				// AOSP
-				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-					String.class, CompatibilityInfo.class,
-					callbackGetTopLevelResources);
+		/*
+		 * getTopLevelResources(a)
+		 *   -> getTopLevelResources(b)
+		 *     -> key = new ResourcesKey()
+		 *     -> r = new Resources()
+		 *     -> mActiveResources.put(key, r)
+		 *     -> return r
+		 */
+
+		final Class<?> classGTLR;
+		final Class<?> classResKey;
+		final ThreadLocal<Object> sLatestResKey = new ThreadLocal<Object>();
+
+		if (Build.VERSION.SDK_INT <= 18) {
+			classGTLR = ActivityThread.class;
+			classResKey = Class.forName("android.app.ActivityThread$ResourcesKey");
+		} else {
+			classGTLR = Class.forName("android.app.ResourcesManager");
+			classResKey = Class.forName("android.content.res.ResourcesKey");
+		}
+
+		hookAllConstructors(classResKey, new XC_MethodHook() {
+			@Override
+			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				sLatestResKey.set(param.thisObject);
 			}
-		} else if (Build.VERSION.SDK_INT <= 18) {
-			GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 1;
-			GET_TOP_LEVEL_RES_PARAM_CONFIG = 2;
-			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 3;
-			try {
-				// HTC
-				findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-					String.class, int.class, Configuration.class, CompatibilityInfo.class, boolean.class,
-					callbackGetTopLevelResources);
-			} catch (NoSuchMethodError ignored) {
-				try {
-					// Sony Xperia/LG
-					findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-						String.class, String[].class, int.class, Configuration.class, CompatibilityInfo.class,
-						callbackGetTopLevelResources);
-					GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 2;
-					GET_TOP_LEVEL_RES_PARAM_CONFIG = 3;
-					GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 4;
-				} catch (NoSuchMethodError ignored2) {
-					try {
-						// Meizu
-						findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-								String.class, int.class, Configuration.class, CompatibilityInfo.class, String.class, boolean.class,
-								callbackGetTopLevelResources);
-					} catch (NoSuchMethodError ignored3) {
-						// AOSP
-						findAndHookMethod(ActivityThread.class, "getTopLevelResources",
-							String.class, int.class, Configuration.class, CompatibilityInfo.class,
-							callbackGetTopLevelResources);
+		});
+
+		hookAllMethods(classGTLR, "getTopLevelResources", new XC_MethodHook() {
+			@Override
+			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				sLatestResKey.set(null);
+			}
+
+			@Override
+			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				Object key = sLatestResKey.get();
+				if (key == null)
+					return;
+
+				sLatestResKey.set(null);
+
+				XResources newRes = null;
+				final Object result = param.getResult();
+				if (result instanceof XResources) {
+					newRes = (XResources) result;
+
+				} else if (result != null) {
+					// replace the returned resources with our subclass
+					Resources origRes = (Resources) result;
+					String resDir = (String) getObjectField(key, "mResDir");
+					newRes = new XResources(origRes, resDir);
+
+					@SuppressWarnings("unchecked")
+					Map<Object, WeakReference<Resources>> mActiveResources =
+					(Map<Object, WeakReference<Resources>>) getObjectField(param.thisObject, "mActiveResources");
+					Object lockObject = (Build.VERSION.SDK_INT <= 18)
+							? getObjectField(param.thisObject, "mPackages") : param.thisObject;
+
+					synchronized (lockObject) {
+						WeakReference<Resources> existing = mActiveResources.get(key);
+						if (existing != null && existing.get() != null && existing.get().getAssets() != newRes.getAssets())
+							existing.get().getAssets().close();
+						mActiveResources.put(key, new WeakReference<Resources>(newRes));
+					}
+
+					newRes.setInited(resDir == null || !newRes.checkFirstLoad());
+					param.setResult(newRes);
+
+				} else {
+					return;
+				}
+
+				if (!newRes.isInited()) {
+					String packageName = newRes.getPackageName();
+					if (packageName != null) {
+						InitPackageResourcesParam resparam = new InitPackageResourcesParam(initPackageResourcesCallbacks);
+						resparam.packageName = packageName;
+						resparam.res = newRes;
+						XCallback.callAll(resparam);
+						newRes.setInited(true);
 					}
 				}
 			}
-		} else {
-			GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 1;
-			GET_TOP_LEVEL_RES_PARAM_CONFIG = 2;
-			GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 3;
-			GET_TOP_LEVEL_RES_PARAM_BINDER = 4;
-			try {
-				// Sony Xperia/LG, AOSP with SDK20+
-				findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
-					String.class, String[].class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
-					callbackGetTopLevelResources);
-				GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 2;
-				GET_TOP_LEVEL_RES_PARAM_CONFIG = 3;
-				GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 4;
-				GET_TOP_LEVEL_RES_PARAM_BINDER = 5;
-			} catch (NoSuchMethodError ignored) {
-				try {
-					// CyanogenMod 11
-					findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
-						String.class, String[].class, int.class, String.class, Configuration.class,
-						CompatibilityInfo.class, IBinder.class, Context.class,
-						callbackGetTopLevelResources);
-					GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = 2;
-					GET_TOP_LEVEL_RES_PARAM_CONFIG = 4;
-					GET_TOP_LEVEL_RES_PARAM_COMP_INFO = 5;
-					GET_TOP_LEVEL_RES_PARAM_BINDER = 6;
-				} catch (NoSuchMethodError ignored2) {
-					// AOSP
-					findAndHookMethod("android.app.ResourcesManager", null, "getTopLevelResources",
-							String.class, int.class, Configuration.class, CompatibilityInfo.class, IBinder.class,
-							callbackGetTopLevelResources);
-				}
-			}
-		}
+		});
 
 		// Replace system resources
 		XC_MethodHook.Unhook paranoidWorkaround = null;
@@ -702,73 +705,6 @@ public final class XposedBridge {
 			initPackageResourcesCallbacks.remove(callback);
 		}
 	}
-
-
-	/**
-	 * Called when the resources for a specific package are requested and instead returns an instance of {@link XResources}.
-	 */
-	private static XC_MethodHook callbackGetTopLevelResources = new XC_MethodHook(XCallback.PRIORITY_HIGHEST - 10) {
-		protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-			XResources newRes = null;
-			final Object result = param.getResult();
-			if (result instanceof XResources) {
-				newRes = (XResources) result;
-
-			} else if (result != null) {
-				// replace the returned resources with our subclass
-				Resources origRes = (Resources) result;
-				String resDir = (String) param.args[0];
-				CompatibilityInfo compInfo = (CompatibilityInfo) param.args[GET_TOP_LEVEL_RES_PARAM_COMP_INFO];
-				int displayId = (Build.VERSION.SDK_INT >= 18) ? (Integer) param.args[GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID] : 0;
-				Configuration config = (Build.VERSION.SDK_INT >= 18) ? (Configuration) param.args[GET_TOP_LEVEL_RES_PARAM_CONFIG] : null;
-				IBinder binder = (Build.VERSION.SDK_INT >= 19) ? (IBinder) param.args[GET_TOP_LEVEL_RES_PARAM_BINDER] : null;
-
-				newRes = new XResources(origRes, resDir);
-
-				@SuppressWarnings("unchecked")
-				Map<Object, WeakReference<Resources>> mActiveResources =
-						(Map<Object, WeakReference<Resources>>) getObjectField(param.thisObject, "mActiveResources");
-				Object lockObject = (Build.VERSION.SDK_INT <= 18)
-						? getObjectField(param.thisObject, "mPackages") : param.thisObject;
-
-				Object key;
-				if (Build.VERSION.SDK_INT <= 16)
-					key = AndroidAppHelper.createResourcesKey(resDir, compInfo);
-				else if (Build.VERSION.SDK_INT <= 18)
-					key = AndroidAppHelper.createResourcesKey(resDir, displayId, config, compInfo);
-				else
-					key = AndroidAppHelper.createResourcesKey(resDir, displayId, config, compInfo, binder);
-
-				synchronized (lockObject) {
-					WeakReference<Resources> existing = mActiveResources.get(key);
-					if (existing != null && existing.get() != null && existing.get().getAssets() != newRes.getAssets())
-						existing.get().getAssets().close();
-					mActiveResources.put(key, new WeakReference<Resources>(newRes));
-				}
-
-				newRes.setInited(resDir == null || !newRes.checkFirstLoad());
-				param.setResult(newRes);
-
-			} else {
-				return;
-			}
-
-			if (!newRes.isInited()) {
-				String packageName = newRes.getPackageName();
-				if (packageName != null) {
-					InitPackageResourcesParam resparam = new InitPackageResourcesParam(initPackageResourcesCallbacks);
-					resparam.packageName = packageName;
-					resparam.res = newRes;
-					XCallback.callAll(resparam);
-					newRes.setInited(true);
-				}
-			}
-		}
-	};
-	private static int GET_TOP_LEVEL_RES_PARAM_DISPLAY_ID = -1;
-	private static int GET_TOP_LEVEL_RES_PARAM_CONFIG = -1;
-	private static int GET_TOP_LEVEL_RES_PARAM_COMP_INFO = -1;
-	private static int GET_TOP_LEVEL_RES_PARAM_BINDER = -1;
 
 	private native static boolean initNative();
 
