@@ -774,6 +774,7 @@ public final class XposedBridge {
 	}
 
 	private static native void setObjectClassNative(Object obj, Class<?> clazz);
+	/*package*/ static native void dumpObjectNative(Object obj);
 
 	public static class CopyOnWriteSortedSet<E> {
 		private transient volatile Object[] elements = EMPTY_ARRAY;
