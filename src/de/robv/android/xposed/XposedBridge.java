@@ -312,42 +312,38 @@ public final class XposedBridge {
 
 				sLatestResKey.set(null);
 
-				XResources newRes = null;
-				final Object result = param.getResult();
-				if (result instanceof XResources) {
-					newRes = (XResources) result;
+				Object result = param.getResult();
+				if (result == null || result instanceof XResources)
+					return;
 
-				} else if (result != null) {
-					// replace the returned resources with our subclass
-					Resources origRes = (Resources) result;
-					String resDir = (String) getObjectField(key, "mResDir");
-					newRes = (XResources) cloneToSubclass(origRes, XResources.class);
-					newRes.initObject(resDir);
+				// replace the returned resources with our subclass
+				XResources newRes = (XResources) cloneToSubclass(result, XResources.class);
+				String resDir = (String) getObjectField(key, "mResDir");
+				newRes.initObject(resDir);
 
-					@SuppressWarnings("unchecked")
-					Map<Object, WeakReference<Resources>> mActiveResources =
-					(Map<Object, WeakReference<Resources>>) getObjectField(param.thisObject, "mActiveResources");
-					Object lockObject = (Build.VERSION.SDK_INT <= 18)
-							? getObjectField(param.thisObject, "mPackages") : param.thisObject;
+				@SuppressWarnings("unchecked")
+				Map<Object, WeakReference<Resources>> mActiveResources =
+						(Map<Object, WeakReference<Resources>>) getObjectField(param.thisObject, "mActiveResources");
+				Object lockObject = (Build.VERSION.SDK_INT <= 18)
+						? getObjectField(param.thisObject, "mPackages") : param.thisObject;
 
-					synchronized (lockObject) {
-						WeakReference<Resources> existing = mActiveResources.get(key);
-						if (existing != null && existing.get() != null && existing.get().getAssets() != newRes.getAssets())
-							existing.get().getAssets().close();
-						mActiveResources.put(key, new WeakReference<Resources>(newRes));
-					}
-
-					// Invoke handleInitPackageResources()
-					if (newRes.isFirstLoad()) {
-						String packageName = newRes.getPackageName();
-						InitPackageResourcesParam resparam = new InitPackageResourcesParam(initPackageResourcesCallbacks);
-						resparam.packageName = packageName;
-						resparam.res = newRes;
-						XCallback.callAll(resparam);
-					}
-
-					param.setResult(newRes);
+				synchronized (lockObject) {
+					WeakReference<Resources> existing = mActiveResources.get(key);
+					if (existing != null && existing.get() != null && existing.get().getAssets() != newRes.getAssets())
+						existing.get().getAssets().close();
+					mActiveResources.put(key, new WeakReference<Resources>(newRes));
 				}
+
+				// Invoke handleInitPackageResources()
+				if (newRes.isFirstLoad()) {
+					String packageName = newRes.getPackageName();
+					InitPackageResourcesParam resparam = new InitPackageResourcesParam(initPackageResourcesCallbacks);
+					resparam.packageName = packageName;
+					resparam.res = newRes;
+					XCallback.callAll(resparam);
+				}
+
+				param.setResult(newRes);
 			}
 		});
 
