@@ -40,7 +40,9 @@ import android.content.ComponentName;
 import android.content.pm.ApplicationInfo;
 import android.content.res.CompatibilityInfo;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.content.res.XResources;
+import android.content.res.XResources.XTypedArray;
 import android.os.Build;
 import android.os.Process;
 import android.util.Log;
@@ -344,6 +346,19 @@ public final class XposedBridge {
 					}
 
 					param.setResult(newRes);
+				}
+			}
+		});
+
+		// Replace TypedArrays with XTypedArrays
+		XposedBridge.hookAllConstructors(TypedArray.class, new XC_MethodHook() {
+			@Override
+			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+				TypedArray typedArray = (TypedArray) param.thisObject;
+				Resources res = typedArray.getResources();
+				if (res instanceof XResources) {
+					setObjectClass(param.thisObject, XTypedArray.class);
+					((XTypedArray) typedArray).initObject((XResources) res);
 				}
 			}
 		});
@@ -737,6 +752,28 @@ public final class XposedBridge {
 
 		return invokeOriginalMethodNative(method, 0, parameterTypes, returnType, thisObject, args);
 	}
+
+	/** Framework only, don't call this from your module! */
+	private static void setObjectClass(Object obj, Class<?> clazz) {
+		if (obj == null)
+			return;
+
+		/*
+		 * Whitelist for classes we have prepared for this substitution in native code.
+		 * These classes must be de-facto final, otherwise subclasses which are not loaded by the
+		 * boot classloader will have gaps in their field offsets, which causes issues with code
+		 * where DexOpt replaced field accesses with direct accesses byte offsets.
+		 */
+		if (clazz != XTypedArray.class)
+			throw new IllegalArgumentException("Target class " + clazz + " is not allowed");
+
+		if (obj.getClass() != clazz.getSuperclass())
+			throw new IllegalArgumentException("Cannot transfer object from " + obj.getClass() + " to " + clazz);
+
+		setObjectClassNative(obj, clazz);
+	}
+
+	private static native void setObjectClassNative(Object obj, Class<?> clazz);
 
 	public static class CopyOnWriteSortedSet<E> {
 		private transient volatile Object[] elements = EMPTY_ARRAY;
