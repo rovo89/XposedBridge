@@ -1,9 +1,7 @@
 package android.content.res;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
-import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
-import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 import java.io.File;
 import java.util.HashMap;
@@ -15,7 +13,6 @@ import org.xmlpull.v1.XmlPullParser;
 import android.graphics.Movie;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -51,43 +48,25 @@ public class XResources extends MiuiResources {
 		}
 	};
 
-	private static boolean HAS_THEME_ICON_MANAGER;
-	private static boolean HAS_ICONS;
-	static {
-		try {
-			// seen on LG G2 ROMs
-			findField(Resources.class, "mThemeIconManager");
-			HAS_THEME_ICON_MANAGER = true;
-		} catch (NoSuchFieldError ignored) {
-		} catch (Throwable t) { XposedBridge.log(t); }
-
-		try {
-			// CyanogenMod 11
-			findField(Resources.class, "mIcons");
-			HAS_ICONS = true;
-		} catch (NoSuchFieldError ignored) {
-		} catch (Throwable t) { XposedBridge.log(t); }
-	}
-
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
 	private static final HashMap<String, String> resDirPackageNames = new HashMap<String, String>();
-	private final String resDir;
 
-	public XResources(Resources parent, String resDir) {
-		super(parent.getAssets(), null, null);
+	private boolean isObjectInited;
+	private String resDir;
+
+	// Dummy, will never be called (objects are transferred to this class only).
+	private XResources() {
+		super(null, null, null);
+		throw new UnsupportedOperationException();
+	}
+
+	/** Framework only, don't call this from your module! */
+	public void initObject(String resDir) {
+		if (isObjectInited)
+			throw new IllegalStateException("Object has already been initialized");
+
 		this.resDir = resDir;
-		updateConfiguration(parent.getConfiguration(), parent.getDisplayMetrics());
-
-		setObjectField(this, "mCompatibilityInfo", getObjectField(parent, "mCompatibilityInfo"));
-
-		if (Build.VERSION.SDK_INT >= 19)
-			setObjectField(this, "mToken", getObjectField(parent, "mToken"));
-
-		if (HAS_THEME_ICON_MANAGER)
-			setObjectField(this, "mThemeIconManager", getObjectField(parent, "mThemeIconManager"));
-
-		if (HAS_ICONS)
-			setObjectField(this, "mIcons", getObjectField(parent, "mIcons"));
+		this.isObjectInited = true;
 	}
 
 	/** Framework only, don't call this from your module! */

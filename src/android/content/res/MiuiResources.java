@@ -7,7 +7,9 @@ import android.util.DisplayMetrics;
  * On MIUI ROM, this class is never seen because the ROM's class hides it (this is intended).
  */
 public class MiuiResources extends Resources {
-	public MiuiResources(AssetManager assets, DisplayMetrics metrics, Configuration config) {
-		super(assets, metrics, config);
+	// Dummy, will never be called (objects are transferred to this class only).
+	/*package*/ MiuiResources(AssetManager assets, DisplayMetrics metrics, Configuration config) {
+		super(null, null, null);
+		throw new UnsupportedOperationException();
 	}
 }

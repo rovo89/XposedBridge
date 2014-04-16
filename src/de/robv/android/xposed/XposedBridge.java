@@ -321,7 +321,8 @@ public final class XposedBridge {
 					// replace the returned resources with our subclass
 					Resources origRes = (Resources) result;
 					String resDir = (String) getObjectField(key, "mResDir");
-					newRes = new XResources(origRes, resDir);
+					newRes = (XResources) cloneToSubclass(origRes, XResources.class);
+					newRes.initObject(resDir);
 
 					@SuppressWarnings("unchecked")
 					Map<Object, WeakReference<Resources>> mActiveResources =
@@ -364,17 +365,9 @@ public final class XposedBridge {
 		});
 
 		// Replace system resources
-		XC_MethodHook.Unhook paranoidWorkaround = null;
-		try {
-			// so early in the process, there shouldn't be other threads we could interfere with
-			paranoidWorkaround = findAndHookMethod(Resources.class, "paranoidHook", XC_MethodReplacement.DO_NOTHING);
-		} catch (NoSuchMethodError ignored) {}
-
-		Resources systemResources = new XResources(Resources.getSystem(), null);
-		setStaticObjectField(Resources.class, "mSystem", systemResources);
-
-		if (paranoidWorkaround != null)
-			paranoidWorkaround.unhook();
+		XResources systemRes = (XResources) cloneToSubclass(Resources.getSystem(), XResources.class);
+		systemRes.initObject(null);
+		setStaticObjectField(Resources.class, "mSystem", systemRes);
 
 		XResources.init();
 	}
@@ -775,6 +768,19 @@ public final class XposedBridge {
 
 	private static native void setObjectClassNative(Object obj, Class<?> clazz);
 	/*package*/ static native void dumpObjectNative(Object obj);
+
+	/** Framework only, don't call this from your module! */
+	private static Object cloneToSubclass(Object obj, Class<?> targetClazz) {
+		if (obj == null)
+			return null;
+
+		if (!obj.getClass().isAssignableFrom(targetClazz))
+			throw new ClassCastException(targetClazz + " doesn't extend " + obj.getClass());
+
+		return cloneToSubclassNative(obj, targetClazz);
+	}
+
+	private static native Object cloneToSubclassNative(Object obj, Class<?> targetClazz);
 
 	public static class CopyOnWriteSortedSet<E> {
 		private transient volatile Object[] elements = EMPTY_ARRAY;
