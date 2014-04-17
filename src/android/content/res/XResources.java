@@ -35,6 +35,10 @@ public class XResources extends MiuiResources {
 	private static final SparseArray<HashMap<String, ResourceNames>> resourceNames
 		= new SparseArray<HashMap<String, ResourceNames>>();
 
+	private static final boolean[] systemReplacementsCache = new boolean[2048]; // bitmask: 0x000700ff => 2048 bytes
+	private boolean[] replacementsCache; // bitmask: 0x0007007f => 1024 bytes
+	private static final HashMap<String, boolean[]> replacementsCacheMap = new HashMap<String, boolean[]>();
+
 	private static final SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>> layoutCallbacks
 		= new SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>>();
 	private static final WeakHashMap<XmlResourceParser, XMLInstanceDetails> xmlInstanceDetails
@@ -66,6 +70,17 @@ public class XResources extends MiuiResources {
 			throw new IllegalStateException("Object has already been initialized");
 
 		this.resDir = resDir;
+
+		if (resDir != null) {
+			synchronized (replacementsCacheMap) {
+				replacementsCache = replacementsCacheMap.get(resDir);
+				if (replacementsCache == null) {
+					replacementsCache = new boolean[1024];
+					replacementsCacheMap.put(resDir, replacementsCache);
+				}
+			}
+		}
+
 		this.isObjectInited = true;
 	}
 
@@ -226,21 +241,21 @@ public class XResources extends MiuiResources {
 	// =======================================================
 	
 	public void setReplacement(int id, Object replacement) {
-		setReplacement(id, replacement, resDir);
+		setReplacement(id, replacement, this);
 	}
 	
 	public void setReplacement(String fullName, Object replacement) {
 		int id = getIdentifier(fullName, null, null);
 		if (id == 0)
 			throw new NotFoundException(fullName);
-		setReplacement(id, replacement, resDir);
+		setReplacement(id, replacement, this);
 	}
 	
 	public void setReplacement(String pkg, String type, String name, Object replacement) {
 		int id = getIdentifier(name, type, pkg);
 		if (id == 0)
 			throw new NotFoundException(pkg + ":" + type + "/" + name);
-		setReplacement(id, replacement, resDir);
+		setReplacement(id, replacement, this);
 	}
 	
 	public static void setSystemWideReplacement(int id, Object replacement) {
@@ -261,15 +276,25 @@ public class XResources extends MiuiResources {
 		setReplacement(id, replacement, null);
 	}
 	
-	private static void setReplacement(int id, Object replacement, String resDir) {
+	private static void setReplacement(int id, Object replacement, XResources res) {
+		String resDir = (res != null) ? res.resDir : null;
 		if (id == 0)
 			throw new IllegalArgumentException("id 0 is not an allowed resource identifier");
 		else if (resDir == null && id >= 0x7f000000)
 			throw new IllegalArgumentException("ids >= 0x7f000000 are app specific and cannot be set for the framework");
-		
+
 		if (replacement instanceof Drawable)
 			throw new IllegalArgumentException("Drawable replacements are deprecated since Xposed 2.1. Use DrawableLoader instead.");
-		
+
+		// Cache that we have a replacement for this ID, false positives are accepted to save memory.
+		if (id < 0x7f000000) {
+			int cacheKey = (id & 0x00070000) >> 8 | id & 0xff;
+			systemReplacementsCache[cacheKey] = true;
+		} else {
+			int cacheKey = (id & 0x00070000) >> 9 | id & 0x7f;
+			res.replacementsCache[cacheKey] = true;
+		}
+
 		synchronized (replacements) {
 			HashMap<String, Object> inner = replacements.get(id);
 			if (inner == null) {
@@ -287,15 +312,26 @@ public class XResources extends MiuiResources {
 	private Object getReplacement(int id) {
 		if (id <= 0)
 			return null;
-		
+
+		// Check the cache whether it's worth looking for replacements
+		if (id < 0x7f000000) {
+			int cacheKey = (id & 0x00070000) >> 8 | id & 0xff;
+			if (!systemReplacementsCache[cacheKey])
+				return null;
+		} else if (resDir != null) {
+			int cacheKey = (id & 0x00070000) >> 9 | id & 0x7f;
+			if (!replacementsCache[cacheKey])
+				return null;
+		}
+
 		HashMap<String, Object> inner;
 		synchronized (replacements) {
 			inner = replacements.get(id); 
 		}
-		
+
 		if (inner == null)
 			return null;
-		
+
 		synchronized (inner) {
 			Object result = inner.get(resDir);
 			if (result != null || resDir == null)
