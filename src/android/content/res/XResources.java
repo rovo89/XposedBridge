@@ -699,8 +699,10 @@ public class XResources extends MiuiResources {
 	
 	public int addResource(Resources res, int id) {
 		int fakeId = getFakeResId(res, id);
-		if (replacements.indexOfKey(fakeId) < 0)
-			setReplacement(fakeId, new XResForwarder(res, id));
+		synchronized (replacements) {
+			if (replacements.indexOfKey(fakeId) < 0)
+				setReplacement(fakeId, new XResForwarder(res, id));
+		}
 		return fakeId;
 	}
 
