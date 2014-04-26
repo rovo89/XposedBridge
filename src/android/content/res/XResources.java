@@ -35,9 +35,9 @@ public class XResources extends MiuiResources {
 	private static final SparseArray<HashMap<String, ResourceNames>> resourceNames
 		= new SparseArray<HashMap<String, ResourceNames>>();
 
-	private static final boolean[] systemReplacementsCache = new boolean[2048]; // bitmask: 0x000700ff => 2048 bytes
-	private boolean[] replacementsCache; // bitmask: 0x0007007f => 1024 bytes
-	private static final HashMap<String, boolean[]> replacementsCacheMap = new HashMap<String, boolean[]>();
+	private static final byte[] systemReplacementsCache = new byte[256];  // bitmask: 0x000700ff => 2048 bit => 256 bytes
+	private byte[] replacementsCache; // bitmask: 0x0007007f => 1024 bit => 128 bytes
+	private static final HashMap<String, byte[]> replacementsCacheMap = new HashMap<String, byte[]>();
 
 	private static final SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>> layoutCallbacks
 		= new SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>>();
@@ -75,7 +75,7 @@ public class XResources extends MiuiResources {
 			synchronized (replacementsCacheMap) {
 				replacementsCache = replacementsCacheMap.get(resDir);
 				if (replacementsCache == null) {
-					replacementsCache = new boolean[1024];
+					replacementsCache = new byte[128];
 					replacementsCacheMap.put(resDir, replacementsCache);
 				}
 			}
@@ -288,11 +288,15 @@ public class XResources extends MiuiResources {
 
 		// Cache that we have a replacement for this ID, false positives are accepted to save memory.
 		if (id < 0x7f000000) {
-			int cacheKey = (id & 0x00070000) >> 8 | id & 0xff;
-			systemReplacementsCache[cacheKey] = true;
+			int cacheKey = (id & 0x00070000) >> 11 | (id & 0xf8) >> 3;
+			synchronized (systemReplacementsCache) {
+				systemReplacementsCache[cacheKey] |= 1 << (id & 7);
+			}
 		} else {
-			int cacheKey = (id & 0x00070000) >> 9 | id & 0x7f;
-			res.replacementsCache[cacheKey] = true;
+			int cacheKey = (id & 0x00070000) >> 12 | (id & 0x78) >> 3;
+			synchronized (res.replacementsCache) {
+				res.replacementsCache[cacheKey] |= 1 << (id & 7);
+			}
 		}
 
 		synchronized (replacements) {
@@ -315,12 +319,12 @@ public class XResources extends MiuiResources {
 
 		// Check the cache whether it's worth looking for replacements
 		if (id < 0x7f000000) {
-			int cacheKey = (id & 0x00070000) >> 8 | id & 0xff;
-			if (!systemReplacementsCache[cacheKey])
+			int cacheKey = (id & 0x00070000) >> 11 | (id & 0xf8) >> 3;
+			if ((systemReplacementsCache[cacheKey] & (1 << (id & 7))) == 0)
 				return null;
 		} else if (resDir != null) {
-			int cacheKey = (id & 0x00070000) >> 9 | id & 0x7f;
-			if (!replacementsCache[cacheKey])
+			int cacheKey = (id & 0x00070000) >> 12 | (id & 0x78) >> 3;
+			if ((replacementsCache[cacheKey] & (1 << (id & 7))) == 0)
 				return null;
 		}
 
