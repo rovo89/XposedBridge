@@ -22,6 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -495,6 +496,10 @@ public final class XposedBridge {
 	public static XC_MethodHook.Unhook hookMethod(Member hookMethod, XC_MethodHook callback) {
 		if (!(hookMethod instanceof Method) && !(hookMethod instanceof Constructor<?>)) {
 			throw new IllegalArgumentException("only methods and constructors can be hooked");
+		} else if (hookMethod.getDeclaringClass().isInterface()) {
+			throw new IllegalArgumentException("interfaces cannot be hooked");
+		} else if (Modifier.isAbstract(hookMethod.getModifiers())) {
+			throw new IllegalArgumentException("abstract methods cannot be hooked");
 		}
 		
 		boolean newMethod = false;
