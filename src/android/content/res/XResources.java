@@ -15,6 +15,7 @@ import android.graphics.Movie;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -375,7 +376,9 @@ public class XResources extends MiuiResources {
 	@Override
 	public float getDimension(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
-		if (replacement instanceof XResForwarder) {
+		if (replacement instanceof DimensionReplacement) {
+			return ((DimensionReplacement) replacement).getDimension(getDisplayMetrics());
+		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
 			return repRes.getDimension(repId);
@@ -386,7 +389,9 @@ public class XResources extends MiuiResources {
 	@Override
 	public int getDimensionPixelOffset(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
-		if (replacement instanceof XResForwarder) {
+		if (replacement instanceof DimensionReplacement) {
+			return ((DimensionReplacement) replacement).getDimensionPixelOffset(getDisplayMetrics());
+		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
 			return repRes.getDimensionPixelOffset(repId);
@@ -397,7 +402,9 @@ public class XResources extends MiuiResources {
 	@Override
 	public int getDimensionPixelSize(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
-		if (replacement instanceof XResForwarder) {
+		if (replacement instanceof DimensionReplacement) {
+			return ((DimensionReplacement) replacement).getDimensionPixelSize(getDisplayMetrics());
+		} else if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
 			return repRes.getDimensionPixelSize(repId);
@@ -928,7 +935,7 @@ public class XResources extends MiuiResources {
 	//   DrawableLoader class
 	// =======================================================
 	/**
-	 * callback function for {@link #getDrawable} and {@link #getDrawableForDensity}
+	 * callback function for {@link XResources#getDrawable} and {@link XResources#getDrawableForDensity}
 	 */
 	public static abstract class DrawableLoader {
 		public abstract Drawable newDrawable(XResources res, int id) throws Throwable;
@@ -937,7 +944,50 @@ public class XResources extends MiuiResources {
 			return newDrawable(res, id);
 		}
 	}
-	
+
+
+	// =======================================================
+	//   DimensionReplacement class
+	// =======================================================
+	/**
+	 * callback function for {@link XResources#getDimension}, {@link XResources#getDimensionPixelOffset}
+	 * and {@link XResources#getDimensionPixelSize}
+	 */
+	public static class DimensionReplacement {
+		private final float mValue;
+		private final int mUnit;
+
+		/**
+		 * Create an object that can be use for {@link #setReplacement} to replace a dimension resource.
+		 * @param value The value of the replacement, in the unit specified with the next parameter.
+		 * @param unit One of the {@code COMPLEX_UNIT_*} constants in @{link TypedValue}.
+		 */
+		public DimensionReplacement(float value, int unit) {
+			mValue = value;
+			mUnit = unit;
+		}
+
+		/** @see Resources#getDimension(int) */
+		public float getDimension(DisplayMetrics metrics) {
+			return TypedValue.applyDimension(mUnit, mValue, metrics);
+		}
+
+		/** @see Resources#getDimensionPixelOffset(int) */
+		public int getDimensionPixelOffset(DisplayMetrics metrics) {
+			return (int) TypedValue.applyDimension(mUnit, mValue, metrics);
+		}
+
+		/** @see Resources#getDimensionPixelSize(int) */
+		public int getDimensionPixelSize(DisplayMetrics metrics) {
+			final float f = TypedValue.applyDimension(mUnit, mValue, metrics);
+			final int res = (int)(f+0.5f);
+			if (res != 0) return res;
+			if (mValue == 0) return 0;
+			if (mValue > 0) return 1;
+			return -1;
+		}
+	}
+
 	// =======================================================
 	//   INFLATING LAYOUTS
 	// =======================================================
