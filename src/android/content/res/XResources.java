@@ -4,6 +4,7 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.WeakHashMap;
@@ -101,9 +102,10 @@ public class XResources extends MiuiResources {
 				return true;
 			
 			// file was changed meanwhile => remove old replacements 
-			for(int i = 0; i < replacements.size(); i++) {
+			for (int i = 0; i < replacements.size(); i++) {
 				replacements.valueAt(i).remove(resDir);
 			}
+			Arrays.fill(replacementsCache, (byte) 0);
 			return true;
 		}
 	}
