@@ -475,6 +475,15 @@ public final class XposedBridge {
 	}
 	
 	/**
+	 * Writes a message to BASE_DIR/log/debug.log (needs to have chmod 777)
+	 * @param tag Used to identify the source of a log message.
+	 * @param text log message
+	 */
+	public synchronized static void log(String tag, String text) {
+		log(tag + ": " + text);
+	}
+
+	/**
 	 * Log the stack trace
 	 * @param t The Throwable object for the stacktrace
 	 * @see XposedBridge#log(String)
