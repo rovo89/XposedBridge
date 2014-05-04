@@ -14,6 +14,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.IBinder;
+import android.view.Display;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
@@ -21,13 +22,18 @@ import de.robv.android.xposed.XposedBridge;
  * Accessor for package level methods/fields in package android.app
  */
 public class AndroidAppHelper {
-	private static boolean hasIsThemeable = false;
+	private static Class<?> CLASS_RESOURCES_KEY;
+	private static boolean HAS_IS_THEMEABLE = false;
 
 	static {
 		try {
+			CLASS_RESOURCES_KEY = (Build.VERSION.SDK_INT < 19) ?
+				  Class.forName("android.app.ActivityThread$ResourcesKey")
+				: Class.forName("android.content.res.ResourcesKey");
+
 			// check if the field exists
 			findField(CompatibilityInfo.class, "isThemeable");
-			hasIsThemeable = true;
+			HAS_IS_THEMEABLE = true;
 		} catch (NoSuchFieldError ignored) {
 		} catch (Throwable t) { XposedBridge.log(t); }
 	}
@@ -45,11 +51,10 @@ public class AndroidAppHelper {
 	/* For SDK 15 & 16 */
 	private static Object createResourcesKey(String resDir, float scale, boolean isThemeable) {
 		try {
-			Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
-			if (hasIsThemeable)
-				return newInstance(classResourcesKey, resDir, scale, isThemeable);
+			if (HAS_IS_THEMEABLE)
+				return newInstance(CLASS_RESOURCES_KEY, resDir, scale, isThemeable);
 			else
-				return newInstance(classResourcesKey, resDir, scale);
+				return newInstance(CLASS_RESOURCES_KEY, resDir, scale);
 		} catch (Throwable t) {
 			XposedBridge.log(t);
 			return null;
@@ -59,11 +64,10 @@ public class AndroidAppHelper {
 	/* For SDK 17 & 18 */
 	private static Object createResourcesKey(String resDir, int displayId, Configuration overrideConfiguration, float scale, boolean isThemeable) {
 		try {
-			Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
-			if (hasIsThemeable)
-				return newInstance(classResourcesKey, resDir, displayId, overrideConfiguration, scale, isThemeable);
+			if (HAS_IS_THEMEABLE)
+				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale, isThemeable);
 			else
-				return newInstance(classResourcesKey, resDir, displayId, overrideConfiguration, scale);
+				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale);
 		} catch (Throwable t) {
 			XposedBridge.log(t);
 			return null;
@@ -73,11 +77,10 @@ public class AndroidAppHelper {
 	/* For SDK 19+ */
 	private static Object createResourcesKey(String resDir, int displayId, Configuration overrideConfiguration, float scale, IBinder token, boolean isThemeable) {
 		try {
-			Class<?> classResourcesKey = Class.forName("android.content.res.ResourcesKey");
-			if (hasIsThemeable)
-				return newInstance(classResourcesKey, resDir, displayId, overrideConfiguration, scale, isThemeable, token);
+			if (HAS_IS_THEMEABLE)
+				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale, isThemeable, token);
 			else
-				return newInstance(classResourcesKey, resDir, displayId, overrideConfiguration, scale, token);
+				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale, token);
 		} catch (Throwable t) {
 			XposedBridge.log(t);
 			return null;
@@ -91,11 +94,11 @@ public class AndroidAppHelper {
 
 		Object resourcesKey;
 		if (Build.VERSION.SDK_INT <= 16)
-			resourcesKey = createResourcesKey(resDir, scale, false);
+			resourcesKey = createResourcesKey(resDir, scale, isThemeable);
 		else if (Build.VERSION.SDK_INT <= 18)
-			resourcesKey = createResourcesKey(resDir, 0, null, scale, false);
+			resourcesKey = createResourcesKey(resDir, Display.DEFAULT_DISPLAY, null, scale, isThemeable);
 		else
-			resourcesKey = createResourcesKey(resDir, 0, null, scale, null, false);
+			resourcesKey = createResourcesKey(resDir, Display.DEFAULT_DISPLAY, null, scale, null, isThemeable);
 
 		if (resourcesKey != null)
 			getActiveResources(thread).put(resourcesKey, new WeakReference<Resources>(resources));
