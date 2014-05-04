@@ -495,6 +495,20 @@ public final class XposedBridge {
 			logWriter.flush();
 		}
 	}
+	
+	/**
+	 * Log the stack trace
+	 * @param tag Used to identify the source of a log message.
+	 * @param t The Throwable object for the stacktrace
+	 * @see XposedBridge#log(String)
+	 */
+	public synchronized static void log(String tag, Throwable t) {
+		Log.i("Xposed", tag + ": " + Log.getStackTraceString(t));
+		if (logWriter != null) {
+			t.printStackTrace(logWriter);
+			logWriter.flush();
+		}
+	}
 
 	/**
 	 * Hook any method with the specified callback
