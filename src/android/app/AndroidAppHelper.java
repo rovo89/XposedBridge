@@ -57,13 +57,13 @@ public class AndroidAppHelper {
 	}
 
 	/* For SDK 17 & 18 */
-	private static Object createResourcesKey(String resDir, int displayId, Configuration config, float scale, boolean isThemeable) {
+	private static Object createResourcesKey(String resDir, int displayId, Configuration overrideConfiguration, float scale, boolean isThemeable) {
 		try {
 			Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
 			if (hasIsThemeable)
-				return newInstance(classResourcesKey, resDir, displayId, config, scale, isThemeable);
+				return newInstance(classResourcesKey, resDir, displayId, overrideConfiguration, scale, isThemeable);
 			else
-				return newInstance(classResourcesKey, resDir, displayId, config, scale);
+				return newInstance(classResourcesKey, resDir, displayId, overrideConfiguration, scale);
 		} catch (Throwable t) {
 			XposedBridge.log(t);
 			return null;
@@ -71,13 +71,13 @@ public class AndroidAppHelper {
 	}
 
 	/* For SDK 19+ */
-	private static Object createResourcesKey(String resDir, int displayId, Configuration config, float scale, IBinder token, boolean isThemeable) {
+	private static Object createResourcesKey(String resDir, int displayId, Configuration overrideConfiguration, float scale, IBinder token, boolean isThemeable) {
 		try {
 			Class<?> classResourcesKey = Class.forName("android.content.res.ResourcesKey");
 			if (hasIsThemeable)
-				return newInstance(classResourcesKey, resDir, displayId, config, scale, isThemeable, token);
+				return newInstance(classResourcesKey, resDir, displayId, overrideConfiguration, scale, isThemeable, token);
 			else
-				return newInstance(classResourcesKey, resDir, displayId, config, scale, token);
+				return newInstance(classResourcesKey, resDir, displayId, overrideConfiguration, scale, token);
 		} catch (Throwable t) {
 			XposedBridge.log(t);
 			return null;
@@ -93,9 +93,9 @@ public class AndroidAppHelper {
 		if (Build.VERSION.SDK_INT <= 16)
 			resourcesKey = createResourcesKey(resDir, scale, false);
 		else if (Build.VERSION.SDK_INT <= 18)
-			resourcesKey = createResourcesKey(resDir, 0, thread.mConfiguration, scale, false);
+			resourcesKey = createResourcesKey(resDir, 0, null, scale, false);
 		else
-			resourcesKey = createResourcesKey(resDir, 0, thread.mConfiguration, scale, null, false);
+			resourcesKey = createResourcesKey(resDir, 0, null, scale, null, false);
 
 		if (resourcesKey != null)
 			getActiveResources(thread).put(resourcesKey, new WeakReference<Resources>(resources));
