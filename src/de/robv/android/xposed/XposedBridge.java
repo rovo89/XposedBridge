@@ -475,12 +475,35 @@ public final class XposedBridge {
 	}
 	
 	/**
+	 * Writes a message to BASE_DIR/log/debug.log (needs to have chmod 777)
+	 * @param tag Used to identify the source of a log message.
+	 * @param text log message
+	 */
+	public synchronized static void log(String tag, String text) {
+		log(tag + ": " + text);
+	}
+
+	/**
 	 * Log the stack trace
 	 * @param t The Throwable object for the stacktrace
 	 * @see XposedBridge#log(String)
 	 */
 	public synchronized static void log(Throwable t) {
 		Log.i("Xposed", Log.getStackTraceString(t));
+		if (logWriter != null) {
+			t.printStackTrace(logWriter);
+			logWriter.flush();
+		}
+	}
+	
+	/**
+	 * Log the stack trace
+	 * @param tag Used to identify the source of a log message.
+	 * @param t The Throwable object for the stacktrace
+	 * @see XposedBridge#log(String)
+	 */
+	public synchronized static void log(String tag, Throwable t) {
+		Log.i("Xposed", tag + ": " + Log.getStackTraceString(t));
 		if (logWriter != null) {
 			t.printStackTrace(logWriter);
 			logWriter.flush();
