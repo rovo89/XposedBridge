@@ -1,7 +1,6 @@
 package android.app;
 
 import static de.robv.android.xposed.XposedHelpers.findField;
-import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.newInstance;
 
@@ -23,7 +22,7 @@ import de.robv.android.xposed.XposedBridge;
  */
 public class AndroidAppHelper {
 	private static boolean hasIsThemeable = false;
-	
+
 	static {
 		try {
 			// check if the field exists
@@ -32,9 +31,9 @@ public class AndroidAppHelper {
 		} catch (NoSuchFieldError ignored) {
 		} catch (Throwable t) { XposedBridge.log(t); }
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static Map<Object, WeakReference<Resources>> getActivityThread_mActiveResources(ActivityThread activityThread) {
+	private static Map<Object, WeakReference<Resources>> getActiveResources(ActivityThread activityThread) {
 		if (Build.VERSION.SDK_INT <= 18) {
 			return (Map) getObjectField(activityThread, "mActiveResources");
 		} else {
@@ -42,19 +41,9 @@ public class AndroidAppHelper {
 			return (Map) getObjectField(resourcesManager, "mActiveResources");
 		}
 	}
-	
-	public static Object createResourcesKey(String resDir, CompatibilityInfo compInfo) {
-		boolean isThemeable = false;
-		if (hasIsThemeable) {
-			try {
-				isThemeable = getBooleanField(compInfo, "isThemeable");
-			} catch (Throwable t) { XposedBridge.log(t); }
-		}
-		
-		return createResourcesKey(resDir, compInfo.applicationScale, isThemeable);
-	}
-	
-	public static Object createResourcesKey(String resDir, float scale, boolean isThemeable) {
+
+	/* For SDK 15 & 16 */
+	private static Object createResourcesKey(String resDir, float scale, boolean isThemeable) {
 		try {
 			Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
 			if (hasIsThemeable)
@@ -66,20 +55,9 @@ public class AndroidAppHelper {
 			return null;
 		}
 	}
-	
-	/* For SDK 17 */
-	public static Object createResourcesKey(String resDir, int displayId, Configuration config, CompatibilityInfo compInfo) {
-		boolean isThemeable = false;
-		if (hasIsThemeable) {
-			try {
-				isThemeable = getBooleanField(compInfo, "isThemeable");
-			} catch (Throwable t) { XposedBridge.log(t); }
-		}
-		return createResourcesKey(resDir, displayId, config, compInfo.applicationScale, isThemeable);
-	}
 
-	/* For SDK 17 */
-	public static Object createResourcesKey(String resDir, int displayId, Configuration config, float scale, boolean isThemeable) {
+	/* For SDK 17 & 18 */
+	private static Object createResourcesKey(String resDir, int displayId, Configuration config, float scale, boolean isThemeable) {
 		try {
 			Class<?> classResourcesKey = Class.forName("android.app.ActivityThread$ResourcesKey");
 			if (hasIsThemeable)
@@ -92,19 +70,8 @@ public class AndroidAppHelper {
 		}
 	}
 
-	/* For SDK 19 */
-	public static Object createResourcesKey(String resDir, int displayId, Configuration config, CompatibilityInfo compInfo, IBinder token) {
-		boolean isThemeable = false;
-		if (hasIsThemeable) {
-			try {
-				isThemeable = getBooleanField(compInfo, "isThemeable");
-			} catch (Throwable t) { XposedBridge.log(t); }
-		}
-		return createResourcesKey(resDir, displayId, config, compInfo.applicationScale, token, isThemeable);
-	}
-
-	/* For SDK 19 */
-	public static Object createResourcesKey(String resDir, int displayId, Configuration config, float scale, IBinder token, boolean isThemeable) {
+	/* For SDK 19+ */
+	private static Object createResourcesKey(String resDir, int displayId, Configuration config, float scale, IBinder token, boolean isThemeable) {
 		try {
 			Class<?> classResourcesKey = Class.forName("android.content.res.ResourcesKey");
 			if (hasIsThemeable)
@@ -121,45 +88,41 @@ public class AndroidAppHelper {
 		ActivityThread thread = ActivityThread.currentActivityThread();
 		if (thread == null)
 			return;
-		
+
+		Object resourcesKey;
 		if (Build.VERSION.SDK_INT <= 16)
-			getActivityThread_mActiveResources(thread).put(
-				createResourcesKey(resDir, scale, false),
-				new WeakReference<Resources>(resources));
+			resourcesKey = createResourcesKey(resDir, scale, false);
 		else if (Build.VERSION.SDK_INT <= 18)
-			// TODO Confirm displayId to use
-			getActivityThread_mActiveResources(thread).put(
-				createResourcesKey(resDir, 0, thread.mConfiguration, scale, false),
-				new WeakReference<Resources>(resources));
+			resourcesKey = createResourcesKey(resDir, 0, thread.mConfiguration, scale, false);
 		else
-			// TODO Confirm displayId/token to use
-			getActivityThread_mActiveResources(thread).put(
-				createResourcesKey(resDir, 0, thread.mConfiguration, scale, null, false),
-				new WeakReference<Resources>(resources));
+			resourcesKey = createResourcesKey(resDir, 0, thread.mConfiguration, scale, null, false);
+
+		if (resourcesKey != null)
+			getActiveResources(thread).put(resourcesKey, new WeakReference<Resources>(resources));
 	}
-	
+
 	public static String currentProcessName() {
 		String processName = ActivityThread.currentPackageName();
 		if (processName == null)
 			return "android";
 		return processName;
 	}
-	
+
 	public static ApplicationInfo currentApplicationInfo() {
-        ActivityThread am = ActivityThread.currentActivityThread();
-        return (am != null && am.mBoundApplication != null)
-            ? am.mBoundApplication.appInfo : null;
+		ActivityThread am = ActivityThread.currentActivityThread();
+		return (am != null && am.mBoundApplication != null)
+				? am.mBoundApplication.appInfo : null;
 	}
-	
+
 	public static String currentPackageName() {
 		ApplicationInfo ai = currentApplicationInfo();
-        return (ai != null) ? ai.packageName : "android";
+		return (ai != null) ? ai.packageName : "android";
 	}
-	
+
 	public static Application currentApplication() {
 		return ActivityThread.currentApplication();
 	}
-	
+
 	/** use class {@link XSharedPreferences} instead */
 	@Deprecated
 	public static SharedPreferences getSharedPreferencesForPackage(String packageName, String prefFileName, int mode) {
