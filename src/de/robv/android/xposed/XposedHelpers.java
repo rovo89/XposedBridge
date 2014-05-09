@@ -117,44 +117,6 @@ public class XposedHelpers {
 		throw new NoSuchFieldError("Field of type " + type.getName() + " in class " + clazz.getName());
 	}
 
-	
-	/**
-	 * Look up a method in a class and set it to accessible. The result is cached.
-	 * If the method was not found, a {@link NoSuchMethodError} will be thrown.
-	 * 
-	 * <p>The parameter types may either be specified as <code>Class</code> or <code>String</code>
-	 * objects. In the latter case, the class is looked up using {@link #findClass} with the same
-	 * class loader as the method's class.
-	 */
-	public static Method findMethodExact(Class<?> clazz, String methodName, Object... parameterTypes) {
-		Class<?>[] parameterClasses = null;
-		for (int i = parameterTypes.length - 1; i >= 0; i--) {
-			Object type = parameterTypes[i];
-			if (type == null)
-				throw new ClassNotFoundError("parameter type must not be null", null);
-			
-			// ignore trailing callback
-			if (type instanceof XC_MethodHook)
-				continue;
-			
-			if (parameterClasses == null)
-				parameterClasses = new Class<?>[i+1];
-			
-			if (type instanceof Class)
-				parameterClasses[i] = (Class<?>) type;
-			else if (type instanceof String)
-				parameterClasses[i] = findClass((String) type, clazz.getClassLoader());
-			else
-				throw new ClassNotFoundError("parameter type must either be specified as Class or String", null);
-		}
-		
-		// if there are no arguments for the method
-		if (parameterClasses == null)
-			parameterClasses = new Class<?>[0];
-		
-		return findMethodExact(clazz, methodName, parameterClasses);
-	}
-	
 	/**
 	 * Look up a method and place a hook on it. The last argument must be the callback for the hook.
 	 * @see #findMethodExact(Class, String, Object...)
@@ -164,14 +126,9 @@ public class XposedHelpers {
 			throw new IllegalArgumentException("no callback defined");
 		
 		XC_MethodHook callback = (XC_MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length-1];
-		Method m = findMethodExact(clazz, methodName, parameterTypesAndCallback);
+		Method m = findMethodExact(clazz, methodName, getParameterClasses(clazz.getClassLoader(), parameterTypesAndCallback));
 		
 		return XposedBridge.hookMethod(m, callback);
-	}
-	
-	/** @see #findMethodExact(Class, String, Object...) */
-	public static Method findMethodExact(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
-		return findMethodExact(findClass(className, classLoader), methodName, parameterTypes);
 	}
 	
 	/** @see #findAndHookMethod(Class, String, Object...) */
@@ -182,7 +139,21 @@ public class XposedHelpers {
 	/**
 	 * Look up a method in a class and set it to accessible. The result is cached.
 	 * If the method was not found, a {@link NoSuchMethodError} will be thrown.
+	 *
+	 * <p>The parameter types may either be specified as <code>Class</code> or <code>String</code>
+	 * objects. In the latter case, the class is looked up using {@link #findClass} with the same
+	 * class loader as the method's class.
 	 */
+	public static Method findMethodExact(Class<?> clazz, String methodName, Object... parameterTypes) {
+		return findMethodExact(clazz, methodName, getParameterClasses(clazz.getClassLoader(), parameterTypes));
+	}
+
+	/** @see #findMethodExact(Class, String, Object...) */
+	public static Method findMethodExact(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
+		return findMethodExact(findClass(className, classLoader), methodName, getParameterClasses(classLoader, parameterTypes));
+	}
+
+	/** @see #findMethodExact(Class, String, Object...) */
 	public static Method findMethodExact(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
 		StringBuilder sb = new StringBuilder(clazz.getName());
 		sb.append('#');
@@ -343,7 +314,40 @@ public class XposedHelpers {
 		}
 		return clazzes;
 	}
-	
+
+	/**
+	 * Retrieve classes from an array, where each element might either be a Class
+	 * already, or a String with the full class name.
+	 */
+	private static Class<?>[] getParameterClasses(ClassLoader classLoader, Object[] parameterTypesAndCallback) {
+		Class<?>[] parameterClasses = null;
+		for (int i = parameterTypesAndCallback.length - 1; i >= 0; i--) {
+			Object type = parameterTypesAndCallback[i];
+			if (type == null)
+				throw new ClassNotFoundError("parameter type must not be null", null);
+
+			// ignore trailing callback
+			if (type instanceof XC_MethodHook)
+				continue;
+
+			if (parameterClasses == null)
+				parameterClasses = new Class<?>[i+1];
+
+			if (type instanceof Class)
+				parameterClasses[i] = (Class<?>) type;
+			else if (type instanceof String)
+				parameterClasses[i] = findClass((String) type, classLoader);
+			else
+				throw new ClassNotFoundError("parameter type must either be specified as Class or String", null);
+		}
+
+		// if there are no arguments for the method
+		if (parameterClasses == null)
+			parameterClasses = new Class<?>[0];
+
+		return parameterClasses;
+	}
+
 	/**
 	 * Return an array with the classes of the given objects
 	 */
@@ -368,8 +372,16 @@ public class XposedHelpers {
 		sb.append(")");
 		return sb.toString();
 	}
-	
-	
+
+
+	public static Constructor<?> findConstructorExact(Class<?> clazz, Object... parameterTypes) {
+		return findConstructorExact(clazz, getParameterClasses(clazz.getClassLoader(), parameterTypes));
+	}
+
+	public static Constructor<?> findConstructorExact(String className, ClassLoader classLoader, Object... parameterTypes) {
+		return findConstructorExact(findClass(className, classLoader), getParameterClasses(classLoader, parameterTypes));
+	}
+
 	public static Constructor<?> findConstructorExact(Class<?> clazz, Class<?>... parameterTypes) {
 		StringBuilder sb = new StringBuilder(clazz.getName());
 		sb.append(getParametersString(parameterTypes));
@@ -393,7 +405,25 @@ public class XposedHelpers {
 			throw new NoSuchMethodError(fullConstructorName);
 		}
 	}
-	
+
+	/**
+	 * Look up a constructor and place a hook on it. The last argument must be the callback for the hook.
+	 * @see #findConstructorExact(Class, Object...)
+	 */
+	public static XC_MethodHook.Unhook findAndHookConstructor(Class<?> clazz, Object... parameterTypesAndCallback) {
+		if (parameterTypesAndCallback.length == 0 || !(parameterTypesAndCallback[parameterTypesAndCallback.length-1] instanceof XC_MethodHook))
+			throw new IllegalArgumentException("no callback defined");
+
+		XC_MethodHook callback = (XC_MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length-1];
+		Constructor<?> m = findConstructorExact(clazz, getParameterClasses(clazz.getClassLoader(), parameterTypesAndCallback));
+
+		return XposedBridge.hookMethod(m, callback);
+	}
+
+	/** @see #findAndHookConstructor(Class, Object...) */
+	public static XC_MethodHook.Unhook findAndHookConstructor(String className, ClassLoader classLoader, Object... parameterTypesAndCallback) {
+		return findAndHookConstructor(findClass(className, classLoader), parameterTypesAndCallback);
+	}
 
 	public static Constructor<?> findConstructorBestMatch(Class<?> clazz, Class<?>... parameterTypes) {
 		StringBuilder sb = new StringBuilder(clazz.getName());
