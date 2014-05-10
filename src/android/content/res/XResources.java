@@ -1,6 +1,7 @@
 package android.content.res;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.getIntField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 import java.io.File;
@@ -590,8 +591,10 @@ public class XResources extends MiuiResources {
 
 			result = repRes.loadXmlResourceParser(repId, type);
 
-			if (!loadFromCache)
-				rewriteXmlReferencesNative(((XmlBlock.Parser) result).mParseState, this, repRes);
+			if (!loadFromCache) {
+				int parseState = getIntField(result, "mParseState");
+				rewriteXmlReferencesNative(parseState, this, repRes);
+			}
 		} else {
 			result = super.loadXmlResourceParser(id, type);
 		}
@@ -610,7 +613,7 @@ public class XResources extends MiuiResources {
 				}
 				if (callbacks != null) {
 					String variant = "layout";
-					TypedValue value = mTmpValue;
+					TypedValue value = (TypedValue) getObjectField(this, "mTmpValue");
 					getValue(id, value, true);
 					if (value.type == TypedValue.TYPE_STRING) {
 						String[] components = value.string.toString().split("/", 3);
