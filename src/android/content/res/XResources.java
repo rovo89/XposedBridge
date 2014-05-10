@@ -168,7 +168,7 @@ public class XResources extends MiuiResources {
 				if (param.hasThrowable())
 					return;
 
-				// filled in by our implementation of loadXmlResourceParser
+				// filled in by our implementation of getLayout()
 				XMLInstanceDetails details = (XMLInstanceDetails) param.getObjectExtra(EXTRA_XML_INSTANCE_DETAILS);
 				if (details != null) {
 					LayoutInflatedParam liparam = new LayoutInflatedParam(details.callbacks);
@@ -349,6 +349,24 @@ public class XResources extends MiuiResources {
 	}
 
 	@Override
+	public XmlResourceParser getAnimation(int id) throws NotFoundException {
+		Object replacement = getReplacement(id);
+		if (replacement instanceof XResForwarder) {
+			Resources repRes = ((XResForwarder) replacement).getResources();
+			int repId = ((XResForwarder) replacement).getId();
+
+			boolean loadedFromCache = isXmlCached(repRes, repId);
+			XmlResourceParser result = repRes.getAnimation(repId);
+
+			if (!loadedFromCache) {
+				int parseState = getIntField(result, "mParseState");
+				rewriteXmlReferencesNative(parseState, this, repRes);
+			}
+		}
+		return super.getAnimation(id);
+	}
+
+	@Override
 	public boolean getBoolean(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
 		if (replacement instanceof Boolean) {
@@ -489,6 +507,74 @@ public class XResources extends MiuiResources {
 	}
 
 	@Override
+	public XmlResourceParser getLayout(int id) throws NotFoundException {
+		XmlResourceParser result;
+		Object replacement = getReplacement(id);
+		if (replacement instanceof XResForwarder) {
+			Resources repRes = ((XResForwarder) replacement).getResources();
+			int repId = ((XResForwarder) replacement).getId();
+
+			boolean loadedFromCache = isXmlCached(repRes, repId);
+			result = repRes.getLayout(repId);
+
+			if (!loadedFromCache) {
+				int parseState = getIntField(result, "mParseState");
+				rewriteXmlReferencesNative(parseState, this, repRes);
+			}
+		} else {
+			result = super.getLayout(id);
+		}
+
+		// Check whether this layout is hooked
+		HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>> inner;
+		synchronized (layoutCallbacks) {
+			inner = layoutCallbacks.get(id);
+		}
+		if (inner != null) {
+			CopyOnWriteSortedSet<XC_LayoutInflated> callbacks;
+			synchronized (inner) {
+				callbacks = inner.get(resDir);
+				if (callbacks == null && resDir != null)
+					callbacks = inner.get(null);
+			}
+			if (callbacks != null) {
+				String variant = "layout";
+				TypedValue value = (TypedValue) getObjectField(this, "mTmpValue");
+				getValue(id, value, true);
+				if (value.type == TypedValue.TYPE_STRING) {
+					String[] components = value.string.toString().split("/", 3);
+					if (components.length == 3)
+						variant = components[1];
+					else
+						XposedBridge.log("Unexpected resource path \"" + value.string.toString()
+								+ "\" for resource id 0x" + Integer.toHexString(id));
+				} else {
+					XposedBridge.log(new NotFoundException("Could not find file name for resource id 0x") + Integer.toHexString(id));
+				}
+
+				synchronized (xmlInstanceDetails) {
+					synchronized (resourceNames) {
+						HashMap<String, ResourceNames> resNamesInner = resourceNames.get(id);
+						if (resNamesInner != null) {
+							synchronized (resNamesInner) {
+								XMLInstanceDetails details = new XMLInstanceDetails(resNamesInner.get(resDir), variant, callbacks);
+								xmlInstanceDetails.put(result, details);
+
+								// if we were called inside LayoutInflater.parseInclude, store the details for it
+								MethodHookParam top = sIncludedLayouts.get().peek();
+								if (top != null)
+									top.setObjectExtra(EXTRA_XML_INSTANCE_DETAILS, details);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	@Override
 	public Movie getMovie(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
 		if (replacement instanceof XResForwarder) {
@@ -569,91 +655,34 @@ public class XResources extends MiuiResources {
 	}
 
 	@Override
-	XmlResourceParser loadXmlResourceParser(int id, String type) throws NotFoundException {
-		XmlResourceParser result;
+	public XmlResourceParser getXml(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
 		if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
 
-			boolean loadFromCache = false;
-			int[] mCachedXmlBlockIds = (int[]) getObjectField(repRes, "mCachedXmlBlockIds");
+			boolean loadedFromCache = isXmlCached(repRes, repId);
+			XmlResourceParser result = repRes.getXml(repId);
 
-			synchronized (mCachedXmlBlockIds) {
-				// First see if this block is in our cache.
-				final int num = mCachedXmlBlockIds.length;
-				for (int i=0; i<num; i++) {
-					if (mCachedXmlBlockIds[i] == repId) {
-						loadFromCache = true;
-					}
-				}
-			}
-
-			result = repRes.loadXmlResourceParser(repId, type);
-
-			if (!loadFromCache) {
+			if (!loadedFromCache) {
 				int parseState = getIntField(result, "mParseState");
 				rewriteXmlReferencesNative(parseState, this, repRes);
 			}
-		} else {
-			result = super.loadXmlResourceParser(id, type);
 		}
-
-		if (type.equals("layout")) {
-			HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>> inner;
-			synchronized (layoutCallbacks) {
-				inner = layoutCallbacks.get(id);
-			}
-			if (inner != null) {
-				CopyOnWriteSortedSet<XC_LayoutInflated> callbacks;
-				synchronized (inner) {
-					callbacks = inner.get(resDir);
-					if (callbacks == null && resDir != null)
-						callbacks = inner.get(null);
-				}
-				if (callbacks != null) {
-					String variant = "layout";
-					TypedValue value = (TypedValue) getObjectField(this, "mTmpValue");
-					getValue(id, value, true);
-					if (value.type == TypedValue.TYPE_STRING) {
-						String[] components = value.string.toString().split("/", 3);
-						if (components.length == 3)
-							variant = components[1];
-						else
-							XposedBridge.log("Unexpected resource path \"" + value.string.toString()
-									+ "\" for resource id 0x" + Integer.toHexString(id));
-					} else {
-						XposedBridge.log(new NotFoundException("Could not find file name for resource id 0x") + Integer.toHexString(id));
-					}
-
-					synchronized (xmlInstanceDetails) {
-						synchronized (resourceNames) {
-							HashMap<String, ResourceNames> resNamesInner = resourceNames.get(id);
-							if (resNamesInner != null) {
-								synchronized (resNamesInner) {
-									XMLInstanceDetails details = new XMLInstanceDetails(resNamesInner.get(resDir), variant, callbacks);
-									xmlInstanceDetails.put(result, details);
-
-									// if we were called inside LayoutInflater.parseInclude, store the details for it
-									MethodHookParam top = sIncludedLayouts.get().peek();
-									if (top != null)
-										top.setObjectExtra(EXTRA_XML_INSTANCE_DETAILS, details);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return result;
+		return super.getXml(id);
 	}
-	// these are handled via loadXmlResourceParser:
-	// public XmlResourceParser getAnimation(int id);
-	// public ColorStateList getColorStateList(int id);
-	// public XmlResourceParser getLayout(int id);
-	// public XmlResourceParser getXml(int id);
 
+	private static boolean isXmlCached(Resources res, int id) {
+		int[] mCachedXmlBlockIds = (int[]) getObjectField(res, "mCachedXmlBlockIds");
+		synchronized (mCachedXmlBlockIds) {
+			final int num = mCachedXmlBlockIds.length;
+			for (int i = 0; i < num; i++) {
+				if (mCachedXmlBlockIds[i] == id)
+					return true;
+			}
+		}
+		return false;
+	}
 
 	private static native void rewriteXmlReferencesNative(int parserPtr, XResources origRes, Resources repRes);
 
@@ -928,9 +957,6 @@ public class XResources extends MiuiResources {
 			}
 			return super.getTextArray(index);
 		}
-
-		// this is handled by XResources.loadXmlResourceParser:
-		// public ColorStateList getColorStateList(int index);
 	}
 
 
