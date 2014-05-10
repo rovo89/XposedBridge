@@ -1,5 +1,6 @@
 package android.app;
 
+import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.findField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.newInstance;
@@ -9,7 +10,6 @@ import java.util.Map;
 
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
-import android.content.res.CompatibilityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
@@ -26,13 +26,13 @@ public class AndroidAppHelper {
 	private static boolean HAS_IS_THEMEABLE = false;
 
 	static {
-		try {
-			CLASS_RESOURCES_KEY = (Build.VERSION.SDK_INT < 19) ?
-				  Class.forName("android.app.ActivityThread$ResourcesKey")
-				: Class.forName("android.content.res.ResourcesKey");
+		CLASS_RESOURCES_KEY = (Build.VERSION.SDK_INT < 19) ?
+			  findClass("android.app.ActivityThread$ResourcesKey", null)
+			: findClass("android.content.res.ResourcesKey", null);
 
-			// check if the field exists
-			findField(CompatibilityInfo.class, "isThemeable");
+		try {
+			// T-Mobile theming engine (CyanogenMod etc.)
+			findField(CLASS_RESOURCES_KEY, "mIsThemeable");
 			HAS_IS_THEMEABLE = true;
 		} catch (NoSuchFieldError ignored) {
 		} catch (Throwable t) { XposedBridge.log(t); }
