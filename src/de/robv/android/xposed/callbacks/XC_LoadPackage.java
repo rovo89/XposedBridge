@@ -11,7 +11,7 @@ public abstract class XC_LoadPackage extends XCallback {
 	public XC_LoadPackage(int priority) {
 		super(priority);
 	}
-	
+
 	public static class LoadPackageParam extends XCallback.Param {
 		public LoadPackageParam(CopyOnWriteSortedSet<XC_LoadPackage> callbacks) {
 			super(callbacks);
@@ -27,15 +27,15 @@ public abstract class XC_LoadPackage extends XCallback {
 		/** Set to true if this is the first (and main) application for this process */
 		public boolean isFirstApplication;
 	}
-	
+
 	@Override
 	protected void call(Param param) throws Throwable {
 		if (param instanceof LoadPackageParam)
 			handleLoadPackage((LoadPackageParam) param);
 	}
-	
+
 	public abstract void handleLoadPackage(LoadPackageParam lpparam) throws Throwable;
-	
+
 	public class Unhook implements IXUnhook {
 		public XC_LoadPackage getCallback() {
 			return XC_LoadPackage.this;

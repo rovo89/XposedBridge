@@ -65,7 +65,7 @@ public final class XposedBridge {
 
 	private static PrintWriter logWriter = null;
 	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
-	private static final int MAX_LOGFILE_SIZE = 20*1024; 
+	private static final int MAX_LOGFILE_SIZE = 20*1024;
 	private static boolean disableHooks = false;
 	public static boolean disableResources = false;
 
@@ -100,7 +100,7 @@ public final class XposedBridge {
 				logFile.setReadable(true, false);
 				logFile.setWritable(true, false);
 			} catch (IOException ignored) {}
-			
+
 			String date = DateFormat.getDateTimeInstance().format(new Date());
 			determineXposedVersion();
 			log("-----------------\n" + date + " UTC\n"
@@ -110,13 +110,13 @@ public final class XposedBridge {
 				// Zygote
 				log("Running ROM '" + Build.DISPLAY + "' with fingerprint '" + Build.FINGERPRINT + "'");
 			}
-			
+
 			if (initNative()) {
 				if (startClassName == null) {
 					// Initializations for Zygote
 					initXbridgeZygote();
 				}
-				
+
 				loadModules(startClassName);
 			} else {
 				log("Errors during native Xposed initialization");
@@ -126,14 +126,14 @@ public final class XposedBridge {
 			log(t);
 			disableHooks = true;
 		}
-		
+
 		// call the original startup code
 		if (startClassName == null)
 			ZygoteInit.main(args);
 		else
 			RuntimeInit.main(args);
 	}
-	
+
 	private static native String getStartClassName();
 
 	private static void determineXposedVersion() throws IOException {
@@ -172,14 +172,14 @@ public final class XposedBridge {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Hook some methods which we want to create an easier interface for developers.
 	 */
 	private static void initXbridgeZygote() throws Throwable {
 		final HashSet<String> loadedPackagesInProcess = new HashSet<String>(1);
-		
-		// normal process initialization (for new Activity, Service, BroadcastReceiver etc.) 
+
+		// normal process initialization (for new Activity, Service, BroadcastReceiver etc.)
 		findAndHookMethod(ActivityThread.class, "handleBindApplication", "android.app.ActivityThread.AppBindData", new XC_MethodHook() {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				ActivityThread activityThread = (ActivityThread) param.thisObject;
@@ -211,14 +211,14 @@ public final class XposedBridge {
 					hookXposedInstaller(lpparam.classLoader);
 			}
 		});
-		
+
 		// system thread initialization
 		findAndHookMethod("com.android.server.ServerThread", null,
 				Build.VERSION.SDK_INT < 19 ? "run" : "initAndLoop", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				loadedPackagesInProcess.add("android");
-				
+
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
 				lpparam.packageName = "android";
 				lpparam.processName = "android"; // it's actually system_server, but other functions return this as well
@@ -228,7 +228,7 @@ public final class XposedBridge {
 				XC_LoadPackage.callAll(lpparam);
 			}
 		});
-		
+
 		// when a package is loaded for an existing process, trigger the callbacks as well
 		hookAllConstructors(LoadedApk.class, new XC_MethodHook() {
 			@Override
@@ -239,10 +239,10 @@ public final class XposedBridge {
 				XResources.setPackageNameForResDir(packageName, loadedApk.getResDir());
 				if (packageName.equals("android") || !loadedPackagesInProcess.add(packageName))
 					return;
-				
+
 				if ((Boolean) getBooleanField(loadedApk, "mIncludeCode") == false)
 					return;
-				
+
 				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
 				lpparam.packageName = packageName;
 				lpparam.processName = AndroidAppHelper.currentProcessName();
@@ -252,7 +252,7 @@ public final class XposedBridge {
 				XC_LoadPackage.callAll(lpparam);
 			}
 		});
-		
+
 		findAndHookMethod("android.app.ApplicationPackageManager", null, "getResourcesForApplication",
 				ApplicationInfo.class, new XC_MethodHook() {
 			@Override
@@ -387,7 +387,7 @@ public final class XposedBridge {
 		}
 		apks.close();
 	}
-	
+
 	/**
 	 * Load a module from an APK by calling the init(String) method for all classes defined
 	 * in <code>assets/xposed_init</code>.
@@ -395,19 +395,19 @@ public final class XposedBridge {
 	@SuppressWarnings("deprecation")
 	private static void loadModule(String apk, String startClassName) {
 		log("Loading modules from " + apk);
-		
+
 		if (!new File(apk).exists()) {
 			log("  File does not exist");
 			return;
 		}
-		
+
 		ClassLoader mcl = new PathClassLoader(apk, BOOTCLASSLOADER);
 		InputStream is = mcl.getResourceAsStream("assets/xposed_init");
 		if (is == null) {
 			log("assets/xposed_init not found in the APK");
 			return;
 		}
-		
+
 		BufferedReader moduleClassesReader = new BufferedReader(new InputStreamReader(is));
 		try {
 			String moduleClassName;
@@ -415,11 +415,11 @@ public final class XposedBridge {
 				moduleClassName = moduleClassName.trim();
 				if (moduleClassName.isEmpty() || moduleClassName.startsWith("#"))
 					continue;
-				
+
 				try {
 					log ("  Loading class " + moduleClassName);
 					Class<?> moduleClass = mcl.loadClass(moduleClassName);
-					
+
 					if (!IXposedMod.class.isAssignableFrom(moduleClass)) {
 						log ("    This class doesn't implement any sub-interface of IXposedMod, skipping it");
 						continue;
@@ -427,7 +427,7 @@ public final class XposedBridge {
 						log ("    This class requires resource-related hooks (which are disabled), skipping it.");
 						continue;
 					}
-					
+
 					// call the init(String) method of the module
 					final Object moduleInstance = moduleClass.newInstance();
 					if (startClassName == null) {
@@ -436,10 +436,10 @@ public final class XposedBridge {
 							param.modulePath = apk;
 							((IXposedHookZygoteInit) moduleInstance).initZygote(param);
 						}
-						
+
 						if (moduleInstance instanceof IXposedHookLoadPackage)
 							hookLoadPackage(new IXposedHookLoadPackage.Wrapper((IXposedHookLoadPackage) moduleInstance));
-						
+
 						if (moduleInstance instanceof IXposedHookInitPackageResources)
 							hookInitPackageResources(new IXposedHookInitPackageResources.Wrapper((IXposedHookInitPackageResources) moduleInstance));
 					} else {
@@ -462,7 +462,7 @@ public final class XposedBridge {
 			} catch (IOException ignored) {}
 		}
 	}
-	
+
 	/**
 	 * Writes a message to BASE_DIR/log/debug.log (needs to have chmod 777)
 	 * @param text log message
@@ -474,7 +474,7 @@ public final class XposedBridge {
 			logWriter.flush();
 		}
 	}
-	
+
 	/**
 	 * Log the stack trace
 	 * @param t The Throwable object for the stacktrace
@@ -490,9 +490,9 @@ public final class XposedBridge {
 
 	/**
 	 * Hook any method with the specified callback
-	 * 
+	 *
 	 * @param hookMethod The method to be hooked
-	 * @param callback 
+	 * @param callback
 	 */
 	public static XC_MethodHook.Unhook hookMethod(Member hookMethod, XC_MethodHook callback) {
 		if (!(hookMethod instanceof Method) && !(hookMethod instanceof Constructor<?>)) {
@@ -502,7 +502,7 @@ public final class XposedBridge {
 		} else if (Modifier.isAbstract(hookMethod.getModifiers())) {
 			throw new IllegalArgumentException("Cannot hook abstract methods: " + hookMethod.toString());
 		}
-		
+
 		boolean newMethod = false;
 		CopyOnWriteSortedSet<XC_MethodHook> callbacks;
 		synchronized (hookedMethodCallbacks) {
@@ -531,11 +531,11 @@ public final class XposedBridge {
 			AdditionalHookInfo additionalInfo = new AdditionalHookInfo(callbacks, parameterTypes, returnType);
 			hookMethodNative(hookMethod, declaringClass, slot, additionalInfo);
 		}
-		
+
 		return callback.new Unhook(hookMethod);
 	}
-	
-	/** 
+
+	/**
 	 * Removes the callback for a hooked method
 	 * @param hookMethod The method for which the callback should be removed
 	 * @param callback The reference to the callback as specified in {@link #hookMethod}
@@ -546,10 +546,10 @@ public final class XposedBridge {
 			callbacks = hookedMethodCallbacks.get(hookMethod);
 			if (callbacks == null)
 				return;
-		}	
+		}
 		callbacks.remove(callback);
 	}
-	
+
 	public static Set<XC_MethodHook.Unhook> hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
 		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
 		for (Member method : hookClass.getDeclaredMethods())
@@ -557,14 +557,14 @@ public final class XposedBridge {
 				unhooks.add(hookMethod(method, callback));
 		return unhooks;
 	}
-	
+
 	public static Set<XC_MethodHook.Unhook> hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
 		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
 		for (Member constructor : hookClass.getDeclaredConstructors())
 			unhooks.add(hookMethod(constructor, callback));
 		return unhooks;
 	}
-	
+
 	/**
 	 * This method is called as a replacement for hooked methods.
 	 */
@@ -593,7 +593,7 @@ public final class XposedBridge {
 		}
 
 		MethodHookParam param = new MethodHookParam();
-		param.method  = method;
+		param.method = method;
 		param.thisObject = thisObject;
 		param.args = args;
 
@@ -663,25 +663,25 @@ public final class XposedBridge {
 		}
 		return callback.new Unhook();
 	}
-	
-	public static void unhookLoadPackage(XC_LoadPackage callback) {		
+
+	public static void unhookLoadPackage(XC_LoadPackage callback) {
 		synchronized (loadedPackageCallbacks) {
 			loadedPackageCallbacks.remove(callback);
 		}
 	}
-	
+
 	/**
 	 * Get notified when the resources for a package are loaded. In callbacks, resource replacements can be created.
-	 * @return 
+	 * @return
 	 */
-	public static XC_InitPackageResources.Unhook hookInitPackageResources(XC_InitPackageResources callback) {		
+	public static XC_InitPackageResources.Unhook hookInitPackageResources(XC_InitPackageResources callback) {
 		synchronized (initPackageResourcesCallbacks) {
 			initPackageResourcesCallbacks.add(callback);
 		}
 		return callback.new Unhook();
 	}
-	
-	public static void unhookInitPackageResources(XC_InitPackageResources callback) {		
+
+	public static void unhookInitPackageResources(XC_InitPackageResources callback) {
 		synchronized (initPackageResourcesCallbacks) {
 			initPackageResourcesCallbacks.remove(callback);
 		}
@@ -710,7 +710,7 @@ public final class XposedBridge {
 	/**
 	 * Basically the same as {@link Method#invoke}, but calls the original method
 	 * as it was before the interception by Xposed. Also, access permissions are not checked.
-	 * 
+	 *
 	 * @param method Method to be called
 	 * @param thisObject For non-static calls, the "this" pointer
 	 * @param args Arguments for the method call as Object[] array

@@ -38,7 +38,7 @@ public class XResources extends MiuiResources {
 	private static final SparseArray<HashMap<String, ResourceNames>> resourceNames
 		= new SparseArray<HashMap<String, ResourceNames>>();
 
-	private static final byte[] systemReplacementsCache = new byte[256];  // bitmask: 0x000700ff => 2048 bit => 256 bytes
+	private static final byte[] systemReplacementsCache = new byte[256]; // bitmask: 0x000700ff => 2048 bit => 256 bytes
 	private byte[] replacementsCache; // bitmask: 0x0007007f => 1024 bit => 128 bytes
 	private static final HashMap<String, byte[]> replacementsCacheMap = new HashMap<String, byte[]>();
 
@@ -92,18 +92,18 @@ public class XResources extends MiuiResources {
 		synchronized (replacements) {
 			if (resDir == null)
 				return false;
-			
+
 			Long lastModification = new File(resDir).lastModified();
 			Long oldModified = resDirLastModified.get(resDir);
 			if (lastModification.equals(oldModified))
 				return false;
-			
+
 			resDirLastModified.put(resDir, lastModification);
-			
+
 			if (oldModified == null)
 				return true;
-			
-			// file was changed meanwhile => remove old replacements 
+
+			// file was changed meanwhile => remove old replacements
 			for (int i = 0; i < replacements.size(); i++) {
 				replacements.valueAt(i).remove(resDir);
 			}
@@ -115,7 +115,7 @@ public class XResources extends MiuiResources {
 	public String getResDir() {
 		return resDir;
 	}
-	
+
 	/** Framework only, don't call this from your module! */
 	public static void setPackageNameForResDir(String packageName, String resDir) {
 		resDirPackageNames.put(resDir, packageName);
@@ -124,7 +124,7 @@ public class XResources extends MiuiResources {
 	public String getPackageName() {
 		if (resDir == null)
 			return "android";
-		
+
 		String packageName = resDirPackageNames.get(resDir);
 		if (packageName != null)
 			return packageName;
@@ -182,14 +182,14 @@ public class XResources extends MiuiResources {
 			}
 		});
 	}
-	
+
 	public static class ResourceNames {
 		public final int id;
 		public final String pkg;
 		public final String name;
 		public final String type;
 		public final String fullName;
-		
+
 		private ResourceNames(int id, String pkg, String name, String type) {
 			this.id = id;
 			this.pkg = pkg;
@@ -197,7 +197,7 @@ public class XResources extends MiuiResources {
 			this.type = type;
 			this.fullName = pkg + ":" + type + "/" + name;
 		}
-		
+
 		/**
 		 * Returns <code>true</code> if all non-null parameters match the values of this object.
 		 */
@@ -208,7 +208,7 @@ public class XResources extends MiuiResources {
 				&& (id == 0 || id == this.id);
 		}
 	}
-	
+
 	private ResourceNames getResourceNames(int id) {
 		return new ResourceNames(
 				id,
@@ -216,7 +216,7 @@ public class XResources extends MiuiResources {
 				getResourceTypeName(id),
 				getResourceEntryName(id));
 	}
-	
+
 	private static ResourceNames getSystemResourceNames(int id) {
 		Resources sysRes = getSystem();
 		return new ResourceNames(
@@ -225,7 +225,7 @@ public class XResources extends MiuiResources {
 				sysRes.getResourceTypeName(id),
 				sysRes.getResourceEntryName(id));
 	}
-	
+
 	private static void putResourceNames(String resDir, ResourceNames resNames) {
 		int id = resNames.id;
 		synchronized (resourceNames) {
@@ -243,43 +243,43 @@ public class XResources extends MiuiResources {
 	// =======================================================
 	//   DEFINING REPLACEMENTS
 	// =======================================================
-	
+
 	public void setReplacement(int id, Object replacement) {
 		setReplacement(id, replacement, this);
 	}
-	
+
 	public void setReplacement(String fullName, Object replacement) {
 		int id = getIdentifier(fullName, null, null);
 		if (id == 0)
 			throw new NotFoundException(fullName);
 		setReplacement(id, replacement, this);
 	}
-	
+
 	public void setReplacement(String pkg, String type, String name, Object replacement) {
 		int id = getIdentifier(name, type, pkg);
 		if (id == 0)
 			throw new NotFoundException(pkg + ":" + type + "/" + name);
 		setReplacement(id, replacement, this);
 	}
-	
+
 	public static void setSystemWideReplacement(int id, Object replacement) {
 		setReplacement(id, replacement, null);
 	}
-	
+
 	public static void setSystemWideReplacement(String fullName, Object replacement) {
 		int id = getSystem().getIdentifier(fullName, null, null);
 		if (id == 0)
 			throw new NotFoundException(fullName);
 		setReplacement(id, replacement, null);
 	}
-	
+
 	public static void setSystemWideReplacement(String pkg, String type, String name, Object replacement) {
 		int id = getSystem().getIdentifier(name, type, pkg);
 		if (id == 0)
 			throw new NotFoundException(pkg + ":" + type + "/" + name);
 		setReplacement(id, replacement, null);
 	}
-	
+
 	private static void setReplacement(int id, Object replacement, XResources res) {
 		String resDir = (res != null) ? res.resDir : null;
 		if (id == 0)
@@ -312,11 +312,11 @@ public class XResources extends MiuiResources {
 			inner.put(resDir, replacement);
 		}
 	}
-	
+
 	// =======================================================
 	//   RETURNING REPLACEMENTS
 	// =======================================================
-	
+
 	private Object getReplacement(int id) {
 		if (id <= 0)
 			return null;
@@ -334,7 +334,7 @@ public class XResources extends MiuiResources {
 
 		HashMap<String, Object> inner;
 		synchronized (replacements) {
-			inner = replacements.get(id); 
+			inner = replacements.get(id);
 		}
 
 		if (inner == null)
@@ -347,7 +347,7 @@ public class XResources extends MiuiResources {
 			return inner.get(null);
 		}
 	}
-	
+
 	@Override
 	public boolean getBoolean(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -360,7 +360,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getBoolean(id);
 	}
-	
+
 	@Override
 	public int getColor(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -373,7 +373,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getColor(id);
 	}
-	
+
 	@Override
 	public float getDimension(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -386,7 +386,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getDimension(id);
 	}
-	
+
 	@Override
 	public int getDimensionPixelOffset(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -399,7 +399,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getDimensionPixelOffset(id);
 	}
-	
+
 	@Override
 	public int getDimensionPixelSize(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -412,7 +412,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getDimensionPixelSize(id);
 	}
-	
+
 	@Override
 	public Drawable getDrawable(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -431,7 +431,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getDrawable(id);
 	}
-	
+
 	@Override
 	public Drawable getDrawableForDensity(int id, int density) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -450,7 +450,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getDrawableForDensity(id, density);
 	}
-	
+
 	@Override
 	public float getFraction(int id, int base, int pbase) {
 		Object replacement = getReplacement(id);
@@ -461,7 +461,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getFraction(id, base, pbase);
 	}
-	
+
 	@Override
 	public int getInteger(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -474,7 +474,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getInteger(id);
 	}
-	
+
 	@Override
 	public int[] getIntArray(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -487,7 +487,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getIntArray(id);
 	}
-	
+
 	@Override
 	public Movie getMovie(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -498,7 +498,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getMovie(id);
 	}
-	
+
 	@Override
 	public CharSequence getQuantityText(int id, int quantity) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -512,7 +512,7 @@ public class XResources extends MiuiResources {
 	// these are handled by getQuantityText:
 	// public String getQuantityString(int id, int quantity);
 	// public String getQuantityString(int id, int quantity, Object... formatArgs);
-	
+
 	@Override
 	public String[] getStringArray(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -525,7 +525,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getStringArray(id);
 	}
-	
+
 	@Override
 	public CharSequence getText(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -541,7 +541,7 @@ public class XResources extends MiuiResources {
 	// these are handled by getText:
 	// public String getString(int id);
 	// public String getString(int id, Object... formatArgs);
-	
+
 	@Override
 	public CharSequence getText(int id, CharSequence def) {
 		Object replacement = getReplacement(id);
@@ -554,7 +554,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getText(id, def);
 	}
-	
+
 	@Override
 	public CharSequence[] getTextArray(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -567,7 +567,7 @@ public class XResources extends MiuiResources {
 		}
 		return super.getTextArray(id);
 	}
-	
+
 	@Override
 	XmlResourceParser loadXmlResourceParser(int id, String type) throws NotFoundException {
 		XmlResourceParser result;
@@ -575,7 +575,7 @@ public class XResources extends MiuiResources {
 		if (replacement instanceof XResForwarder) {
 			Resources repRes = ((XResForwarder) replacement).getResources();
 			int repId = ((XResForwarder) replacement).getId();
-			
+
 			boolean loadFromCache = false;
 			int[] mCachedXmlBlockIds = (int[]) getObjectField(repRes, "mCachedXmlBlockIds");
 
@@ -598,7 +598,7 @@ public class XResources extends MiuiResources {
 		} else {
 			result = super.loadXmlResourceParser(id, type);
 		}
-		
+
 		if (type.equals("layout")) {
 			HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>> inner;
 			synchronized (layoutCallbacks) {
@@ -645,21 +645,21 @@ public class XResources extends MiuiResources {
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	// these are handled via loadXmlResourceParser: 
+	// these are handled via loadXmlResourceParser:
 	// public XmlResourceParser getAnimation(int id);
 	// public ColorStateList getColorStateList(int id);
 	// public XmlResourceParser getLayout(int id);
 	// public XmlResourceParser getXml(int id);
-	
+
 
 	private static native void rewriteXmlReferencesNative(int parserPtr, XResources origRes, Resources repRes);
-	
+
 	/**
 	 * Used to replace reference IDs in XMLs.
-	 * 
+	 *
 	 * When resource requests are forwarded to modules, the may include references to resources with the same
 	 * name as in the original resources, but the IDs generated by aapt will be different. rewriteXmlReferencesNative
 	 * walks through all references and calls this function to find out the original ID, which it then writes to
@@ -675,7 +675,7 @@ public class XResources extends MiuiResources {
 				// look for a resource with the same name and type in the original package
 				origResId = origRes.getIdentifier(entryName, entryType, origPackage);
 			} catch (NotFoundException ignored) {}
-			
+
 			boolean repResDefined = false;
 			try {
 				final TypedValue tmpValue = new TypedValue();
@@ -684,35 +684,35 @@ public class XResources extends MiuiResources {
 				// this means a boolean "false" value is not detected of it is directly referenced in an XML file
 				repResDefined = !(tmpValue.type == TypedValue.TYPE_INT_BOOLEAN && tmpValue.data == 0);
 			} catch (NotFoundException ignored) {}
-			
+
 			if (!repResDefined && origResId == 0 && !entryType.equals("id")) {
 				XposedBridge.log(entryType + "/" + entryName + " is neither defined in module nor in original resources");
 				return 0;
 			}
-			
+
 			// exists only in module, so create a fake resource id
 			if (origResId == 0)
 				origResId = getFakeResId(repRes, id);
-			
+
 			// IDs will never be loaded, no need to set a replacement
 			if (repResDefined && !entryType.equals("id"))
 				origRes.setReplacement(origResId, new XResForwarder(repRes, id));
-			
+
 			return origResId;
 		} catch (Exception e) {
 			XposedBridge.log(e);
 			return id;
 		}
 	}
-	
+
 	public static int getFakeResId(String resName) {
 		return 0x7e000000 | (resName.hashCode() & 0x00ffffff);
 	}
-	
+
 	public static int getFakeResId(Resources res, int id) {
 		return getFakeResId(res.getResourceName(id));
 	}
-	
+
 	public int addResource(Resources res, int id) {
 		int fakeId = getFakeResId(res, id);
 		synchronized (replacements) {
@@ -735,7 +735,7 @@ public class XResources extends MiuiResources {
 		}
 		return origAttrId;
 	}
-	
+
 	// =======================================================
 	//   XTypedArray class
 	// =======================================================
@@ -932,8 +932,8 @@ public class XResources extends MiuiResources {
 		// this is handled by XResources.loadXmlResourceParser:
 		// public ColorStateList getColorStateList(int index);
 	}
-	
-	
+
+
 	// =======================================================
 	//   DrawableLoader class
 	// =======================================================
@@ -942,7 +942,7 @@ public class XResources extends MiuiResources {
 	 */
 	public static abstract class DrawableLoader {
 		public abstract Drawable newDrawable(XResources res, int id) throws Throwable;
-		
+
 		public Drawable newDrawableForDensity(XResources res, int id, int density) throws Throwable {
 			return newDrawable(res, id);
 		}
@@ -994,25 +994,25 @@ public class XResources extends MiuiResources {
 	// =======================================================
 	//   INFLATING LAYOUTS
 	// =======================================================
-	
+
 	private class XMLInstanceDetails {
 		public final ResourceNames resNames;
 		public final String variant;
 		public final CopyOnWriteSortedSet<XC_LayoutInflated> callbacks;
 		public final XResources res = XResources.this;
-		
+
 		private XMLInstanceDetails(ResourceNames resNames, String variant, CopyOnWriteSortedSet<XC_LayoutInflated> callbacks) {
 			this.resNames = resNames;
 			this.variant = variant;
 			this.callbacks = callbacks;
 		}
 	}
-	
+
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
 	public XC_LayoutInflated.Unhook hookLayout(int id, XC_LayoutInflated callback) {
 		return hookLayoutInternal(resDir, id, getResourceNames(id), callback);
 	}
-	
+
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
 	public XC_LayoutInflated.Unhook hookLayout(String fullName, XC_LayoutInflated callback) {
 		int id = getIdentifier(fullName, null, null);
@@ -1020,13 +1020,13 @@ public class XResources extends MiuiResources {
 			throw new NotFoundException(fullName);
 		return hookLayout(id, callback);
 	}
-	
+
 	/**
 	 * Add a function to be called once a specific layout has been inflated.
 	 * @param pkg Package, e.g. <code>com.android.systemui</code>
 	 * @param type Type (in this case always <code>layout</code>)
 	 * @param name Name of the resource (e.g. <code>statusbar</code>)
-	 * @param callback Handler to be called  
+	 * @param callback Handler to be called
 	 */
 	public XC_LayoutInflated.Unhook hookLayout(String pkg, String type, String name, XC_LayoutInflated callback) {
 		int id = getIdentifier(name, type, pkg);
@@ -1034,14 +1034,14 @@ public class XResources extends MiuiResources {
 			throw new NotFoundException(pkg + ":" + type + "/" + name);
 		return hookLayout(id, callback);
 	}
-	
+
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
 	public static XC_LayoutInflated.Unhook hookSystemWideLayout(int id, XC_LayoutInflated callback) {
 		if (id >= 0x7f000000)
 			throw new IllegalArgumentException("ids >= 0x7f000000 are app specific and cannot be set for the framework");
 		return hookLayoutInternal(null, id, getSystemResourceNames(id), callback);
 	}
-	
+
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
 	public static XC_LayoutInflated.Unhook hookSystemWideLayout(String fullName, XC_LayoutInflated callback) {
 		int id = getSystem().getIdentifier(fullName, null, null);
@@ -1049,7 +1049,7 @@ public class XResources extends MiuiResources {
 			throw new NotFoundException(fullName);
 		return hookSystemWideLayout(id, callback);
 	}
-	
+
 	/** @see #hookLayout(String, String, String, XC_LayoutInflated) */
 	public static XC_LayoutInflated.Unhook hookSystemWideLayout(String pkg, String type, String name, XC_LayoutInflated callback) {
 		int id = getSystem().getIdentifier(name, type, pkg);
@@ -1057,7 +1057,7 @@ public class XResources extends MiuiResources {
 			throw new NotFoundException(pkg + ":" + type + "/" + name);
 		return hookSystemWideLayout(id, callback);
 	}
-	
+
 	private static XC_LayoutInflated.Unhook hookLayoutInternal(String resDir, int id, ResourceNames resNames, XC_LayoutInflated callback) {
 		if (id == 0)
 			throw new IllegalArgumentException("id 0 is not an allowed resource identifier");
@@ -1070,7 +1070,7 @@ public class XResources extends MiuiResources {
 				layoutCallbacks.put(id, inner);
 			}
 		}
-		
+
 		CopyOnWriteSortedSet<XC_LayoutInflated> callbacks;
 		synchronized (inner) {
 			callbacks = inner.get(resDir);
@@ -1078,15 +1078,15 @@ public class XResources extends MiuiResources {
 				callbacks = new CopyOnWriteSortedSet<XC_LayoutInflated>();
 				inner.put(resDir, callbacks);
 			}
-		} 
-		
+		}
+
 		callbacks.add(callback);
-		
+
 		putResourceNames(resDir, resNames);
-		
+
 		return callback.new Unhook(resDir, id);
 	}
-	
+
 	public static void unhookLayout(String resDir, int id, XC_LayoutInflated callback) {
 		HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>> inner;
 		synchronized (layoutCallbacks) {
@@ -1094,14 +1094,14 @@ public class XResources extends MiuiResources {
 			if (inner == null)
 				return;
 		}
-		
+
 		CopyOnWriteSortedSet<XC_LayoutInflated> callbacks;
 		synchronized (inner) {
 			callbacks = inner.get(resDir);
 			if (callbacks == null)
 				return;
-		} 
-		
+		}
+
 		callbacks.remove(callback);
 	}
 }

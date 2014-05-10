@@ -16,7 +16,7 @@ public interface IXposedHookCmdInit extends IXposedMod {
 	 * @throws Throwable everything is caught, but will prevent further initialization of the module
 	 */
 	public void initCmdApp(StartupParam startupParam) throws Throwable;
-	
+
 	public static class StartupParam {
 		public String modulePath;
 		public String startClassName;

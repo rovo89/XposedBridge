@@ -8,16 +8,16 @@ package android.content.res;
 public class XResForwarder {
 	private final Resources res;
 	private final int id;
-	
+
 	public XResForwarder(Resources res, int id) {
 		this.res = res;
 		this.id = id;
 	}
-	
+
 	public Resources getResources() {
 		return res;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
