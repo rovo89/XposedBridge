@@ -93,9 +93,9 @@ public final class XposedBridge {
 		try {
 			// initialize log file
 			try {
-				File logFile = new File(BASE_DIR + "log/debug.log");
+				File logFile = new File(BASE_DIR + "log/error.log");
 				if (startClassName == null && logFile.length() > MAX_LOGFILE_SIZE)
-					logFile.renameTo(new File(BASE_DIR + "log/debug.log.old"));
+					logFile.renameTo(new File(BASE_DIR + "log/error.log.old"));
 				logWriter = new PrintWriter(new FileWriter(logFile, true));
 				logFile.setReadable(true, false);
 				logFile.setWritable(true, false);
@@ -464,8 +464,12 @@ public final class XposedBridge {
 	}
 
 	/**
-	 * Writes a message to BASE_DIR/log/debug.log (needs to have chmod 777)
-	 * @param text log message
+	 * Writes a message to the Xposed error log.
+	 *
+	 * <p>DON'T FLOOD THE LOG!!! This is only meant for error logging.
+	 * If you want to write information/debug messages, use logcat.
+	 *
+	 * @param text The log message.
 	 */
 	public synchronized static void log(String text) {
 		Log.i("Xposed", text);
@@ -476,9 +480,12 @@ public final class XposedBridge {
 	}
 
 	/**
-	 * Log the stack trace
-	 * @param t The Throwable object for the stacktrace
-	 * @see XposedBridge#log(String)
+	 * Logs a stack trace to the Xposed error log.
+	 *
+	 * <p>DON'T FLOOD THE LOG!!! This is only meant for error logging.
+	 * If you want to write information/debug messages, use logcat.
+	 *
+	 * @param t The Throwable object for the stack trace.
 	 */
 	public synchronized static void log(Throwable t) {
 		Log.i("Xposed", Log.getStackTraceString(t));
