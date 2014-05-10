@@ -113,8 +113,14 @@ public class AndroidAppHelper {
 
 	public static ApplicationInfo currentApplicationInfo() {
 		ActivityThread am = ActivityThread.currentActivityThread();
-		return (am != null && am.mBoundApplication != null)
-				? am.mBoundApplication.appInfo : null;
+		if (am == null)
+			return null;
+
+		Object boundApplication = getObjectField(am, "mBoundApplication");
+		if (boundApplication == null)
+			return null;
+
+		return (ApplicationInfo) getObjectField(boundApplication, "appInfo");
 	}
 
 	public static String currentPackageName() {
