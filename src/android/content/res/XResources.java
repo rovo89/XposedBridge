@@ -41,6 +41,7 @@ public class XResources extends MiuiResources {
 	private static final byte[] systemReplacementsCache = new byte[256]; // bitmask: 0x000700ff => 2048 bit => 256 bytes
 	private byte[] replacementsCache; // bitmask: 0x0007007f => 1024 bit => 128 bytes
 	private static final HashMap<String, byte[]> replacementsCacheMap = new HashMap<String, byte[]>();
+	private static final SparseArray<ColorStateList> colorStateListCache = new SparseArray<ColorStateList>(0);
 
 	private static final SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>> layoutCallbacks
 		= new SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>>();
@@ -390,6 +391,29 @@ public class XResources extends MiuiResources {
 			return repRes.getColor(repId);
 		}
 		return super.getColor(id);
+	}
+
+	@Override
+	public ColorStateList getColorStateList(int id) throws NotFoundException {
+		Object replacement = getReplacement(id);
+		if (replacement instanceof ColorStateList) {
+			return (ColorStateList) replacement;
+		} else if (replacement instanceof Integer) {
+			int color = (Integer) replacement;
+			synchronized (colorStateListCache) {
+				ColorStateList result = colorStateListCache.get(color);
+				if (result == null) {
+					result = ColorStateList.valueOf(color);
+					colorStateListCache.put(color, result);
+				}
+				return result;
+			}
+		} else if (replacement instanceof XResForwarder) {
+			Resources repRes = ((XResForwarder) replacement).getResources();
+			int repId = ((XResForwarder) replacement).getId();
+			return repRes.getColorStateList(repId);
+		}
+		return super.getColorStateList(id);
 	}
 
 	@Override
@@ -814,6 +838,29 @@ public class XResources extends MiuiResources {
 				return repRes.getColor(repId);
 			}
 			return super.getColor(index, defValue);
+		}
+
+		@Override
+		public ColorStateList getColorStateList(int index) {
+			Object replacement = res.getReplacement(getResourceId(index, 0));
+			if (replacement instanceof ColorStateList) {
+				return (ColorStateList) replacement;
+			} else if (replacement instanceof Integer) {
+				int color = (Integer) replacement;
+				synchronized (colorStateListCache) {
+					ColorStateList result = colorStateListCache.get(color);
+					if (result == null) {
+						result = ColorStateList.valueOf(color);
+						colorStateListCache.put(color, result);
+					}
+					return result;
+				}
+			} else if (replacement instanceof XResForwarder) {
+				Resources repRes = ((XResForwarder) replacement).getResources();
+				int repId = ((XResForwarder) replacement).getId();
+				return repRes.getColorStateList(repId);
+			}
+			return super.getColorStateList(index);
 		}
 
 		@Override
