@@ -920,6 +920,28 @@ public class XResources extends MiuiResources {
 		}
 
 		@Override
+		public int getLayoutDimension(int index, int defValue) {
+			Object replacement = res.getReplacement(getResourceId(index, 0));
+			if (replacement instanceof XResForwarder) {
+				Resources repRes = ((XResForwarder) replacement).getResources();
+				int repId = ((XResForwarder) replacement).getId();
+				return repRes.getDimensionPixelSize(repId);
+			}
+			return super.getLayoutDimension(index, defValue);
+		}
+
+		@Override
+		public int getLayoutDimension(int index, String name) {
+			Object replacement = res.getReplacement(getResourceId(index, 0));
+			if (replacement instanceof XResForwarder) {
+				Resources repRes = ((XResForwarder) replacement).getResources();
+				int repId = ((XResForwarder) replacement).getId();
+				return repRes.getDimensionPixelSize(repId);
+			}
+			return super.getLayoutDimension(index, name);
+		}
+
+		@Override
 		public String getString(int index) {
 			Object replacement = res.getReplacement(getResourceId(index, 0));
 			if (replacement instanceof CharSequence) {
