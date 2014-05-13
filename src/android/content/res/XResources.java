@@ -58,6 +58,7 @@ public class XResources extends MiuiResources {
 
 	private static final HashMap<String, Long> resDirLastModified = new HashMap<String, Long>();
 	private static final HashMap<String, String> resDirPackageNames = new HashMap<String, String>();
+	private static ThreadLocal<Object> sLatestResKey = null;
 
 	private boolean isObjectInited;
 	private String resDir;
@@ -122,7 +123,14 @@ public class XResources extends MiuiResources {
 		resDirPackageNames.put(resDir, packageName);
 	}
 
+	/**
+	 * Returns the name of the package that these resources belong to, or "android" for system resources.
+	 */
 	public String getPackageName() {
+		return getPackageName(this.resDir);
+	}
+
+	private static String getPackageName(String resDir) {
 		if (resDir == null)
 			return "android";
 
@@ -133,8 +141,27 @@ public class XResources extends MiuiResources {
 			throw new IllegalStateException("Could not determine package name for " + resDir);
 	}
 
+	/**
+	 * For a short moment during/after the creation of a new {@code Resources} object, it isn't an
+	 * instance of {@code XResources} yet. For any hooks that need information about the just created
+	 * object during this particular stage, this method will return the package name.
+	 *
+	 * <p>Note: If you call this outside of {@code getTopLevelResources()}, it throws an
+	 * {@code IllegalStateException}.
+	 */
+	public static String getPackageNameDuringConstruction() {
+		Object key = sLatestResKey.get();
+		if (key == null)
+			throw new IllegalStateException("This method can only be called during getTopLevelResources()");
+
+		String resDir = (String) getObjectField(key, "mResDir");
+		return getPackageName(resDir);
+	}
+
 	/** Framework only, don't call this from your module! */
-	public static void init() throws Exception {
+	public static void init(ThreadLocal<Object> latestResKey) throws Exception {
+		sLatestResKey = latestResKey;
+
 		findAndHookMethod(LayoutInflater.class, "inflate", XmlPullParser.class, ViewGroup.class, boolean.class, new XC_MethodHook() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {

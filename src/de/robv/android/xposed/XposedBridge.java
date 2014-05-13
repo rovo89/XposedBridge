@@ -282,7 +282,7 @@ public final class XposedBridge {
 
 		final Class<?> classGTLR;
 		final Class<?> classResKey;
-		final ThreadLocal<Object> sLatestResKey = new ThreadLocal<Object>();
+		final ThreadLocal<Object> latestResKey = new ThreadLocal<Object>();
 
 		if (Build.VERSION.SDK_INT <= 18) {
 			classGTLR = ActivityThread.class;
@@ -295,23 +295,23 @@ public final class XposedBridge {
 		hookAllConstructors(classResKey, new XC_MethodHook() {
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				sLatestResKey.set(param.thisObject);
+				latestResKey.set(param.thisObject);
 			}
 		});
 
 		hookAllMethods(classGTLR, "getTopLevelResources", new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				sLatestResKey.set(null);
+				latestResKey.set(null);
 			}
 
 			@Override
 			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				Object key = sLatestResKey.get();
+				Object key = latestResKey.get();
 				if (key == null)
 					return;
 
-				sLatestResKey.set(null);
+				latestResKey.set(null);
 
 				Object result = param.getResult();
 				if (result == null || result instanceof XResources)
@@ -366,7 +366,7 @@ public final class XposedBridge {
 		systemRes.initObject(null);
 		setStaticObjectField(Resources.class, "mSystem", systemRes);
 
-		XResources.init();
+		XResources.init(latestResKey);
 	}
 
 	private static void hookXposedInstaller(ClassLoader classLoader) {
