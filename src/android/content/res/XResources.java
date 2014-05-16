@@ -12,11 +12,13 @@ import java.util.WeakHashMap;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import android.content.pm.PackageParser;
 import android.graphics.Movie;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -145,8 +147,16 @@ public class XResources extends MiuiResources {
 
 		if (packageName != null)
 			return packageName;
-		else
-			throw new IllegalStateException("Could not determine package name for " + resDir);
+
+		PackageParser.PackageLite pkgInfo = PackageParser.parsePackageLite(resDir, 0);
+		if (pkgInfo != null && pkgInfo.packageName != null) {
+			Log.w("Xposed", "Package name for " + resDir + " had to be retrieved via parser");
+			packageName = pkgInfo.packageName;
+			setPackageNameForResDir(packageName, resDir);
+			return packageName;
+		}
+
+		throw new IllegalStateException("Could not determine package name for " + resDir);
 	}
 
 	/**
