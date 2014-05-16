@@ -62,6 +62,7 @@ public class XResources extends MiuiResources {
 
 	private boolean isObjectInited;
 	private String resDir;
+	private String packageName;
 
 	// Dummy, will never be called (objects are transferred to this class only).
 	private XResources() {
@@ -75,6 +76,7 @@ public class XResources extends MiuiResources {
 			throw new IllegalStateException("Object has already been initialized");
 
 		this.resDir = resDir;
+		this.packageName = getPackageName(this.resDir);
 
 		if (resDir != null) {
 			synchronized (replacementsCacheMap) {
@@ -129,7 +131,7 @@ public class XResources extends MiuiResources {
 	 * Returns the name of the package that these resources belong to, or "android" for system resources.
 	 */
 	public String getPackageName() {
-		return getPackageName(this.resDir);
+		return packageName;
 	}
 
 	private static String getPackageName(String resDir) {
@@ -755,7 +757,7 @@ public class XResources extends MiuiResources {
 		try {
 			String entryName = repRes.getResourceEntryName(id);
 			String entryType = repRes.getResourceTypeName(id);
-			String origPackage = origRes.getPackageName();
+			String origPackage = origRes.packageName;
 			int origResId = 0;
 			try {
 				// look for a resource with the same name and type in the original package
@@ -812,7 +814,7 @@ public class XResources extends MiuiResources {
 	 * Similar to {@link #translateResId}, but used to determine the original ID of attribute names
 	 */
 	private static int translateAttrId(String attrName, XResources origRes) {
-		String origPackage = origRes.getPackageName();
+		String origPackage = origRes.packageName;
 		int origAttrId = 0;
 		try {
 			origAttrId = origRes.getIdentifier(attrName, "attr", origPackage);
