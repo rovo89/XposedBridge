@@ -118,15 +118,16 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
-	private boolean hasFileChanged() {
+	/**
+	 * Check whether the file has changed since the last reboot.
+	 */
+	public synchronized boolean hasFileChanged() {
 		if (!mFile.canRead()) {
 			return true;
 		}
 		long lastModified = mFile.lastModified();
 		long fileSize = mFile.length();
-		synchronized (this) {
-			return mLastModified != lastModified || mFileSize != fileSize;
-		}
+		return mLastModified != lastModified || mFileSize != fileSize;
 	}
 
 	private void awaitLoadedLocked() {
