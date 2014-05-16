@@ -120,7 +120,9 @@ public class XResources extends MiuiResources {
 
 	/** Framework only, don't call this from your module! */
 	public static void setPackageNameForResDir(String packageName, String resDir) {
-		resDirPackageNames.put(resDir, packageName);
+		synchronized (resDirPackageNames) {
+			resDirPackageNames.put(resDir, packageName);
+		}
 	}
 
 	/**
@@ -134,7 +136,11 @@ public class XResources extends MiuiResources {
 		if (resDir == null)
 			return "android";
 
-		String packageName = resDirPackageNames.get(resDir);
+		String packageName;
+		synchronized (resDirPackageNames) {
+			packageName = resDirPackageNames.get(resDir);
+		}
+
 		if (packageName != null)
 			return packageName;
 		else
