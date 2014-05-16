@@ -50,6 +50,13 @@ public final class XSharedPreferences implements SharedPreferences {
 		return mFile.setReadable(true, false);
 	}
 
+	/**
+	 * Returns the file that is backing these preferences.
+	 */
+	public File getFile() {
+		return mFile;
+	}
+
 	private void startLoadFromDisk() {
 		synchronized (this) {
 			mLoaded = false;
