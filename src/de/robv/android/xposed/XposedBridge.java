@@ -75,11 +75,11 @@ public final class XposedBridge {
 	public static final String BASE_DIR = "/data/data/" + INSTALLER_PACKAGE_NAME + "/";
 
 	// built-in handlers
-	private static final Map<Member, CopyOnWriteSortedSet<XC_MethodHook>> hookedMethodCallbacks
+	private static final Map<Member, CopyOnWriteSortedSet<XC_MethodHook>> sHookedMethodCallbacks
 									= new HashMap<Member, CopyOnWriteSortedSet<XC_MethodHook>>();
-	private static final CopyOnWriteSortedSet<XC_LoadPackage> loadedPackageCallbacks
+	private static final CopyOnWriteSortedSet<XC_LoadPackage> sLoadedPackageCallbacks
 									= new CopyOnWriteSortedSet<XC_LoadPackage>();
-	private static final CopyOnWriteSortedSet<XC_InitPackageResources> initPackageResourcesCallbacks
+	private static final CopyOnWriteSortedSet<XC_InitPackageResources> sInitPackageResourcesCallbacks
 									= new CopyOnWriteSortedSet<XC_InitPackageResources>();
 
 	/**
@@ -199,7 +199,7 @@ public final class XposedBridge {
 				LoadedApk loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
 				XResources.setPackageNameForResDir(appInfo.packageName, loadedApk.getResDir());
 
-				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
+				LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
 				lpparam.packageName = appInfo.packageName;
 				lpparam.processName = (String) getObjectField(param.args[0], "processName");
 				lpparam.classLoader = loadedApk.getClassLoader();
@@ -219,7 +219,7 @@ public final class XposedBridge {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				loadedPackagesInProcess.add("android");
 
-				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
+				LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
 				lpparam.packageName = "android";
 				lpparam.processName = "android"; // it's actually system_server, but other functions return this as well
 				lpparam.classLoader = BOOTCLASSLOADER;
@@ -243,7 +243,7 @@ public final class XposedBridge {
 				if ((Boolean) getBooleanField(loadedApk, "mIncludeCode") == false)
 					return;
 
-				LoadPackageParam lpparam = new LoadPackageParam(loadedPackageCallbacks);
+				LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
 				lpparam.packageName = packageName;
 				lpparam.processName = AndroidAppHelper.currentProcessName();
 				lpparam.classLoader = loadedApk.getClassLoader();
@@ -338,7 +338,7 @@ public final class XposedBridge {
 				// Invoke handleInitPackageResources()
 				if (newRes.isFirstLoad()) {
 					String packageName = newRes.getPackageName();
-					InitPackageResourcesParam resparam = new InitPackageResourcesParam(initPackageResourcesCallbacks);
+					InitPackageResourcesParam resparam = new InitPackageResourcesParam(sInitPackageResourcesCallbacks);
 					resparam.packageName = packageName;
 					resparam.res = newRes;
 					XCallback.callAll(resparam);
@@ -512,11 +512,11 @@ public final class XposedBridge {
 
 		boolean newMethod = false;
 		CopyOnWriteSortedSet<XC_MethodHook> callbacks;
-		synchronized (hookedMethodCallbacks) {
-			callbacks = hookedMethodCallbacks.get(hookMethod);
+		synchronized (sHookedMethodCallbacks) {
+			callbacks = sHookedMethodCallbacks.get(hookMethod);
 			if (callbacks == null) {
 				callbacks = new CopyOnWriteSortedSet<XC_MethodHook>();
-				hookedMethodCallbacks.put(hookMethod, callbacks);
+				sHookedMethodCallbacks.put(hookMethod, callbacks);
 				newMethod = true;
 			}
 		}
@@ -549,8 +549,8 @@ public final class XposedBridge {
 	 */
 	public static void unhookMethod(Member hookMethod, XC_MethodHook callback) {
 		CopyOnWriteSortedSet<XC_MethodHook> callbacks;
-		synchronized (hookedMethodCallbacks) {
-			callbacks = hookedMethodCallbacks.get(hookMethod);
+		synchronized (sHookedMethodCallbacks) {
+			callbacks = sHookedMethodCallbacks.get(hookMethod);
 			if (callbacks == null)
 				return;
 		}
@@ -665,15 +665,15 @@ public final class XposedBridge {
 	 * Get notified when a package is loaded. This is especially useful to hook some package-specific methods.
 	 */
 	public static XC_LoadPackage.Unhook hookLoadPackage(XC_LoadPackage callback) {
-		synchronized (loadedPackageCallbacks) {
-			loadedPackageCallbacks.add(callback);
+		synchronized (sLoadedPackageCallbacks) {
+			sLoadedPackageCallbacks.add(callback);
 		}
 		return callback.new Unhook();
 	}
 
 	public static void unhookLoadPackage(XC_LoadPackage callback) {
-		synchronized (loadedPackageCallbacks) {
-			loadedPackageCallbacks.remove(callback);
+		synchronized (sLoadedPackageCallbacks) {
+			sLoadedPackageCallbacks.remove(callback);
 		}
 	}
 
@@ -682,15 +682,15 @@ public final class XposedBridge {
 	 * @return
 	 */
 	public static XC_InitPackageResources.Unhook hookInitPackageResources(XC_InitPackageResources callback) {
-		synchronized (initPackageResourcesCallbacks) {
-			initPackageResourcesCallbacks.add(callback);
+		synchronized (sInitPackageResourcesCallbacks) {
+			sInitPackageResourcesCallbacks.add(callback);
 		}
 		return callback.new Unhook();
 	}
 
 	public static void unhookInitPackageResources(XC_InitPackageResources callback) {
-		synchronized (initPackageResourcesCallbacks) {
-			initPackageResourcesCallbacks.remove(callback);
+		synchronized (sInitPackageResourcesCallbacks) {
+			sInitPackageResourcesCallbacks.remove(callback);
 		}
 	}
 
