@@ -408,6 +408,8 @@ public class XResources extends MiuiResources {
 				int parseState = getIntField(result, "mParseState");
 				rewriteXmlReferencesNative(parseState, this, repRes);
 			}
+
+			return result;
 		}
 		return super.getAnimation(id);
 	}
@@ -737,6 +739,8 @@ public class XResources extends MiuiResources {
 				int parseState = getIntField(result, "mParseState");
 				rewriteXmlReferencesNative(parseState, this, repRes);
 			}
+
+			return result;
 		}
 		return super.getXml(id);
 	}
