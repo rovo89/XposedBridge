@@ -168,8 +168,8 @@ public class XResources extends MiuiResources {
 	 * {@code IllegalStateException}.
 	 */
 	public static String getPackageNameDuringConstruction() {
-		Object key = sLatestResKey.get();
-		if (key == null)
+		Object key;
+		if (sLatestResKey == null || (key = sLatestResKey.get()) == null)
 			throw new IllegalStateException("This method can only be called during getTopLevelResources()");
 
 		String resDir = (String) getObjectField(key, "mResDir");
