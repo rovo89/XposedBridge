@@ -63,6 +63,12 @@ public final class XposedBridge {
 	public static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
 	public static int XPOSED_BRIDGE_VERSION;
 
+	private static boolean isZygote = true;
+	private static String startClassName = null;
+	private static int runtime = 0;
+	private static final int RUNTIME_DALVIK = 1;
+	private static final int RUNTIME_ART = 2;
+
 	private static PrintWriter logWriter = null;
 	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
 	private static final int MAX_LOGFILE_SIZE = 20*1024;
@@ -85,16 +91,13 @@ public final class XposedBridge {
 	/**
 	 * Called when native methods and other things are initialized, but before preloading classes etc.
 	 */
-	private static void main(String[] args) {
-		// the class the VM has been created for or null for the Zygote process
-		String startClassName = getStartClassName();
-
-		// initialize the Xposed framework and modules
+	protected static void main(String[] args) {
+		// Initialize the Xposed framework and modules
 		try {
-			// initialize log file
+			// Initialize log file
 			try {
 				File logFile = new File(BASE_DIR + "log/error.log");
-				if (startClassName == null && logFile.length() > MAX_LOGFILE_SIZE)
+				if (isZygote && logFile.length() > MAX_LOGFILE_SIZE)
 					logFile.renameTo(new File(BASE_DIR + "log/error.log.old"));
 				logWriter = new PrintWriter(new FileWriter(logFile, true));
 				logFile.setReadable(true, false);
@@ -105,19 +108,17 @@ public final class XposedBridge {
 			determineXposedVersion();
 			log("-----------------\n" + date + " UTC\n"
 					+ "Loading Xposed v" + XPOSED_BRIDGE_VERSION
-					+ " (for " + (startClassName == null ? "Zygote" : startClassName) + ")...");
-			if (startClassName == null) {
-				// Zygote
+					+ " (for " + (isZygote ? "Zygote" : startClassName) + ")...");
+
+			if (isZygote)
 				log("Running ROM '" + Build.DISPLAY + "' with fingerprint '" + Build.FINGERPRINT + "'");
-			}
 
+			runtime = getRuntime();
 			if (initNative()) {
-				if (startClassName == null) {
-					// Initializations for Zygote
-					initXbridgeZygote();
-				}
+				if (isZygote)
+					initForZygote();
 
-				loadModules(startClassName);
+				loadModules();
 			} else {
 				log("Errors during native Xposed initialization");
 			}
@@ -127,14 +128,26 @@ public final class XposedBridge {
 			disableHooks = true;
 		}
 
-		// call the original startup code
-		if (startClassName == null)
+		// Call the original startup code
+		if (isZygote)
 			ZygoteInit.main(args);
 		else
 			RuntimeInit.main(args);
 	}
 
+	protected static class ToolEntryPoint {
+		protected static void main(String[] args) {
+			try {
+				startClassName = getStartClassName();
+			} catch (Throwable ignored) {};
+
+			isZygote = false;
+			XposedBridge.main(args);
+		}
+	}
+
 	private static native String getStartClassName();
+	private static native int getRuntime();
 
 	private static void determineXposedVersion() throws IOException {
 		ZipInputStream is = new ZipInputStream(new FileInputStream(BASE_DIR + "bin/XposedBridge.jar"));
@@ -176,7 +189,7 @@ public final class XposedBridge {
 	/**
 	 * Hook some methods which we want to create an easier interface for developers.
 	 */
-	private static void initXbridgeZygote() throws Throwable {
+	private static void initForZygote() throws Throwable {
 		final HashSet<String> loadedPackagesInProcess = new HashSet<String>(1);
 
 		// normal process initialization (for new Activity, Service, BroadcastReceiver etc.)
@@ -379,11 +392,11 @@ public final class XposedBridge {
 	/**
 	 * Try to load all modules defined in <code>BASE_DIR/conf/modules.list</code>
 	 */
-	private static void loadModules(String startClassName) throws IOException {
+	private static void loadModules() throws IOException {
 		BufferedReader apks = new BufferedReader(new FileReader(BASE_DIR + "conf/modules.list"));
 		String apk;
 		while ((apk = apks.readLine()) != null) {
-			loadModule(apk, startClassName);
+			loadModule(apk);
 		}
 		apks.close();
 	}
@@ -393,7 +406,7 @@ public final class XposedBridge {
 	 * in <code>assets/xposed_init</code>.
 	 */
 	@SuppressWarnings("deprecation")
-	private static void loadModule(String apk, String startClassName) {
+	private static void loadModule(String apk) {
 		log("Loading modules from " + apk);
 
 		if (!new File(apk).exists()) {
@@ -430,7 +443,7 @@ public final class XposedBridge {
 
 					// call the init(String) method of the module
 					final Object moduleInstance = moduleClass.newInstance();
-					if (startClassName == null) {
+					if (isZygote) {
 						if (moduleInstance instanceof IXposedHookZygoteInit) {
 							IXposedHookZygoteInit.StartupParam param = new IXposedHookZygoteInit.StartupParam();
 							param.modulePath = apk;
@@ -523,7 +536,7 @@ public final class XposedBridge {
 		callbacks.add(callback);
 		if (newMethod) {
 			Class<?> declaringClass = hookMethod.getDeclaringClass();
-			int slot = (int) getIntField(hookMethod, "slot");
+			int slot = (runtime == RUNTIME_DALVIK) ? (int) getIntField(hookMethod, "slot") : 0;
 
 			Class<?>[] parameterTypes;
 			Class<?> returnType;
