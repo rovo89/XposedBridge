@@ -469,12 +469,12 @@ public final class XposedBridge {
 	 * <p>DON'T FLOOD THE LOG!!! This is only meant for error logging.
 	 * If you want to write information/debug messages, use logcat.
 	 *
-	 * @param text The log message.
+	 * @param error The log message.
 	 */
-	public synchronized static void log(String text) {
-		Log.i("Xposed", text);
+	public synchronized static void logError(String error) {
+		Log.i("Xposed", error);
 		if (logWriter != null) {
-			logWriter.println(text);
+			logWriter.println(error);
 			logWriter.flush();
 		}
 	}
