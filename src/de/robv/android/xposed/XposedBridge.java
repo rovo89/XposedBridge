@@ -63,9 +63,11 @@ public final class XposedBridge {
 	public static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
 	public static int XPOSED_BRIDGE_VERSION;
 
+	private static File logFile = null;
 	private static PrintWriter logWriter = null;
 	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
-	private static final int MAX_LOGFILE_SIZE = 20*1024;
+	private static final int MAX_LOGFILE_SIZE_SOFT = 20*1024;
+	private static final int MAX_LOGFILE_SIZE_HARD = 5*1024*1024;
 	private static boolean disableHooks = false;
 	public static boolean disableResources = false;
 
@@ -93,8 +95,8 @@ public final class XposedBridge {
 		try {
 			// initialize log file
 			try {
-				File logFile = new File(BASE_DIR + "log/error.log");
-				if (startClassName == null && logFile.length() > MAX_LOGFILE_SIZE)
+				logFile = new File(BASE_DIR + "log/error.log");
+				if (startClassName == null && logFile.length() > MAX_LOGFILE_SIZE_SOFT)
 					logFile.renameTo(new File(BASE_DIR + "log/error.log.old"));
 				logWriter = new PrintWriter(new FileWriter(logFile, true));
 				logFile.setReadable(true, false);
@@ -473,7 +475,7 @@ public final class XposedBridge {
 	 */
 	public synchronized static void log(String text) {
 		Log.i("Xposed", text);
-		if (logWriter != null) {
+		if (logWriter != null && logFile.length() < MAX_LOGFILE_SIZE_HARD) {
 			logWriter.println(text);
 			logWriter.flush();
 		}
@@ -489,7 +491,7 @@ public final class XposedBridge {
 	 */
 	public synchronized static void log(Throwable t) {
 		Log.i("Xposed", Log.getStackTraceString(t));
-		if (logWriter != null) {
+		if (logWriter != null && logFile.length() < MAX_LOGFILE_SIZE_HARD) {
 			t.printStackTrace(logWriter);
 			logWriter.flush();
 		}
