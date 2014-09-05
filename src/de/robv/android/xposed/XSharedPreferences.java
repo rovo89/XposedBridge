@@ -104,7 +104,6 @@ public final class XSharedPreferences implements SharedPreferences {
 				}
 			}
 		}
-		mLoaded = true;
 		if (map != null) {
 			mMap = map;
 			mLastModified = lastModified;
@@ -112,6 +111,7 @@ public final class XSharedPreferences implements SharedPreferences {
 		} else {
 			mMap = new HashMap<String, Object>();
 		}
+		mLoaded = true;
 		notifyAll();
 	}
 
