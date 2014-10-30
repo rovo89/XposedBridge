@@ -481,6 +481,10 @@ public final class XposedBridge {
 		}
 	}
 
+        public static File getXposedErrorLogFile() {
+		return logFile;
+		}
+	}
 	/**
 	 * Logs a stack trace to the Xposed error log.
 	 *
