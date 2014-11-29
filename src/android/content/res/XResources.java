@@ -2,6 +2,7 @@ package android.content.res;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getIntField;
+import static de.robv.android.xposed.XposedHelpers.getLongField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 
 import java.io.File;
@@ -16,6 +17,7 @@ import android.content.pm.PackageParser;
 import android.graphics.Movie;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -201,7 +203,7 @@ public class XResources extends MiuiResources {
 			}
 		});
 
-		findAndHookMethod(LayoutInflater.class, "parseInclude", XmlPullParser.class, View.class, AttributeSet.class, new XC_MethodHook() {
+		final XC_MethodHook parseIncludeHook = new XC_MethodHook() {
 			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				sIncludedLayouts.get().push(param);
@@ -226,7 +228,14 @@ public class XResources extends MiuiResources {
 					XCallback.callAll(liparam);
 				}
 			}
-		});
+		};
+		if (Build.VERSION.SDK_INT < 21) {
+			findAndHookMethod(LayoutInflater.class, "parseInclude", XmlPullParser.class, View.class,
+					AttributeSet.class, parseIncludeHook);
+		} else {
+			findAndHookMethod(LayoutInflater.class, "parseInclude", XmlPullParser.class, View.class,
+					AttributeSet.class, boolean.class, parseIncludeHook);
+		}
 	}
 
 	public static class ResourceNames {
@@ -405,7 +414,9 @@ public class XResources extends MiuiResources {
 			XmlResourceParser result = repRes.getAnimation(repId);
 
 			if (!loadedFromCache) {
-				int parseState = getIntField(result, "mParseState");
+				long parseState = (Build.VERSION.SDK_INT >= 21)
+					? getLongField(result, "mParseState")
+					: getIntField(result, "mParseState");
 				rewriteXmlReferencesNative(parseState, this, repRes);
 			}
 
@@ -757,7 +768,7 @@ public class XResources extends MiuiResources {
 		return false;
 	}
 
-	private static native void rewriteXmlReferencesNative(int parserPtr, XResources origRes, Resources repRes);
+	private static native void rewriteXmlReferencesNative(long parserPtr, XResources origRes, Resources repRes);
 
 	/**
 	 * Used to replace reference IDs in XMLs.

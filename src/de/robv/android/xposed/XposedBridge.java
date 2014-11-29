@@ -225,22 +225,45 @@ public final class XposedBridge {
 			}
 		});
 
-		// system thread initialization
-		findAndHookMethod("com.android.server.ServerThread", null,
-				Build.VERSION.SDK_INT < 19 ? "run" : "initAndLoop", new XC_MethodHook() {
-			@Override
-			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				loadedPackagesInProcess.add("android");
+		// system_server initialization
+		if (Build.VERSION.SDK_INT < 21) {
+			findAndHookMethod("com.android.server.ServerThread", null,
+					Build.VERSION.SDK_INT < 19 ? "run" : "initAndLoop", new XC_MethodHook() {
+				@Override
+				protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+					loadedPackagesInProcess.add("android");
 
-				LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
-				lpparam.packageName = "android";
-				lpparam.processName = "android"; // it's actually system_server, but other functions return this as well
-				lpparam.classLoader = BOOTCLASSLOADER;
-				lpparam.appInfo = null;
-				lpparam.isFirstApplication = true;
-				XC_LoadPackage.callAll(lpparam);
-			}
-		});
+					LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
+					lpparam.packageName = "android";
+					lpparam.processName = "android"; // it's actually system_server, but other functions return this as well
+					lpparam.classLoader = BOOTCLASSLOADER;
+					lpparam.appInfo = null;
+					lpparam.isFirstApplication = true;
+					XC_LoadPackage.callAll(lpparam);
+				}
+			});
+		} else {
+			findAndHookMethod(ActivityThread.class, "systemMain", new XC_MethodHook() {
+				@Override
+				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+					final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+					findAndHookMethod("com.android.server.SystemServer", cl, "startBootstrapServices", new XC_MethodHook() {
+						@Override
+						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+							loadedPackagesInProcess.add("android");
+
+							LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
+							lpparam.packageName = "android";
+							lpparam.processName = "android"; // it's actually system_server, but other functions return this as well
+							lpparam.classLoader = cl;
+							lpparam.appInfo = null;
+							lpparam.isFirstApplication = true;
+							XC_LoadPackage.callAll(lpparam);
+						}
+					});
+				}
+			});
+		}
 
 		// when a package is loaded for an existing process, trigger the callbacks as well
 		hookAllConstructors(LoadedApk.class, new XC_MethodHook() {
