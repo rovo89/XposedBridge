@@ -398,6 +398,11 @@ public final class XposedBridge {
 	private static void loadModule(String apk, String startClassName) {
 		log("Loading modules from " + apk);
 
+		if (apk.startsWith("/mnt/asec")) {
+			log("  This module is installed on external SD card and it will NOT work");
+			return;                	
+		}
+
 		if (!new File(apk).exists()) {
 			log("  File does not exist");
 			return;
