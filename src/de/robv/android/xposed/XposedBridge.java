@@ -10,12 +10,9 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
@@ -23,9 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.text.DateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -69,9 +64,6 @@ public final class XposedBridge {
 	private static final int RUNTIME_DALVIK = 1;
 	private static final int RUNTIME_ART = 2;
 
-	private static PrintWriter logWriter = null;
-	// log for initialization of a few mods is about 500 bytes, so 2*20 kB (2*~350 lines) should be enough
-	private static final int MAX_LOGFILE_SIZE = 20*1024;
 	private static boolean disableHooks = false;
 	public static boolean disableResources = false;
 
@@ -94,24 +86,8 @@ public final class XposedBridge {
 	protected static void main(String[] args) {
 		// Initialize the Xposed framework and modules
 		try {
-			// Initialize log file
-			try {
-				File logFile = new File(BASE_DIR + "log/error.log");
-				if (isZygote && logFile.length() > MAX_LOGFILE_SIZE)
-					logFile.renameTo(new File(BASE_DIR + "log/error.log.old"));
-				logWriter = new PrintWriter(new FileWriter(logFile, true));
-				logFile.setReadable(true, false);
-				logFile.setWritable(true, false);
-			} catch (IOException ignored) {}
-
-			String date = DateFormat.getDateTimeInstance().format(new Date());
 			determineXposedVersion();
-			log("-----------------\n" + date + " UTC\n"
-					+ "Loading Xposed v" + XPOSED_BRIDGE_VERSION
-					+ " (for " + (isZygote ? "Zygote" : startClassName) + ")...");
-
-			if (isZygote)
-				log("Running ROM '" + Build.DISPLAY + "' with fingerprint '" + Build.FINGERPRINT + "'");
+			log("Initializing XposedBridge version " + XPOSED_BRIDGE_VERSION);
 
 			runtime = getRuntime();
 			if (initNative()) {
@@ -509,10 +485,6 @@ public final class XposedBridge {
 	 */
 	public synchronized static void log(String text) {
 		Log.i("Xposed", text);
-		if (logWriter != null) {
-			logWriter.println(text);
-			logWriter.flush();
-		}
 	}
 
 	/**
@@ -524,11 +496,7 @@ public final class XposedBridge {
 	 * @param t The Throwable object for the stack trace.
 	 */
 	public synchronized static void log(Throwable t) {
-		Log.i("Xposed", Log.getStackTraceString(t));
-		if (logWriter != null) {
-			t.printStackTrace(logWriter);
-			logWriter.flush();
-		}
+		Log.e("Xposed", Log.getStackTraceString(t));
 	}
 
 	/**
