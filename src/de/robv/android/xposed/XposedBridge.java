@@ -59,6 +59,7 @@ public final class XposedBridge {
 	public static int XPOSED_BRIDGE_VERSION;
 
 	private static boolean isZygote = true;
+	private static boolean startsSystemServer = true;
 	private static String startClassName = null;
 	private static int runtime = 0;
 	private static final int RUNTIME_DALVIK = 1;
@@ -91,8 +92,10 @@ public final class XposedBridge {
 
 			runtime = getRuntime();
 			if (initNative()) {
-				if (isZygote)
+				if (isZygote) {
+					startsSystemServer = startsSystemServer();
 					initForZygote();
+				}
 
 				loadModules();
 			} else {
@@ -124,6 +127,7 @@ public final class XposedBridge {
 
 	private static native String getStartClassName();
 	private static native int getRuntime();
+	private static native boolean startsSystemServer();
 
 	private static void determineXposedVersion() throws IOException {
 		ZipInputStream is = new ZipInputStream(new FileInputStream("/system/framework/XposedBridge.jar"));
@@ -218,7 +222,7 @@ public final class XposedBridge {
 					XC_LoadPackage.callAll(lpparam);
 				}
 			});
-		} else {
+		} else if (startsSystemServer) {
 			findAndHookMethod(ActivityThread.class, "systemMain", new XC_MethodHook() {
 				@Override
 				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -440,12 +444,12 @@ public final class XposedBridge {
 						continue;
 					}
 
-					// call the init(String) method of the module
 					final Object moduleInstance = moduleClass.newInstance();
 					if (isZygote) {
 						if (moduleInstance instanceof IXposedHookZygoteInit) {
 							IXposedHookZygoteInit.StartupParam param = new IXposedHookZygoteInit.StartupParam();
 							param.modulePath = apk;
+							param.startsSystemServer = startsSystemServer;
 							((IXposedHookZygoteInit) moduleInstance).initZygote(param);
 						}
 
