@@ -1,8 +1,7 @@
 package de.robv.android.xposed;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,11 +9,15 @@ import java.util.Set;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.internal.util.XmlUtils;
+
+import de.robv.android.xposed.services.FileResult;
 
 /**
  * This class is basically the same as SharedPreferencesImpl from AOSP, but
@@ -22,29 +25,61 @@ import com.android.internal.util.XmlUtils;
  * compatible with all ROMs.
  */
 public final class XSharedPreferences implements SharedPreferences {
-	private static final String TAG = "ReadOnlySharedPreferences";
+	private static final String TAG = "XSharedPreferences";
 	private final File mFile;
+	private final String mFilename;
 	private Map<String, Object> mMap;
 	private boolean mLoaded = false;
 	private long mLastModified;
 	private long mFileSize;
 
+	/**
+	 * Read settings from the specified file.
+	 * @param prefFile The file to read the preferences from.
+	 */
 	public XSharedPreferences(File prefFile) {
 		mFile = prefFile;
+		mFilename = mFile.getAbsolutePath();
 		startLoadFromDisk();
 	}
 
+	/**
+	 * Read settings from the default preferences for a package.
+	 * These preferences are returned by {@link PreferenceManager#getDefaultSharedPreferences}.
+	 * @param packageName The package name.
+	 */
 	public XSharedPreferences(String packageName) {
 		this(packageName, packageName + "_preferences");
 	}
 
+	/**
+	 * Read settings from a custom preferences file for a package.
+	 * These preferences are returned by {@link Context#getSharedPreferences(String, int)}.
+	 * @param packageName The package name.
+	 * @param prefFileName The file name without ".xml".
+	 */
 	public XSharedPreferences(String packageName, String prefFileName) {
 		mFile = new File(Environment.getDataDirectory(), "data/" + packageName + "/shared_prefs/" + prefFileName + ".xml");
+		mFilename = mFile.getAbsolutePath();
 		startLoadFromDisk();
 	}
 
+	/**
+	 * Tries to make the preferences file world-readable.
+	 *
+	 * <p><strong>Warning:</strong> This is only meant to work around permission "fix" functions that are part
+	 * of some recoveries. It doesn't replace the need to open preferences with {@code MODE_WORLD_READABLE}
+	 * in the module's UI code. Otherwise, Android will set stricter permissions again during the next save.
+	 *
+	 * <p>This will only work if executed as root (e.g. {@code initZygote()}) and only if SELinux is disabled.
+	 *
+	 * @return {@code true} in case the file could be made world-readable.
+	 */
 	public boolean makeWorldReadable() {
-		if (!mFile.exists()) // just in case - the file should never be created if it doesn'e exist
+		if (!SELinuxHelper.getAppDataFileService().hasDirectFileAccess())
+			return false; // It doesn't make much sense to make the file readable if we wouldn't be able to access it anyway.
+
+		if (!mFile.exists()) // Just in case - the file should never be created if it doesn't exist.
 			return false;
 
 		return mFile.setReadable(true, false);
@@ -52,6 +87,8 @@ public final class XSharedPreferences implements SharedPreferences {
 
 	/**
 	 * Returns the file that is backing these preferences.
+	 *
+	 * <p><strong>Warning:</strong> The file might not be accessible directly.
 	 */
 	public File getFile() {
 		return mFile;
@@ -78,37 +115,38 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 
 		Map map = null;
-		long lastModified = 0;
-		long fileSize = 0;
-		if (mFile.canRead()) {
-			lastModified = mFile.lastModified();
-			fileSize = mFile.length();
-			BufferedInputStream str = null;
-			try {
-				str = new BufferedInputStream(
-						new FileInputStream(mFile), 16*1024);
-				map = XmlUtils.readMapXml(str);
-				str.close();
-			} catch (XmlPullParserException e) {
-				Log.w(TAG, "getSharedPreferences", e);
-			} catch (IOException e) {
-				Log.w(TAG, "getSharedPreferences", e);
-			} finally {
-				if (str != null) {
-					try {
-						str.close();
-					} catch (RuntimeException rethrown) {
-						throw rethrown;
-					} catch (Exception ignored) {
-					}
+		FileResult result = null;
+		try {
+			result = SELinuxHelper.getAppDataFileService().getFileInputStream(mFilename, mFileSize, mLastModified);
+			if (result.stream != null) {
+				map = XmlUtils.readMapXml(result.stream);
+				result.stream.close();
+			} else {
+				// The file is unchanged, keep the current values
+				map = mMap;
+			}
+		} catch (XmlPullParserException e) {
+			Log.w(TAG, "getSharedPreferences", e);
+		} catch (FileNotFoundException ignored) {
+			// SharedPreferencesImpl has a canRead() check, so it doesn't log anything in case the file doesn't exist
+		} catch (IOException e) {
+			Log.w(TAG, "getSharedPreferences", e);
+		} finally {
+			if (result != null && result.stream != null) {
+				try {
+					result.stream.close();
+				} catch (RuntimeException rethrown) {
+					throw rethrown;
+				} catch (Exception ignored) {
 				}
 			}
 		}
+
 		mLoaded = true;
 		if (map != null) {
 			mMap = map;
-			mLastModified = lastModified;
-			mFileSize = fileSize;
+			mLastModified = result.mtime;
+			mFileSize = result.size;
 		} else {
 			mMap = new HashMap<String, Object>();
 		}
@@ -117,24 +155,30 @@ public final class XSharedPreferences implements SharedPreferences {
 
 	/**
 	 * Reload the settings from file if they have changed.
+	 *
+	 * <p><strong>Warning:</strong> With enforcing SELinux, this call might be quite expensive.
 	 */
-	public void reload() {
-		synchronized (this) {
-			if (hasFileChanged())
-				startLoadFromDisk();
-		}
+	public synchronized void reload() {
+		if (hasFileChanged())
+			startLoadFromDisk();
 	}
 
 	/**
-	 * Check whether the file has changed since the last reboot.
+	 * Check whether the file has changed since the last time it has been loaded.
+	 *
+	 * <p><strong>Warning:</strong> With enforcing SELinux, this call might be quite expensive.
 	 */
 	public synchronized boolean hasFileChanged() {
-		if (!mFile.canRead()) {
+		try {
+			FileResult result = SELinuxHelper.getAppDataFileService().statFile(mFilename);
+			return mLastModified != result.mtime || mFileSize != result.size;
+		} catch (FileNotFoundException ignored) {
+			// SharedPreferencesImpl doesn't log anything in case the file doesn't exist
+			return true;
+		} catch (IOException e) {
+			Log.w(TAG, "hasFileChanged", e);
 			return true;
 		}
-		long lastModified = mFile.lastModified();
-		long fileSize = mFile.length();
-		return mLastModified != lastModified || mFileSize != fileSize;
 	}
 
 	private void awaitLoadedLocked() {

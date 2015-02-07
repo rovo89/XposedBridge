@@ -90,6 +90,9 @@ public final class XposedBridge {
 			determineXposedVersion();
 			log("Initializing XposedBridge version " + XPOSED_BRIDGE_VERSION);
 
+			SELinuxHelper.initOnce();
+			SELinuxHelper.initForProcess();
+
 			runtime = getRuntime();
 			if (initNative()) {
 				if (isZygote) {
@@ -175,6 +178,7 @@ public final class XposedBridge {
 		// normal process initialization (for new Activity, Service, BroadcastReceiver etc.)
 		findAndHookMethod(ActivityThread.class, "handleBindApplication", "android.app.ActivityThread.AppBindData", new XC_MethodHook() {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+				SELinuxHelper.initForProcess();
 				ActivityThread activityThread = (ActivityThread) param.thisObject;
 				ApplicationInfo appInfo = (ApplicationInfo) getObjectField(param.args[0], "appInfo");
 				ComponentName instrumentationName = (ComponentName) getObjectField(param.args[0], "instrumentationName");
@@ -211,6 +215,7 @@ public final class XposedBridge {
 					Build.VERSION.SDK_INT < 19 ? "run" : "initAndLoop", new XC_MethodHook() {
 				@Override
 				protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+					SELinuxHelper.initForProcess();
 					loadedPackagesInProcess.add("android");
 
 					LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
@@ -230,6 +235,7 @@ public final class XposedBridge {
 					findAndHookMethod("com.android.server.SystemServer", cl, "startBootstrapServices", new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+							SELinuxHelper.initForProcess();
 							loadedPackagesInProcess.add("android");
 
 							LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
@@ -279,7 +285,7 @@ public final class XposedBridge {
 			}
 		});
 
-		if (!new File(BASE_DIR + "conf/disable_resources").exists()) {
+		if (!SELinuxHelper.getAppDataFileService().checkFileExists(BASE_DIR + "conf/disable_resources")) {
 			hookResources();
 		} else {
 			disableResources = true;
@@ -396,7 +402,8 @@ public final class XposedBridge {
 	 * Try to load all modules defined in <code>BASE_DIR/conf/modules.list</code>
 	 */
 	private static void loadModules() throws IOException {
-		BufferedReader apks = new BufferedReader(new FileReader(BASE_DIR + "conf/modules.list"));
+		InputStream stream = SELinuxHelper.getAppDataFileService().getFileInputStream(BASE_DIR + "conf/modules.list");
+		BufferedReader apks = new BufferedReader(new InputStreamReader(stream));
 		String apk;
 		while ((apk = apks.readLine()) != null) {
 			loadModule(apk);
