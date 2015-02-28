@@ -53,8 +53,10 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResou
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.callbacks.XCallback;
+import de.robv.android.xposed.services.BaseService;
 
 public final class XposedBridge {
+	public static final String TAG = "Xposed";
 	public static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
 	public static int XPOSED_BRIDGE_VERSION;
 
@@ -402,7 +404,14 @@ public final class XposedBridge {
 	 * Try to load all modules defined in <code>BASE_DIR/conf/modules.list</code>
 	 */
 	private static void loadModules() throws IOException {
-		InputStream stream = SELinuxHelper.getAppDataFileService().getFileInputStream(BASE_DIR + "conf/modules.list");
+		final String filename = BASE_DIR + "conf/modules.list";
+		BaseService service = SELinuxHelper.getAppDataFileService();
+		if (!service.checkFileExists(filename)) {
+			Log.e(TAG, "Cannot load any modules because " + filename + " was not found");
+			return;
+		}
+
+		InputStream stream = service.getFileInputStream(filename);
 		BufferedReader apks = new BufferedReader(new InputStreamReader(stream));
 		String apk;
 		while ((apk = apks.readLine()) != null) {
@@ -495,7 +504,7 @@ public final class XposedBridge {
 	 * @param text The log message.
 	 */
 	public synchronized static void log(String text) {
-		Log.i("Xposed", text);
+		Log.i(TAG, text);
 	}
 
 	/**
@@ -507,7 +516,7 @@ public final class XposedBridge {
 	 * @param t The Throwable object for the stack trace.
 	 */
 	public synchronized static void log(Throwable t) {
-		Log.e("Xposed", Log.getStackTraceString(t));
+		Log.e(TAG, Log.getStackTraceString(t));
 	}
 
 	/**
