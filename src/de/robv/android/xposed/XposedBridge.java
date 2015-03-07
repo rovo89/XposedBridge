@@ -183,9 +183,10 @@ public final class XposedBridge {
 				SELinuxHelper.initForProcess();
 				ActivityThread activityThread = (ActivityThread) param.thisObject;
 				ApplicationInfo appInfo = (ApplicationInfo) getObjectField(param.args[0], "appInfo");
+				String reportedPackageName = appInfo.packageName.equals("android") ? "system" : appInfo.packageName;
 				ComponentName instrumentationName = (ComponentName) getObjectField(param.args[0], "instrumentationName");
 				if (instrumentationName != null) {
-					XposedBridge.log("Instrumentation detected, disabling framework for " + appInfo.packageName);
+					XposedBridge.log("Instrumentation detected, disabling framework for " + reportedPackageName);
 					disableHooks = true;
 					return;
 				}
@@ -194,19 +195,19 @@ public final class XposedBridge {
 					return;
 
 				setObjectField(activityThread, "mBoundApplication", param.args[0]);
-				loadedPackagesInProcess.add(appInfo.packageName);
+				loadedPackagesInProcess.add(reportedPackageName);
 				LoadedApk loadedApk = activityThread.getPackageInfoNoCheck(appInfo, compatInfo);
 				XResources.setPackageNameForResDir(appInfo.packageName, loadedApk.getResDir());
 
 				LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
-				lpparam.packageName = appInfo.packageName;
+				lpparam.packageName = reportedPackageName;
 				lpparam.processName = (String) getObjectField(param.args[0], "processName");
 				lpparam.classLoader = loadedApk.getClassLoader();
 				lpparam.appInfo = appInfo;
 				lpparam.isFirstApplication = true;
 				XC_LoadPackage.callAll(lpparam);
 
-				if (appInfo.packageName.equals(INSTALLER_PACKAGE_NAME))
+				if (reportedPackageName.equals(INSTALLER_PACKAGE_NAME))
 					hookXposedInstaller(lpparam.classLoader);
 			}
 		});
