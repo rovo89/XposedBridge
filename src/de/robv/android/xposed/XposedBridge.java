@@ -93,7 +93,7 @@ public final class XposedBridge {
 			log("Initializing XposedBridge version " + XPOSED_BRIDGE_VERSION);
 
 			SELinuxHelper.initOnce();
-			SELinuxHelper.initForProcess();
+			SELinuxHelper.initForProcess(null);
 
 			runtime = getRuntime();
 			if (initNative()) {
@@ -180,10 +180,10 @@ public final class XposedBridge {
 		// normal process initialization (for new Activity, Service, BroadcastReceiver etc.)
 		findAndHookMethod(ActivityThread.class, "handleBindApplication", "android.app.ActivityThread.AppBindData", new XC_MethodHook() {
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				SELinuxHelper.initForProcess();
 				ActivityThread activityThread = (ActivityThread) param.thisObject;
 				ApplicationInfo appInfo = (ApplicationInfo) getObjectField(param.args[0], "appInfo");
 				String reportedPackageName = appInfo.packageName.equals("android") ? "system" : appInfo.packageName;
+				SELinuxHelper.initForProcess(reportedPackageName);
 				ComponentName instrumentationName = (ComponentName) getObjectField(param.args[0], "instrumentationName");
 				if (instrumentationName != null) {
 					XposedBridge.log("Instrumentation detected, disabling framework for " + reportedPackageName);
@@ -218,7 +218,7 @@ public final class XposedBridge {
 					Build.VERSION.SDK_INT < 19 ? "run" : "initAndLoop", new XC_MethodHook() {
 				@Override
 				protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-					SELinuxHelper.initForProcess();
+					SELinuxHelper.initForProcess("android");
 					loadedPackagesInProcess.add("android");
 
 					LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);
@@ -238,7 +238,7 @@ public final class XposedBridge {
 					findAndHookMethod("com.android.server.SystemServer", cl, "startBootstrapServices", new XC_MethodHook() {
 						@Override
 						protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-							SELinuxHelper.initForProcess();
+							SELinuxHelper.initForProcess("android");
 							loadedPackagesInProcess.add("android");
 
 							LoadPackageParam lpparam = new LoadPackageParam(sLoadedPackageCallbacks);

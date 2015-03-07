@@ -3,7 +3,6 @@ package de.robv.android.xposed;
 import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 import android.os.Build;
-import android.os.Process;
 import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 import de.robv.android.xposed.services.BaseService;
 import de.robv.android.xposed.services.BinderService;
@@ -59,7 +58,7 @@ public final class SELinuxHelper {
 
 	private static BaseService sServiceAppDataFile = null;
 
-	static void initOnce() {
+	/*package*/ static void initOnce() {
 		if (Build.VERSION.SDK_INT < 17)
 			return;
 
@@ -70,17 +69,16 @@ public final class SELinuxHelper {
 		} catch (ClassNotFoundError ignored) {};
 	}
 
-	static void initForProcess() {
+	/*package*/ static void initForProcess(String packageName) {
 		if (sIsSELinuxEnabled)
 			sContext = (String) callStaticMethod(sClassSELinux, "getContext");
 
 		if (sIsSELinuxEnforced) {
-			int uid = Process.myUid();
-			if (uid == 0) {
+			if (packageName == null) {  // Zygote
 				sServiceAppDataFile = new ZygoteService();
-			} else if (uid == Process.SYSTEM_UID) {
+			} else if (packageName.equals("android")) {  //system_server
 				sServiceAppDataFile = BinderService.getService(BinderService.TARGET_APP);
-			} else {
+			} else {  // app
 				sServiceAppDataFile = new DirectAccessService();
 			}
 		} else {
