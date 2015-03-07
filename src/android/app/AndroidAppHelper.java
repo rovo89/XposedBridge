@@ -2,6 +2,7 @@ package android.app;
 
 import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.findField;
+import static de.robv.android.xposed.XposedHelpers.findMethodExact;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.newInstance;
 
@@ -24,6 +25,7 @@ import de.robv.android.xposed.XposedBridge;
 public class AndroidAppHelper {
 	private static Class<?> CLASS_RESOURCES_KEY;
 	private static boolean HAS_IS_THEMEABLE = false;
+	private static boolean HAS_THEME_CONFIG_PARAMETER = false;
 
 	static {
 		CLASS_RESOURCES_KEY = (Build.VERSION.SDK_INT < 19) ?
@@ -36,6 +38,14 @@ public class AndroidAppHelper {
 			HAS_IS_THEMEABLE = true;
 		} catch (NoSuchFieldError ignored) {
 		} catch (Throwable t) { XposedBridge.log(t); }
+
+		if (HAS_IS_THEMEABLE && Build.VERSION.SDK_INT >= 21) {
+			try {
+				findMethodExact("android.app.ResourcesManager", null, "getThemeConfig");
+				HAS_THEME_CONFIG_PARAMETER = true;
+			} catch (NoSuchMethodError ignored) {
+			} catch (Throwable t) { XposedBridge.log(t); }
+		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -77,7 +87,9 @@ public class AndroidAppHelper {
 	/* For SDK 19+ */
 	private static Object createResourcesKey(String resDir, int displayId, Configuration overrideConfiguration, float scale, IBinder token, boolean isThemeable) {
 		try {
-			if (HAS_IS_THEMEABLE)
+			if (HAS_THEME_CONFIG_PARAMETER)
+				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale, isThemeable, null, token);
+			else if (HAS_IS_THEMEABLE)
 				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale, isThemeable, token);
 			else
 				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale, token);
