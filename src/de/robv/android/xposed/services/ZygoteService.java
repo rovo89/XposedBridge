@@ -35,13 +35,13 @@ public final class ZygoteService extends BaseService {
 
 		// Check range
 		if (offset > 0 && offset >= stat.size) {
-			throw new IllegalArgumentException("Offset " + offset + " is out of range for " + filename);
+			throw new IllegalArgumentException("offset " + offset + " >= size " + stat.size + " for " + filename);
 		} else if (offset < 0) {
 			offset = 0;
 		}
 
 		if (length > 0 && (offset + length) > stat.size) {
-			throw new IllegalArgumentException("Length " + length + " is out of range for " + filename);
+			throw new IllegalArgumentException("offset " + offset + " + length " + length + " > size " + stat.size + " for " + filename);
 		} else if (length <= 0) {
 			length = (int) (stat.size - offset);
 		}
