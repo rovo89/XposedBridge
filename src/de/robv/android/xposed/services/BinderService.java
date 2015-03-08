@@ -74,7 +74,7 @@ public final class BinderService extends BaseService {
 		reply.readException();
 		int errno = reply.readInt();
 		if (errno != 0)
-			throwCommonIOException(errno, filename, " while retrieving attributes for ");
+			throwCommonIOException(errno, null, filename, " while retrieving attributes for ");
 
 		long size = reply.readLong();
 		long time = reply.readLong();
@@ -117,6 +117,7 @@ public final class BinderService extends BaseService {
 
 		reply.readException();
 		int errno = reply.readInt();
+		String errorMsg = reply.readString();
 		long size = reply.readLong();
 		long time = reply.readLong();
 		byte[] content = reply.createByteArray();
@@ -127,10 +128,18 @@ public final class BinderService extends BaseService {
 			case 0:
 				return new FileResult(content, size, time);
 			case 22: // EINVAL
-				throw new IllegalArgumentException("Offset " + offset + " / Length " + length
-						+ " is out of range for " + filename + " with size " + size);
+				if (errorMsg != null) {
+					IllegalArgumentException iae = new IllegalArgumentException(errorMsg);
+					if (offset == 0 && length == 0)
+						throw new IOException(iae);
+					else
+						throw iae;
+				} else {
+					throw new IllegalArgumentException("Offset " + offset + " / Length " + length
+							+ " is out of range for " + filename + " with size " + size);
+				}
 			default:
-				throwCommonIOException(errno, filename, " while reading ");
+				throwCommonIOException(errno, errorMsg, filename, " while reading ");
 				return null; // not reached
 		}
 	}

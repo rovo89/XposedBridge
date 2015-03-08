@@ -144,18 +144,19 @@ public abstract class BaseService {
 		}
 	}
 
-	protected static void throwCommonIOException(int errno, String filename, String defaultText) throws IOException {
+	protected static void throwCommonIOException(int errno, String errorMsg, String filename, String defaultText) throws IOException {
 		switch (errno) {
 			case 1: // EPERM
-				throw new FileNotFoundException("Permission denied: " + filename);
+			case 13: // EACCES
+				throw new FileNotFoundException(errorMsg != null ? errorMsg : "Permission denied: " + filename);
 			case 2: // ENOENT
-				throw new FileNotFoundException("No such file or directory: " + filename);
+				throw new FileNotFoundException(errorMsg != null ? errorMsg : "No such file or directory: " + filename);
 			case 12: // ENOMEM
-				throw new OutOfMemoryError();
+				throw new OutOfMemoryError(errorMsg);
 			case 21: // EISDIR
-				throw new FileNotFoundException("Is a directory: " + filename);
+				throw new FileNotFoundException(errorMsg != null ? errorMsg : "Is a directory: " + filename);
 			default:
-				throw new IOException("Error " + errno + defaultText + filename);
+				throw new IOException(errorMsg != null ? errorMsg : "Error " + errno + defaultText + filename);
 		}
 	}
 }
