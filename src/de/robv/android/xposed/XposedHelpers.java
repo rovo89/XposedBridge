@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.res.Resources;
 import external.org.apache.commons.lang3.ClassUtils;
@@ -27,6 +28,7 @@ public class XposedHelpers {
 	private static final HashMap<String, Method> methodCache = new HashMap<String, Method>();
 	private static final HashMap<String, Constructor<?>> constructorCache = new HashMap<String, Constructor<?>>();
 	private static final WeakHashMap<Object, HashMap<String, Object>> additionalFields = new WeakHashMap<Object, HashMap<String, Object>>();
+	private static final HashMap<String, ThreadLocal<AtomicInteger>> sMethodDepth = new HashMap<String, ThreadLocal<AtomicInteger>>();
 
 	/**
 	 * Look up a class with the specified class loader (or the boot class loader if
@@ -1177,6 +1179,45 @@ public class XposedHelpers {
 		}
 	}
 
+	//#################################################################################################
+	/**
+	 * Increment the depth counter for the given method.
+	 * @return The updated depth.
+	 */
+	public static int incrementMethodDepth(String method) {
+		return getMethodDepthCounter(method).get().incrementAndGet();
+	}
+
+	/**
+	 * Decrement the depth counter for the given method.
+	 * @return The updated depth.
+	 */
+	public static int decrementMethodDepth(String method) {
+		return getMethodDepthCounter(method).get().decrementAndGet();
+	}
+
+	/**
+	 * Get the depth counter for the given method.
+	 * @return The depth.
+	 */
+	public static int getMethodDepth(String method) {
+		return getMethodDepthCounter(method).get().get();
+	}
+
+	private static ThreadLocal<AtomicInteger> getMethodDepthCounter(String method) {
+		synchronized (sMethodDepth) {
+			ThreadLocal<AtomicInteger> counter = sMethodDepth.get(method);
+			if (counter == null) {
+				counter = new ThreadLocal<AtomicInteger>() {
+					protected AtomicInteger initialValue() {
+						return new AtomicInteger();
+					}
+				};
+				sMethodDepth.put(method, counter);
+			}
+			return counter;
+		}
+	}
 
 	//#################################################################################################
 	// TODO helpers for view traversing
