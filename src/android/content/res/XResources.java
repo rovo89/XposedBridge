@@ -1,9 +1,11 @@
 package android.content.res;
 
+import static de.robv.android.xposed.XposedHelpers.decrementMethodDepth;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.getIntField;
 import static de.robv.android.xposed.XposedHelpers.getLongField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.incrementMethodDepth;
 
 import java.io.File;
 import java.util.Arrays;
@@ -515,116 +517,152 @@ public class XResources extends MiuiResources {
 
 	@Override
 	public Drawable getDrawable(int id) throws NotFoundException {
-		Object replacement = getReplacement(id);
-		if (replacement instanceof DrawableLoader) {
-			try {
-				Drawable result = ((DrawableLoader) replacement).newDrawable(this, id);
-				if (result != null)
-					return result;
-			} catch (Throwable t) { XposedBridge.log(t); }
-		} else if (replacement instanceof Integer) {
-			return new ColorDrawable((Integer) replacement);
-		} else if (replacement instanceof XResForwarder) {
-			Resources repRes = ((XResForwarder) replacement).getResources();
-			int repId = ((XResForwarder) replacement).getId();
-			return repRes.getDrawable(repId);
+		try {
+			if (incrementMethodDepth("getDrawable") == 1) {
+				Object replacement = getReplacement(id);
+				if (replacement instanceof DrawableLoader) {
+					try {
+						Drawable result = ((DrawableLoader) replacement).newDrawable(this, id);
+						if (result != null)
+							return result;
+					} catch (Throwable t) { XposedBridge.log(t); }
+				} else if (replacement instanceof Integer) {
+					return new ColorDrawable((Integer) replacement);
+				} else if (replacement instanceof XResForwarder) {
+					Resources repRes = ((XResForwarder) replacement).getResources();
+					int repId = ((XResForwarder) replacement).getId();
+					return repRes.getDrawable(repId);
+				}
+			}
+			return super.getDrawable(id);
+		} finally {
+			decrementMethodDepth("getDrawable");
 		}
-		return super.getDrawable(id);
 	}
 
 	@Override
 	public Drawable getDrawable(int id, Theme theme) throws NotFoundException {
-		Object replacement = getReplacement(id);
-		if (replacement instanceof DrawableLoader) {
-			try {
-				Drawable result = ((DrawableLoader) replacement).newDrawable(this, id);
-				if (result != null)
-					return result;
-			} catch (Throwable t) { XposedBridge.log(t); }
-		} else if (replacement instanceof Integer) {
-			return new ColorDrawable((Integer) replacement);
-		} else if (replacement instanceof XResForwarder) {
-			Resources repRes = ((XResForwarder) replacement).getResources();
-			int repId = ((XResForwarder) replacement).getId();
-			return repRes.getDrawable(repId);
+		try {
+			if (incrementMethodDepth("getDrawable") == 1) {
+				Object replacement = getReplacement(id);
+				if (replacement instanceof DrawableLoader) {
+					try {
+						Drawable result = ((DrawableLoader) replacement).newDrawable(this, id);
+						if (result != null)
+							return result;
+					} catch (Throwable t) { XposedBridge.log(t); }
+				} else if (replacement instanceof Integer) {
+					return new ColorDrawable((Integer) replacement);
+				} else if (replacement instanceof XResForwarder) {
+					Resources repRes = ((XResForwarder) replacement).getResources();
+					int repId = ((XResForwarder) replacement).getId();
+					return repRes.getDrawable(repId);
+				}
+			}
+			return super.getDrawable(id, theme);
+		} finally {
+			decrementMethodDepth("getDrawable");
 		}
-		return super.getDrawable(id, theme);
 	}
 
 	@Override
 	public Drawable getDrawable(int id, Theme theme, boolean supportComposedIcons) throws NotFoundException {
-		Object replacement = getReplacement(id);
-		if (replacement instanceof DrawableLoader) {
-			try {
-				Drawable result = ((DrawableLoader) replacement).newDrawable(this, id);
-				if (result != null)
-					return result;
-			} catch (Throwable t) { XposedBridge.log(t); }
-		} else if (replacement instanceof Integer) {
-			return new ColorDrawable((Integer) replacement);
-		} else if (replacement instanceof XResForwarder) {
-			Resources repRes = ((XResForwarder) replacement).getResources();
-			int repId = ((XResForwarder) replacement).getId();
-			return repRes.getDrawable(repId);
+		try {
+			if (incrementMethodDepth("getDrawable") == 1) {
+				Object replacement = getReplacement(id);
+				if (replacement instanceof DrawableLoader) {
+					try {
+						Drawable result = ((DrawableLoader) replacement).newDrawable(this, id);
+						if (result != null)
+							return result;
+					} catch (Throwable t) { XposedBridge.log(t); }
+				} else if (replacement instanceof Integer) {
+					return new ColorDrawable((Integer) replacement);
+				} else if (replacement instanceof XResForwarder) {
+					Resources repRes = ((XResForwarder) replacement).getResources();
+					int repId = ((XResForwarder) replacement).getId();
+					return repRes.getDrawable(repId);
+				}
+			}
+			return super.getDrawable(id, theme, supportComposedIcons);
+		} finally {
+			decrementMethodDepth("getDrawable");
 		}
-		return super.getDrawable(id, theme, supportComposedIcons);
 	}
 
 	@Override
 	public Drawable getDrawableForDensity(int id, int density) throws NotFoundException {
-		Object replacement = getReplacement(id);
-		if (replacement instanceof DrawableLoader) {
-			try {
-				Drawable result = ((DrawableLoader) replacement).newDrawableForDensity(this, id, density);
-				if (result != null)
-					return result;
-			} catch (Throwable t) { XposedBridge.log(t); }
-		} else if (replacement instanceof Integer) {
-			return new ColorDrawable((Integer) replacement);
-		} else if (replacement instanceof XResForwarder) {
-			Resources repRes = ((XResForwarder) replacement).getResources();
-			int repId = ((XResForwarder) replacement).getId();
-			return repRes.getDrawableForDensity(repId, density);
+		try {
+			if (incrementMethodDepth("getDrawableForDensity") == 1) {
+				Object replacement = getReplacement(id);
+				if (replacement instanceof DrawableLoader) {
+					try {
+						Drawable result = ((DrawableLoader) replacement).newDrawableForDensity(this, id, density);
+						if (result != null)
+							return result;
+					} catch (Throwable t) { XposedBridge.log(t); }
+				} else if (replacement instanceof Integer) {
+					return new ColorDrawable((Integer) replacement);
+				} else if (replacement instanceof XResForwarder) {
+					Resources repRes = ((XResForwarder) replacement).getResources();
+					int repId = ((XResForwarder) replacement).getId();
+					return repRes.getDrawableForDensity(repId, density);
+				}
+			}
+			return super.getDrawableForDensity(id, density);
+		} finally {
+			decrementMethodDepth("getDrawableForDensity");
 		}
-		return super.getDrawableForDensity(id, density);
 	}
 
 	@Override
 	public Drawable getDrawableForDensity(int id, int density, Theme theme) throws NotFoundException {
-		Object replacement = getReplacement(id);
-		if (replacement instanceof DrawableLoader) {
-			try {
-				Drawable result = ((DrawableLoader) replacement).newDrawableForDensity(this, id, density);
-				if (result != null)
-					return result;
-			} catch (Throwable t) { XposedBridge.log(t); }
-		} else if (replacement instanceof Integer) {
-			return new ColorDrawable((Integer) replacement);
-		} else if (replacement instanceof XResForwarder) {
-			Resources repRes = ((XResForwarder) replacement).getResources();
-			int repId = ((XResForwarder) replacement).getId();
-			return repRes.getDrawableForDensity(repId, density);
+		try {
+			if (incrementMethodDepth("getDrawableForDensity") == 1) {
+				Object replacement = getReplacement(id);
+				if (replacement instanceof DrawableLoader) {
+					try {
+						Drawable result = ((DrawableLoader) replacement).newDrawableForDensity(this, id, density);
+						if (result != null)
+							return result;
+					} catch (Throwable t) { XposedBridge.log(t); }
+				} else if (replacement instanceof Integer) {
+					return new ColorDrawable((Integer) replacement);
+				} else if (replacement instanceof XResForwarder) {
+					Resources repRes = ((XResForwarder) replacement).getResources();
+					int repId = ((XResForwarder) replacement).getId();
+					return repRes.getDrawableForDensity(repId, density);
+				}
+			}
+			return super.getDrawableForDensity(id, density, theme);
+		} finally {
+			decrementMethodDepth("getDrawableForDensity");
 		}
-		return super.getDrawableForDensity(id, density, theme);
 	}
 
 	@Override
 	public Drawable getDrawableForDensity(int id, int density, Theme theme, boolean supportComposedIcons) throws NotFoundException {
-		Object replacement = getReplacement(id);
-		if (replacement instanceof DrawableLoader) {
-			try {
-				Drawable result = ((DrawableLoader) replacement).newDrawableForDensity(this, id, density);
-				if (result != null)
-					return result;
-			} catch (Throwable t) { XposedBridge.log(t); }
-		} else if (replacement instanceof Integer) {
-			return new ColorDrawable((Integer) replacement);
-		} else if (replacement instanceof XResForwarder) {
-			Resources repRes = ((XResForwarder) replacement).getResources();
-			int repId = ((XResForwarder) replacement).getId();
-			return repRes.getDrawableForDensity(repId, density);
+		try {
+			if (incrementMethodDepth("getDrawableForDensity") == 1) {
+				Object replacement = getReplacement(id);
+				if (replacement instanceof DrawableLoader) {
+					try {
+						Drawable result = ((DrawableLoader) replacement).newDrawableForDensity(this, id, density);
+						if (result != null)
+							return result;
+					} catch (Throwable t) { XposedBridge.log(t); }
+				} else if (replacement instanceof Integer) {
+					return new ColorDrawable((Integer) replacement);
+				} else if (replacement instanceof XResForwarder) {
+					Resources repRes = ((XResForwarder) replacement).getResources();
+					int repId = ((XResForwarder) replacement).getId();
+					return repRes.getDrawableForDensity(repId, density);
+				}
+			}
+			return super.getDrawableForDensity(id, density, theme, supportComposedIcons);
+		} finally {
+			decrementMethodDepth("getDrawableForDensity");
 		}
-		return super.getDrawableForDensity(id, density, theme, supportComposedIcons);
 	}
 
 	@Override
