@@ -373,6 +373,34 @@ public final class XposedBridge {
 			}
 		});
 
+		if (Build.VERSION.SDK_INT >= 19) {
+			// This method exists only on CM-based ROMs
+			hookAllMethods(classGTLR, "getTopLevelThemedResources", new XC_MethodHook() {
+				@Override
+				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+					Object result = param.getResult();
+					if (result == null || result instanceof XResources)
+						return;
+
+					// replace the returned resources with our subclass
+					XResources newRes = (XResources) cloneToSubclass(result, XResources.class);
+					String resDir = (String) param.args[0];
+					newRes.initObject(resDir);
+
+					// Invoke handleInitPackageResources()
+					if (newRes.isFirstLoad()) {
+						String packageName = newRes.getPackageName();
+						InitPackageResourcesParam resparam = new InitPackageResourcesParam(sInitPackageResourcesCallbacks);
+						resparam.packageName = packageName;
+						resparam.res = newRes;
+						XCallback.callAll(resparam);
+					}
+
+					param.setResult(newRes);
+				}
+			});
+		}
+
 		// Replace TypedArrays with XTypedArrays
 		XposedBridge.hookAllConstructors(TypedArray.class, new XC_MethodHook() {
 			@Override
