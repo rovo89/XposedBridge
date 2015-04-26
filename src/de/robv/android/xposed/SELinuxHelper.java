@@ -1,9 +1,6 @@
 package de.robv.android.xposed;
 
-import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
-import static de.robv.android.xposed.XposedHelpers.findClass;
-import android.os.Build;
-import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
+import android.os.SELinux;
 import de.robv.android.xposed.services.BaseService;
 import de.robv.android.xposed.services.BinderService;
 import de.robv.android.xposed.services.DirectAccessService;
@@ -26,7 +23,7 @@ public final class SELinuxHelper {
 	* @return A boolean indicating whether SELinux is enforcing.
 	*/
 	public static boolean isSELinuxEnforced() {
-		return sIsSELinuxEnforced;
+		return sIsSELinuxEnabled ? SELinux.isSELinuxEnforced() : false;
 	}
 
 	/**
@@ -34,7 +31,7 @@ public final class SELinuxHelper {
 	* @return A String representing the security context of the current process.
 	*/
 	public static String getContext() {
-		return sContext;
+		return sIsSELinuxEnabled ? SELinux.getContext() : null;
 	}
 
 	/**
@@ -51,28 +48,16 @@ public final class SELinuxHelper {
 
 
 	// ----------------------------------------------------------------------------
-	private static Class<?> sClassSELinux = null;
 	private static boolean sIsSELinuxEnabled = false;
-	private static boolean sIsSELinuxEnforced = false;
-	private static String sContext = null;
-
 	private static BaseService sServiceAppDataFile = null;
 
 	/*package*/ static void initOnce() {
-		if (Build.VERSION.SDK_INT < 17)
-			return;
-
 		try {
-			sClassSELinux = findClass("android.os.SELinux", null);
-			sIsSELinuxEnabled = (Boolean) callStaticMethod(sClassSELinux, "isSELinuxEnabled");
-			sIsSELinuxEnforced = sIsSELinuxEnabled && (Boolean) callStaticMethod(sClassSELinux, "isSELinuxEnforced");
-		} catch (ClassNotFoundError ignored) {};
+			sIsSELinuxEnabled = SELinux.isSELinuxEnabled();
+		} catch (NoClassDefFoundError ignored) {};
 	}
 
 	/*package*/ static void initForProcess(String packageName) {
-		if (sIsSELinuxEnabled)
-			sContext = (String) callStaticMethod(sClassSELinux, "getContext");
-
 		if (sIsSELinuxEnabled) {
 			if (packageName == null) {  // Zygote
 				sServiceAppDataFile = new ZygoteService();
