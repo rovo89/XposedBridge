@@ -16,6 +16,7 @@ import java.util.WeakHashMap;
 import org.xmlpull.v1.XmlPullParser;
 
 import android.content.pm.PackageParser;
+import android.content.pm.PackageParser.PackageParserException;
 import android.graphics.Movie;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -152,9 +153,18 @@ public class XResources extends MiuiResources {
 		if (packageName != null)
 			return packageName;
 
-		PackageParser.PackageLite pkgInfo = PackageParser.parsePackageLite(resDir, 0);
+		PackageParser.PackageLite pkgInfo;
+		if (Build.VERSION.SDK_INT >= 21) {
+			try {
+				pkgInfo = PackageParser.parsePackageLite(new File(resDir), 0);
+			} catch (PackageParserException e) {
+				throw new IllegalStateException("Could not determine package name for " + resDir, e);
+			}
+		} else {
+			pkgInfo = PackageParser.parsePackageLite(resDir, 0);
+		}
 		if (pkgInfo != null && pkgInfo.packageName != null) {
-			Log.w("Xposed", "Package name for " + resDir + " had to be retrieved via parser");
+			Log.w(XposedBridge.TAG, "Package name for " + resDir + " had to be retrieved via parser");
 			packageName = pkgInfo.packageName;
 			setPackageNameForResDir(packageName, resDir);
 			return packageName;
