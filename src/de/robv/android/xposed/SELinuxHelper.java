@@ -73,7 +73,7 @@ public final class SELinuxHelper {
 		if (sIsSELinuxEnabled)
 			sContext = (String) callStaticMethod(sClassSELinux, "getContext");
 
-		if (sIsSELinuxEnforced) {
+		if (sIsSELinuxEnabled) {
 			if (packageName == null) {  // Zygote
 				sServiceAppDataFile = new ZygoteService();
 			} else if (packageName.equals("android")) {  //system_server
