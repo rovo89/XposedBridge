@@ -1,0 +1,38 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+    }
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+       tasks.withType(JavaCompile) {
+           options.compilerArgs.add('-Xbootclasspath/p:lib/HiddenAPIStubs.jar')
+       }
+    }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 15
+    buildToolsVersion "22.0.1"
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src', 'lib/apache-commons-lang']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            resources {
+                srcDirs = ['.']
+                exclude 'assets', 'src', 'lib', 'HiddenAPIStubs'
+                exclude 'build', 'bin', 'gen'
+                exclude '*.launch', '*.bat', '*.jardesc', '*.properties', '*.xml', '*.gradle', '.*'
+            }
+        }
+    }
+}
