@@ -9,7 +9,6 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,8 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityThread;
@@ -58,6 +55,9 @@ import de.robv.android.xposed.services.BaseService;
 public final class XposedBridge {
 	public static final String TAG = "Xposed";
 	public static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
+
+	/** Use {@link #getXposedVersion()} instead. */
+	@Deprecated
 	public static int XPOSED_BRIDGE_VERSION;
 
 	private static boolean isZygote = true;
@@ -89,14 +89,12 @@ public final class XposedBridge {
 	protected static void main(String[] args) {
 		// Initialize the Xposed framework and modules
 		try {
-			determineXposedVersion();
-			log("Initializing XposedBridge version " + XPOSED_BRIDGE_VERSION);
-
 			SELinuxHelper.initOnce();
 			SELinuxHelper.initForProcess(null);
 
 			runtime = getRuntime();
 			if (initNative()) {
+				XPOSED_BRIDGE_VERSION = getXposedVersion();
 				if (isZygote) {
 					startsSystemServer = startsSystemServer();
 					initForZygote();
@@ -134,42 +132,10 @@ public final class XposedBridge {
 	private static native int getRuntime();
 	private static native boolean startsSystemServer();
 
-	private static void determineXposedVersion() throws IOException {
-		ZipInputStream is = new ZipInputStream(new FileInputStream("/system/framework/XposedBridge.jar"));
-		ZipEntry entry;
-		try {
-			while ((entry = is.getNextEntry()) != null) {
-				if (!entry.getName().equals("assets/VERSION"))
-					continue;
-
-				BufferedReader br = new BufferedReader(new InputStreamReader(is));
-				String version = br.readLine();
-				br.close();
-
-				XPOSED_BRIDGE_VERSION = extractIntPart(version);
-				if (XPOSED_BRIDGE_VERSION == 0)
-					throw new RuntimeException("could not parse XposedBridge version from \"" + version + "\"");
-				return;
-			}
-			throw new RuntimeException("could not find assets/VERSION in /system/framework/XposedBridge.jar");
-		} finally {
-			try {
-				is.close();
-			} catch (Exception e) { }
-		}
-	}
-
-	private static int extractIntPart(String str) {
-		int result = 0, length = str.length();
-		for (int offset = 0; offset < length; offset++) {
-			char c = str.charAt(offset);
-			if ('0' <= c && c <= '9')
-				result = result * 10 + (c - '0');
-			else
-				break;
-		}
-		return result;
-	}
+	/**
+	 * Returns the currently installed version of the Xposed framework.
+	 */
+	public static native int getXposedVersion();
 
 	/**
 	 * Hook some methods which we want to create an easier interface for developers.
@@ -425,7 +391,7 @@ public final class XposedBridge {
 	private static void hookXposedInstaller(ClassLoader classLoader) {
 		try {
 			findAndHookMethod(INSTALLER_PACKAGE_NAME + ".XposedApp", classLoader, "getActiveXposedVersion",
-				XC_MethodReplacement.returnConstant(XPOSED_BRIDGE_VERSION));
+				XC_MethodReplacement.returnConstant(getXposedVersion()));
 		} catch (Throwable t) { XposedBridge.log(t); }
 	}
 
