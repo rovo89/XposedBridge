@@ -724,7 +724,9 @@ public class XResources extends MiuiResources {
 			result = repRes.getLayout(repId);
 
 			if (!loadedFromCache) {
-				int parseState = getIntField(result, "mParseState");
+				long parseState = (Build.VERSION.SDK_INT >= 21)
+					? getLongField(result, "mParseState")
+					: getIntField(result, "mParseState");
 				rewriteXmlReferencesNative(parseState, this, repRes);
 			}
 		} else {
@@ -871,7 +873,9 @@ public class XResources extends MiuiResources {
 			XmlResourceParser result = repRes.getXml(repId);
 
 			if (!loadedFromCache) {
-				int parseState = getIntField(result, "mParseState");
+				long parseState = (Build.VERSION.SDK_INT >= 21)
+					? getLongField(result, "mParseState")
+					: getIntField(result, "mParseState");
 				rewriteXmlReferencesNative(parseState, this, repRes);
 			}
 
