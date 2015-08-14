@@ -257,6 +257,7 @@ public final class XposedBridge {
 		if (!SELinuxHelper.getAppDataFileService().checkFileExists(BASE_DIR + "conf/disable_resources")) {
 			hookResources();
 		} else {
+			Log.w(TAG, "Found " + BASE_DIR + "conf/disable_resources, not hooking resources");
 			disableResources = true;
 		}
 	}
@@ -274,6 +275,7 @@ public final class XposedBridge {
 		final Class<?> classGTLR;
 		final Class<?> classResKey;
 		final ThreadLocal<Object> latestResKey = new ThreadLocal<Object>();
+		final String[] conflictingPackages = { "com.sygic.aura" };
 
 		if (Build.VERSION.SDK_INT <= 18) {
 			classGTLR = ActivityThread.class;
@@ -306,6 +308,9 @@ public final class XposedBridge {
 
 				Object result = param.getResult();
 				if (result == null || result instanceof XResources)
+					return;
+
+				if (Arrays.binarySearch(conflictingPackages, AndroidAppHelper.currentPackageName()) == 0)
 					return;
 
 				// replace the returned resources with our subclass
@@ -346,6 +351,9 @@ public final class XposedBridge {
 				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 					Object result = param.getResult();
 					if (result == null || result instanceof XResources)
+						return;
+
+					if (Arrays.binarySearch(conflictingPackages, AndroidAppHelper.currentPackageName()) == 0)
 						return;
 
 					// replace the returned resources with our subclass
