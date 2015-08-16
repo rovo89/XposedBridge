@@ -214,6 +214,16 @@ public final class XposedBridge {
 							lpparam.appInfo = null;
 							lpparam.isFirstApplication = true;
 							XC_LoadPackage.callAll(lpparam);
+
+							// Force dex2oat while the system is still booting to ensure that system content providers work.
+							findAndHookMethod("com.android.server.pm.PackageManagerService", cl, "performDexOpt",
+									String.class, String.class, boolean.class, new XC_MethodHook() {
+								@Override
+								protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+									if (getObjectField(param.thisObject, "mDeferredDexOpt") != null)
+										param.args[2] = true;
+								}
+							});
 						}
 					});
 				}
