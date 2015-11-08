@@ -25,6 +25,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.android.internal.os.RuntimeInit;
+import com.android.internal.os.ZygoteInit;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityThread;
 import android.app.AndroidAppHelper;
@@ -39,10 +42,6 @@ import android.content.res.XResources.XTypedArray;
 import android.os.Build;
 import android.os.Process;
 import android.util.Log;
-
-import com.android.internal.os.RuntimeInit;
-import com.android.internal.os.ZygoteInit;
-
 import dalvik.system.PathClassLoader;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
@@ -215,15 +214,17 @@ public final class XposedBridge {
 							lpparam.isFirstApplication = true;
 							XC_LoadPackage.callAll(lpparam);
 
-							// Force dex2oat while the system is still booting to ensure that system content providers work.
-							findAndHookMethod("com.android.server.pm.PackageManagerService", cl, "performDexOpt",
-									String.class, String.class, boolean.class, new XC_MethodHook() {
-								@Override
-								protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-									if (getObjectField(param.thisObject, "mDeferredDexOpt") != null)
-										param.args[2] = true;
-								}
-							});
+							if (Build.VERSION.SDK_INT >= 21 && Build.VERSION.SDK_INT <= 22) {
+								// Force dex2oat while the system is still booting to ensure that system content providers work.
+								findAndHookMethod("com.android.server.pm.PackageManagerService", cl, "performDexOpt",
+										String.class, String.class, boolean.class, new XC_MethodHook() {
+									@Override
+									protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+										if (getObjectField(param.thisObject, "mDeferredDexOpt") != null)
+											param.args[2] = true;
+									}
+								});
+							}
 						}
 					});
 				}

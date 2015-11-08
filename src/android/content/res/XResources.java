@@ -15,6 +15,7 @@ import java.util.WeakHashMap;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import android.content.Context;
 import android.content.pm.PackageParser;
 import android.content.pm.PackageParser.PackageParserException;
 import android.graphics.Movie;
@@ -232,7 +233,7 @@ public class XResources extends MiuiResources {
 				XMLInstanceDetails details = (XMLInstanceDetails) param.getObjectExtra(EXTRA_XML_INSTANCE_DETAILS);
 				if (details != null) {
 					LayoutInflatedParam liparam = new LayoutInflatedParam(details.callbacks);
-					ViewGroup group = (ViewGroup) param.args[1];
+					ViewGroup group = (ViewGroup) param.args[(Build.VERSION.SDK_INT < 23) ? 1 : 2];
 					liparam.view = group.getChildAt(group.getChildCount() - 1);
 					liparam.resNames = details.resNames;
 					liparam.variant = details.variant;
@@ -244,9 +245,12 @@ public class XResources extends MiuiResources {
 		if (Build.VERSION.SDK_INT < 21) {
 			findAndHookMethod(LayoutInflater.class, "parseInclude", XmlPullParser.class, View.class,
 					AttributeSet.class, parseIncludeHook);
-		} else {
+		} else if (Build.VERSION.SDK_INT < 23) {
 			findAndHookMethod(LayoutInflater.class, "parseInclude", XmlPullParser.class, View.class,
 					AttributeSet.class, boolean.class, parseIncludeHook);
+		} else {
+			findAndHookMethod(LayoutInflater.class, "parseInclude", XmlPullParser.class, Context.class,
+					View.class, AttributeSet.class, parseIncludeHook);
 		}
 	}
 
