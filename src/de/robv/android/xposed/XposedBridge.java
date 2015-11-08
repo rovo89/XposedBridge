@@ -559,16 +559,22 @@ public final class XposedBridge {
 			}
 		}
 		callbacks.add(callback);
+
 		if (newMethod) {
 			Class<?> declaringClass = hookMethod.getDeclaringClass();
-			int slot = (runtime == RUNTIME_DALVIK) ? (int) getIntField(hookMethod, "slot") : 0;
-
+			int slot;
 			Class<?>[] parameterTypes;
 			Class<?> returnType;
-			if (hookMethod instanceof Method) {
+			if (runtime == RUNTIME_ART) {
+				slot = 0;
+				parameterTypes = null;
+				returnType = null;
+			} else if (hookMethod instanceof Method) {
+				slot = (int) getIntField(hookMethod, "slot");
 				parameterTypes = ((Method) hookMethod).getParameterTypes();
 				returnType = ((Method) hookMethod).getReturnType();
 			} else {
+				slot = (int) getIntField(hookMethod, "slot");
 				parameterTypes = ((Constructor<?>) hookMethod).getParameterTypes();
 				returnType = null;
 			}
@@ -744,14 +750,6 @@ public final class XposedBridge {
 			Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
-	/** Old method signature to avoid crashes if only XposedBridge.jar is updated, will be removed in the next version */
-	@Deprecated
-	private native synchronized static void hookMethodNative(Class<?> declaringClass, int slot);
-
-	@Deprecated
-	private native static Object invokeOriginalMethodNative(Member method, Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
-			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
-
 	/**
 	 * Basically the same as {@link Method#invoke}, but calls the original method
 	 * as it was before the interception by Xposed. Also, access permissions are not checked.
@@ -780,7 +778,10 @@ public final class XposedBridge {
 
 		Class<?>[] parameterTypes;
 		Class<?> returnType;
-		if (method instanceof Method) {
+		if (runtime == RUNTIME_ART && (method instanceof Method || method instanceof Constructor)) {
+			parameterTypes = null;
+			returnType = null;
+		} else if (method instanceof Method) {
 			parameterTypes = ((Method) method).getParameterTypes();
 			returnType = ((Method) method).getReturnType();
 		} else if (method instanceof Constructor) {
