@@ -71,10 +71,12 @@ public class AndroidAppHelper {
 		}
 	}
 
-	/* For SDK 17 & 18 */
+	/* For SDK 17 & 18 & 23+ */
 	private static Object createResourcesKey(String resDir, int displayId, Configuration overrideConfiguration, float scale, boolean isThemeable) {
 		try {
-			if (HAS_IS_THEMEABLE)
+			if (HAS_THEME_CONFIG_PARAMETER)
+				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale, isThemeable, null);
+			else if (HAS_IS_THEMEABLE)
 				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale, isThemeable);
 			else
 				return newInstance(CLASS_RESOURCES_KEY, resDir, displayId, overrideConfiguration, scale);
@@ -84,7 +86,7 @@ public class AndroidAppHelper {
 		}
 	}
 
-	/* For SDK 19+ */
+	/* For SDK 19 - 22 */
 	private static Object createResourcesKey(String resDir, int displayId, Configuration overrideConfiguration, float scale, IBinder token, boolean isThemeable) {
 		try {
 			if (HAS_THEME_CONFIG_PARAMETER)
@@ -107,7 +109,7 @@ public class AndroidAppHelper {
 		Object resourcesKey;
 		if (Build.VERSION.SDK_INT <= 16)
 			resourcesKey = createResourcesKey(resDir, scale, isThemeable);
-		else if (Build.VERSION.SDK_INT <= 18)
+		else if (Build.VERSION.SDK_INT <= 18 || Build.VERSION.SDK_INT >= 23)
 			resourcesKey = createResourcesKey(resDir, Display.DEFAULT_DISPLAY, null, scale, isThemeable);
 		else
 			resourcesKey = createResourcesKey(resDir, Display.DEFAULT_DISPLAY, null, scale, null, isThemeable);
