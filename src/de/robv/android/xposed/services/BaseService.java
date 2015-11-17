@@ -18,7 +18,7 @@ public abstract class BaseService {
 	public static final int F_OK = 0;
 
 	/**
-	 * Checks whether the services accesses files directly (instead of using IPC).
+	 * Checks whether the services access files directly (instead of using IPC).
 	 * @return {@code true} in case direct access is possible.
 	 */
 	public boolean hasDirectFileAccess() {

@@ -942,7 +942,7 @@ public class XposedHelpers {
 	//#################################################################################################
 	/**
 	 * Call instance or static method <code>methodName</code> for object <code>obj</code> with the arguments
-	 * <code>args</code>. The types for the arguments will be determined automaticall from <code>args</code>
+	 * <code>args</code>. The types for the arguments will be determined automatically from <code>args</code>
 	 */
 	public static Object callMethod(Object obj, String methodName, Object... args) {
 		try {
@@ -980,7 +980,7 @@ public class XposedHelpers {
 
 	/**
 	 * Call static method <code>methodName</code> for class <code>clazz</code> with the arguments
-	 * <code>args</code>. The types for the arguments will be determined automaticall from <code>args</code>
+	 * <code>args</code>. The types for the arguments will be determined automatically from <code>args</code>
 	 */
 	public static Object callStaticMethod(Class<?> clazz, String methodName, Object... args) {
 		try {
@@ -1142,7 +1142,7 @@ public class XposedHelpers {
 
 	//#################################################################################################
 	/**
-	 * Load an asset from a resource and return the content as byte array.
+	 * Load an asset from a resource and return the content as a byte array.
 	 */
 	public static byte[] assetAsByteArray(Resources res, String path) throws IOException {
 		InputStream is = res.getAssets().open(path);
