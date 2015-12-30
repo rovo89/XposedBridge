@@ -1,0 +1,46 @@
+import com.android.builder.core.BuilderConstants
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        minSdkVersion 15
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs += ['src/main/apacheCommonsLang']
+        }
+    }
+
+    // only build the release variant
+    variantFilter { variant ->
+        if (variant.buildType.name != BuilderConstants.RELEASE) {
+            variant.ignore = true
+        }
+    }
+
+    // Add the hidden API stub classes to the bootclasspath.
+    // As they have to be injected before the official SDK classes and must not be part of the
+    // final JAR/APK, the best way seems to compile them in a separate project and use some dirty
+    // magic to add its output directory to all variants' configuration.
+    def stubs = project(':hiddenapistubs')
+    stubs.afterEvaluate {
+        stubs.android.compileSdkVersion compileSdkVersion
+        stubs.android.buildToolsVersion buildToolsVersion
+        preBuild.dependsOn stubs.assembleRelease
+        stubs.preBuild << {
+            def stubsCompiler = stubs.android.libraryVariants[0].javaCompiler
+            def stubsDestPath = stubsCompiler.destinationDir.getAbsolutePath()
+            applicationVariants.all { variant ->
+                variant.javaCompiler.with {
+                    dependsOn stubsCompiler
+                    options.bootClasspath = stubsDestPath + File.pathSeparator + options.bootClasspath
+                }
+            }
+        }
+    }
+}
