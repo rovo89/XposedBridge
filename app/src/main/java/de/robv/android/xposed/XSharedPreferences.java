@@ -1,14 +1,5 @@
 package de.robv.android.xposed;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -16,6 +7,15 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.internal.util.XmlUtils;
+
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import de.robv.android.xposed.services.FileResult;
 

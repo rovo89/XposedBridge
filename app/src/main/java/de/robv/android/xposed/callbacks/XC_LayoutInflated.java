@@ -3,6 +3,7 @@ package de.robv.android.xposed.callbacks;
 import android.content.res.XResources;
 import android.content.res.XResources.ResourceNames;
 import android.view.View;
+
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XC_LayoutInflated extends XCallback {

@@ -1,11 +1,22 @@
 package de.robv.android.xposed;
 
-import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
-import static de.robv.android.xposed.XposedHelpers.getBooleanField;
-import static de.robv.android.xposed.XposedHelpers.getIntField;
-import static de.robv.android.xposed.XposedHelpers.getObjectField;
-import static de.robv.android.xposed.XposedHelpers.setObjectField;
-import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
+import android.annotation.SuppressLint;
+import android.app.ActivityThread;
+import android.app.AndroidAppHelper;
+import android.app.LoadedApk;
+import android.content.ComponentName;
+import android.content.pm.ApplicationInfo;
+import android.content.res.CompatibilityInfo;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.content.res.XResources;
+import android.content.res.XResources.XTypedArray;
+import android.os.Build;
+import android.os.Process;
+import android.util.Log;
+
+import com.android.internal.os.RuntimeInit;
+import com.android.internal.os.ZygoteInit;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,23 +36,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.android.internal.os.RuntimeInit;
-import com.android.internal.os.ZygoteInit;
-
-import android.annotation.SuppressLint;
-import android.app.ActivityThread;
-import android.app.AndroidAppHelper;
-import android.app.LoadedApk;
-import android.content.ComponentName;
-import android.content.pm.ApplicationInfo;
-import android.content.res.CompatibilityInfo;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.content.res.XResources;
-import android.content.res.XResources.XTypedArray;
-import android.os.Build;
-import android.os.Process;
-import android.util.Log;
 import dalvik.system.PathClassLoader;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
@@ -50,6 +44,13 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import de.robv.android.xposed.callbacks.XCallback;
 import de.robv.android.xposed.services.BaseService;
+
+import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.getBooleanField;
+import static de.robv.android.xposed.XposedHelpers.getIntField;
+import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.setObjectField;
+import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 public final class XposedBridge {
 	public static final String TAG = "Xposed";

@@ -1,5 +1,7 @@
 package de.robv.android.xposed;
 
+import android.content.res.Resources;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,7 +20,6 @@ import java.util.List;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import android.content.res.Resources;
 import external.org.apache.commons.lang3.ClassUtils;
 import external.org.apache.commons.lang3.reflect.MemberUtils;
 import external.org.apache.commons.lang3.reflect.MethodUtils;

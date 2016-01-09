@@ -1,6 +1,7 @@
 package de.robv.android.xposed.callbacks;
 
 import android.content.res.XResources;
+
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 

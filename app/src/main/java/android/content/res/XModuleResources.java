@@ -2,6 +2,7 @@ package android.content.res;
 
 import android.app.AndroidAppHelper;
 import android.util.DisplayMetrics;
+
 import de.robv.android.xposed.XposedBridge;
 
 /**

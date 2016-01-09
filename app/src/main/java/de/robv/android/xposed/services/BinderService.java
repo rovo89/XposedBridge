@@ -1,11 +1,11 @@
 package de.robv.android.xposed.services;
 
-import java.io.IOException;
-
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+
+import java.io.IOException;
 
 public final class BinderService extends BaseService {
 	public static final int TARGET_APP = 0;

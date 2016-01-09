@@ -1,8 +1,9 @@
 package de.robv.android.xposed.callbacks;
 
+import android.os.Bundle;
+
 import java.io.Serializable;
 
-import android.os.Bundle;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
