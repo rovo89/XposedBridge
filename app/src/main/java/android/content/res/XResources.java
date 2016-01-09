@@ -42,6 +42,7 @@ import static de.robv.android.xposed.XposedHelpers.incrementMethodDepth;
 /**
  * Resources class that allows replacements for selected resources
  */
+@SuppressWarnings("JniMissingFunction")
 public class XResources extends MiuiResources {
 	private static final SparseArray<HashMap<String, Object>> sReplacements = new SparseArray<HashMap<String, Object>>();
 	private static final SparseArray<HashMap<String, ResourceNames>> sResourceNames
@@ -892,9 +893,8 @@ public class XResources extends MiuiResources {
 	private static boolean isXmlCached(Resources res, int id) {
 		int[] mCachedXmlBlockIds = (int[]) getObjectField(res, "mCachedXmlBlockIds");
 		synchronized (mCachedXmlBlockIds) {
-			final int num = mCachedXmlBlockIds.length;
-			for (int i = 0; i < num; i++) {
-				if (mCachedXmlBlockIds[i] == id)
+			for (int cachedId : mCachedXmlBlockIds) {
+				if (cachedId == id)
 					return true;
 			}
 		}
@@ -1228,6 +1228,7 @@ public class XResources extends MiuiResources {
 	/**
 	 * callback function for {@link XResources#getDrawable} and {@link XResources#getDrawableForDensity}
 	 */
+	@SuppressWarnings("UnusedParameters")
 	public static abstract class DrawableLoader {
 		public abstract Drawable newDrawable(XResources res, int id) throws Throwable;
 

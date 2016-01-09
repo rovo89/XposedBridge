@@ -12,12 +12,12 @@ package de.robv.android.xposed;
 public interface IXposedHookCmdInit extends IXposedMod {
 	/**
 	 * Called very early during startup of a command-line tool
-	 * @param startClassName The startup class
+	 * @param startupParam Details about the module itself and the started process
 	 * @throws Throwable everything is caught, but will prevent further initialization of the module
 	 */
-	public void initCmdApp(StartupParam startupParam) throws Throwable;
+	void initCmdApp(StartupParam startupParam) throws Throwable;
 
-	public static class StartupParam {
+	class StartupParam {
 		public String modulePath;
 		public String startClassName;
 	}

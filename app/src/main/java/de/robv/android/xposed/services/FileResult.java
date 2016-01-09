@@ -38,7 +38,7 @@ public final class FileResult {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer("{");
+		StringBuilder sb = new StringBuilder("{");
 		if (content != null) {
 			sb.append("content.length: ");
 			sb.append(content.length);

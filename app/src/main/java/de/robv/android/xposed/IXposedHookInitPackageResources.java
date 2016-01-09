@@ -8,9 +8,9 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResou
  */
 public interface IXposedHookInitPackageResources extends IXposedMod {
 	/** @see XC_InitPackageResources#handleInitPackageResources */
-	public abstract void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable;
+	void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable;
 
-	public static class Wrapper extends XC_InitPackageResources {
+	class Wrapper extends XC_InitPackageResources {
 		private final IXposedHookInitPackageResources instance;
 		public Wrapper(IXposedHookInitPackageResources instance) {
 			this.instance = instance;

@@ -1,5 +1,6 @@
 package de.robv.android.xposed;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -75,6 +76,7 @@ public final class XSharedPreferences implements SharedPreferences {
 	 *
 	 * @return {@code true} in case the file could be made world-readable.
 	 */
+	@SuppressLint("SetWorldReadable")
 	public boolean makeWorldReadable() {
 		if (!SELinuxHelper.getAppDataFileService().hasDirectFileAccess())
 			return false; // It doesn't make much sense to make the file readable if we wouldn't be able to access it anyway.

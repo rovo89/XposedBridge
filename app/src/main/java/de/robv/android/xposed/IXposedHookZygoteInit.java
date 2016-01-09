@@ -8,9 +8,9 @@ public interface IXposedHookZygoteInit extends IXposedMod {
 	 * Called very early during startup of Zygote.
 	 * @throws Throwable everything is caught, but will prevent further initialization of the module.
 	 */
-	public void initZygote(StartupParam startupParam) throws Throwable;
+	void initZygote(StartupParam startupParam) throws Throwable;
 
-	public static class StartupParam {
+	class StartupParam {
 		/** The path to the module's APK. */
 		public String modulePath;
 

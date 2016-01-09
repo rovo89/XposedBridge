@@ -38,6 +38,7 @@ public abstract class BaseService {
 	 * @param filename The absolute path of the file to check.
 	 * @return The result of the {@code access()} function.
 	 */
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean checkFileExists(String filename) {
 		return checkFileAccess(filename, F_OK);
 	}

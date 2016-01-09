@@ -24,7 +24,7 @@ public final class SELinuxHelper {
 	* @return A boolean indicating whether SELinux is enforcing.
 	*/
 	public static boolean isSELinuxEnforced() {
-		return sIsSELinuxEnabled ? SELinux.isSELinuxEnforced() : false;
+		return sIsSELinuxEnabled && SELinux.isSELinuxEnforced();
 	}
 
 	/**
@@ -55,7 +55,7 @@ public final class SELinuxHelper {
 	/*package*/ static void initOnce() {
 		try {
 			sIsSELinuxEnabled = SELinux.isSELinuxEnabled();
-		} catch (NoClassDefFoundError ignored) {};
+		} catch (NoClassDefFoundError ignored) {}
 	}
 
 	/*package*/ static void initForProcess(String packageName) {

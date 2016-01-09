@@ -140,7 +140,7 @@ public final class BinderService extends BaseService {
 				}
 			default:
 				throwCommonIOException(errno, errorMsg, filename, " while reading ");
-				return null; // not reached
+				throw new IllegalStateException(); // not reached
 		}
 	}
 

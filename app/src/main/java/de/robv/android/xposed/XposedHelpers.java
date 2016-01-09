@@ -61,10 +61,7 @@ public class XposedHelpers {
 	 * If the field was not found, a {@link NoSuchFieldError} will be thrown.
 	 */
 	public static Field findField(Class<?> clazz, String fieldName) {
-		StringBuilder sb = new StringBuilder(clazz.getName());
-		sb.append('#');
-		sb.append(fieldName);
-		String fullFieldName = sb.toString();
+		String fullFieldName = clazz.getName() + '#' + fieldName;
 
 		if (fieldCache.containsKey(fullFieldName)) {
 			Field field = fieldCache.get(fullFieldName);
@@ -158,12 +155,7 @@ public class XposedHelpers {
 
 	/** @see #findMethodExact(Class, String, Object...) */
 	public static Method findMethodExact(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
-		StringBuilder sb = new StringBuilder(clazz.getName());
-		sb.append('#');
-		sb.append(methodName);
-		sb.append(getParametersString(parameterTypes));
-		sb.append("#exact");
-		String fullMethodName = sb.toString();
+		String fullMethodName = clazz.getName() + '#' + methodName + getParametersString(parameterTypes) + "#exact";
 
 		if (methodCache.containsKey(fullMethodName)) {
 			Method method = methodCache.get(fullMethodName);
@@ -223,12 +215,7 @@ public class XposedHelpers {
 	 * @see MethodUtils#getMatchingAccessibleMethod
 	 */
 	public static Method findMethodBestMatch(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
-		StringBuilder sb = new StringBuilder(clazz.getName());
-		sb.append('#');
-		sb.append(methodName);
-		sb.append(getParametersString(parameterTypes));
-		sb.append("#bestmatch");
-		String fullMethodName = sb.toString();
+		String fullMethodName = clazz.getName() + '#' + methodName + getParametersString(parameterTypes) + "#bestmatch";
 
 		if (methodCache.containsKey(fullMethodName)) {
 			Method method = methodCache.get(fullMethodName);
@@ -386,10 +373,7 @@ public class XposedHelpers {
 	}
 
 	public static Constructor<?> findConstructorExact(Class<?> clazz, Class<?>... parameterTypes) {
-		StringBuilder sb = new StringBuilder(clazz.getName());
-		sb.append(getParametersString(parameterTypes));
-		sb.append("#exact");
-		String fullConstructorName = sb.toString();
+		String fullConstructorName = clazz.getName() + getParametersString(parameterTypes) + "#exact";
 
 		if (constructorCache.containsKey(fullConstructorName)) {
 			Constructor<?> constructor = constructorCache.get(fullConstructorName);
@@ -429,10 +413,7 @@ public class XposedHelpers {
 	}
 
 	public static Constructor<?> findConstructorBestMatch(Class<?> clazz, Class<?>... parameterTypes) {
-		StringBuilder sb = new StringBuilder(clazz.getName());
-		sb.append(getParametersString(parameterTypes));
-		sb.append("#bestmatch");
-		String fullConstructorName = sb.toString();
+		String fullConstructorName = clazz.getName() + getParametersString(parameterTypes) + "#bestmatch";
 
 		if (constructorCache.containsKey(fullConstructorName)) {
 			Constructor<?> constructor = constructorCache.get(fullConstructorName);
@@ -626,6 +607,7 @@ public class XposedHelpers {
 		return getObjectField(obj, "this$0");
 	}
 
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public static boolean getBooleanField(Object obj, String fieldName) {
 		try {
 			return findField(obj.getClass(), fieldName).getBoolean(obj);
@@ -1167,7 +1149,7 @@ public class XposedHelpers {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			InputStream is = new FileInputStream(file);
 			byte[] buffer = new byte[8192];
-			int read = 0;
+			int read;
 			while ((read = is.read(buffer)) > 0) {
 				digest.update(buffer, 0, read);
 			}

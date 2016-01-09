@@ -24,7 +24,7 @@ import static de.robv.android.xposed.XposedHelpers.newInstance;
  * Accessor for package level methods/fields in package android.app
  */
 public class AndroidAppHelper {
-	private static Class<?> CLASS_RESOURCES_KEY;
+	private static final Class<?> CLASS_RESOURCES_KEY;
 	private static boolean HAS_IS_THEMEABLE = false;
 	private static boolean HAS_THEME_CONFIG_PARAMETER = false;
 
@@ -148,6 +148,7 @@ public class AndroidAppHelper {
 	}
 
 	/** use class {@link XSharedPreferences} instead */
+	@SuppressWarnings("UnusedParameters")
 	@Deprecated
 	public static SharedPreferences getSharedPreferencesForPackage(String packageName, String prefFileName, int mode) {
 		return new XSharedPreferences(packageName, prefFileName);

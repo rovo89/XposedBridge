@@ -19,19 +19,21 @@ public abstract class XC_MethodReplacement extends XC_MethodHook {
 		}
 	}
 
+	@SuppressWarnings("EmptyMethod")
 	protected final void afterHookedMethod(MethodHookParam param) throws Throwable {}
 
 	/**
 	 * Shortcut for replacing a method completely. Whatever is returned/thrown here is taken
 	 * instead of the result of the original method (which will not be called).
 	 */
+	@SuppressWarnings("UnusedParameters")
 	protected abstract Object replaceHookedMethod(MethodHookParam param) throws Throwable;
 
 	public static final XC_MethodReplacement DO_NOTHING = new XC_MethodReplacement(PRIORITY_HIGHEST*2) {
 		@Override
 		protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
 			return null;
-		};
+		}
 	};
 
 	/**
