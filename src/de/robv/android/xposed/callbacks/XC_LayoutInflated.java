@@ -1,10 +1,9 @@
 package de.robv.android.xposed.callbacks;
 
-import java.util.TreeSet;
-
 import android.content.res.XResources;
 import android.content.res.XResources.ResourceNames;
 import android.view.View;
+import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XC_LayoutInflated extends XCallback {
 	public XC_LayoutInflated() {
@@ -13,9 +12,9 @@ public abstract class XC_LayoutInflated extends XCallback {
 	public XC_LayoutInflated(int priority) {
 		super(priority);
 	}
-	
+
 	public static class LayoutInflatedParam extends XCallback.Param {
-		public LayoutInflatedParam(TreeSet<XC_LayoutInflated> callbacks) {
+		public LayoutInflatedParam(CopyOnWriteSortedSet<XC_LayoutInflated> callbacks) {
 			super(callbacks);
 		}
 		/** The view that has been created from the layout */
@@ -27,31 +26,31 @@ public abstract class XC_LayoutInflated extends XCallback {
 		/** Resources containing the layout */
 		public XResources res;
 	}
-	
+
 	@Override
 	protected void call(Param param) throws Throwable {
 		if (param instanceof LayoutInflatedParam)
 			handleLayoutInflated((LayoutInflatedParam) param);
 	}
-	
+
 	public abstract void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable;
-	
+
 	public class Unhook implements IXUnhook {
 		private final String resDir;
 		private final int id;
-		
+
 		public Unhook(String resDir, int id) {
 			this.resDir = resDir;
 			this.id = id;
-        }
+		}
 
 		public String getResDir() {
 			return resDir;
 		}
-		
+
 		public int getId() {
-        	return id;
-        }
+			return id;
+		}
 
 		public XC_LayoutInflated getCallback() {
 			return XC_LayoutInflated.this;

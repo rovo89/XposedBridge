@@ -9,7 +9,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 public interface IXposedHookLoadPackage extends IXposedMod {
 	/** @see XC_LoadPackage#handleLoadPackage */
 	public abstract void handleLoadPackage(LoadPackageParam lpparam) throws Throwable;
-	
+
 	public static class Wrapper extends XC_LoadPackage {
 		private final IXposedHookLoadPackage instance;
 		public Wrapper(IXposedHookLoadPackage instance) {

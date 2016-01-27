@@ -9,7 +9,7 @@ public interface IXposedHookZygoteInit extends IXposedMod {
 	 * @throws Throwable everything is caught, but will prevent further initialization of the module
 	 */
 	public void initZygote(StartupParam startupParam) throws Throwable;
-	
+
 	public static class StartupParam {
 		public String modulePath;
 	}
