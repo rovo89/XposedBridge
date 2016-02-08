@@ -27,18 +27,18 @@ android {
     // As they have to be injected before the official SDK classes and must not be part of the
     // final JAR/APK, the best way seems to compile them in a separate project and use some dirty
     // magic to add its output directory to all variants' configuration.
-    def stubs = project(':hiddenapistubs')
-    stubs.afterEvaluate {
-        stubs.android.compileSdkVersion compileSdkVersion
-        stubs.android.buildToolsVersion buildToolsVersion
-        preBuild.dependsOn stubs.assembleRelease
-        stubs.preBuild << {
-            def stubsCompiler = stubs.android.libraryVariants[0].javaCompiler
-            def stubsDestPath = stubsCompiler.destinationDir.getAbsolutePath()
+    def hiddenapi = project(':hiddenapistubs')
+    hiddenapi.afterEvaluate {
+        hiddenapi.android.compileSdkVersion compileSdkVersion
+        hiddenapi.android.buildToolsVersion buildToolsVersion
+        preBuild.dependsOn hiddenapi.assembleRelease
+        hiddenapi.preBuild << {
+            def hiddenapiCompiler = hiddenapi.android.libraryVariants[0].javaCompiler
+            def hiddenapiDestPath = hiddenapiCompiler.destinationDir.getAbsolutePath()
             applicationVariants.all { variant ->
                 variant.javaCompiler.with {
-                    dependsOn stubsCompiler
-                    options.bootClasspath = stubsDestPath + File.pathSeparator + options.bootClasspath
+                    dependsOn hiddenapiCompiler
+                    options.bootClasspath = hiddenapiDestPath + File.pathSeparator + options.bootClasspath
                 }
             }
         }
