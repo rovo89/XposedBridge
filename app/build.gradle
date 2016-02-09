@@ -39,11 +39,82 @@ android {
                 variant.javaCompiler.with {
                     dependsOn hiddenapiCompiler
                     options.bootClasspath = hiddenapiDestPath + File.pathSeparator + options.bootClasspath
+                    if (variant.name == BuilderConstants.RELEASE) {
+                        generateDocs.options.bootClasspath = files(options.bootClasspath.split(File.pathSeparator), destinationDir).asType(List)
+                        generateStubs.options.bootClasspath = generateDocs.options.bootClasspath
+                        compileStubs.classpath = files(options.bootClasspath.split(File.pathSeparator))
+                    }
                 }
             }
         }
     }
 }
+
+task generateDocs(type: Javadoc, dependsOn: 'compileReleaseSources') {
+    source = file('src/main/java')
+    title = null
+
+    options {
+        doclet = 'com.google.doclava.Doclava'
+        docletpath = fileTree(dir: 'doclib', include: '**/*.jar').asType(List)
+        jFlags '-Dignore.symbol.file'
+        addStringOption 'federate android', 'http://developer.android.com'
+        addFileOption 'federationapi android', fileTree(dir: 'doclib/api', include: 'android_*.txt').singleFile
+        addFileOption 'proofread', file("$buildDir/docs/proofread.txt")
+        addStringOption 'todo', 'reference/todo.html'
+
+        // The sources of the Android SDK are added to the sourcepath.
+        // This ensures that Javadoc can be inherited properly, but it
+        // takes longer and throws a lot of errors (which we ignore here).
+        def sdkSources = file("$android.sdkDirectory/sources/$android.compileSdkVersion")
+        assert sdkSources.exists()
+        addFileOption 'sourcepath', sdkSources
+
+        failOnError = false
+        addStringOption 'Xmaxwarns', '1'
+        addStringOption 'Xmaxerrs', '1'
+        (101..122).each {
+            addBooleanOption 'hide ' + it, true
+        }
+    }
+}
+
+task generateStubs(type: Javadoc, dependsOn: 'compileReleaseSources') {
+    source = file('src/main/java')
+    ext.stubsDir = "$buildDir/api/stub-sources"
+    outputs.dir ext.stubsDir
+    title = null
+
+    options {
+        doclet = 'com.google.doclava.Doclava'
+        docletpath = fileTree(dir: 'doclib', include: '**/*.jar').asType(List)
+        jFlags '-Dignore.symbol.file'
+        addBooleanOption 'nodocs', true
+        addFileOption 'stubs', file(ext.stubsDir)
+        addFileOption 'api', file('doclib/api/current.txt')
+        addBooleanOption 'hide 113', true
+    }
+}
+
+task compileStubs(type: JavaCompile, dependsOn: 'generateStubs') {
+    source = fileTree(generateStubs.ext.stubsDir)
+    destinationDir = file("$buildDir/api/stub-classes")
+}
+
+task jarStubs(type: Jar) {
+    from compileStubs
+    destinationDir = file("$buildDir/api")
+    baseName = 'api'
+}
+
+task jarStubsSource(type: Jar) {
+    from generateStubs.source
+    destinationDir = jarStubs.destinationDir
+    baseName = jarStubs.baseName
+    classifier = 'sources'
+}
+
+task generateAPI(dependsOn: ['generateDocs', 'generateStubs', 'jarStubs', 'jarStubsSource'])
 
 // Make sure that hiddenapistubs are placed before the Android SDK in app.iml
 // as there doesn't seem to be any way to configure this in Android Studio.

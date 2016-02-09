@@ -1,0 +1,68 @@
+From 38bb62c9fc590f17e2aac0e38ad3fb2448b1135a Mon Sep 17 00:00:00 2001
+From: rovo89 <android@robv.de>
+Date: Wed, 24 Feb 2016 20:19:09 +0100
+Subject: [PATCH 3/4] [Xposed] Ignore missing documentation for deprecated
+ classes/methods
+
+The deprecation comment should be enough.
+
+Change-Id: I399ce5071d2c506e98621fdefb8f74102829948d
+---
+ src/com/google/doclava/TodoFile.java | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/com/google/doclava/TodoFile.java b/src/com/google/doclava/TodoFile.java
+index 36df2c7..efbd1b0 100644
+--- a/src/com/google/doclava/TodoFile.java
++++ b/src/com/google/doclava/TodoFile.java
+@@ -84,7 +84,7 @@ public class TodoFile {
+       int errors = 0;
+       int total = 1;
+ 
+-      if (!areTagsUseful(cl.inlineTags())) {
++      if (!cl.comment().isDeprecated() && !areTagsUseful(cl.inlineTags())) {
+         setHDF(data, base + errors, cl.position(), "&lt;class comment&gt;", MISSING);
+         errors++;
+       }
+@@ -93,7 +93,7 @@ public class TodoFile {
+       for (MethodInfo m : cl.constructors()) {
+         boolean good = true;
+         total++;
+-        if (m.checkLevel()) {
++        if (m.checkLevel() && !m.comment().isDeprecated()) {
+           if (!areTagsUseful(m.inlineTags())) {
+             setHDF(data, base + errors, m.position(), m.prettySignature(), MISSING);
+             good = false;
+@@ -107,9 +107,9 @@ public class TodoFile {
+       for (MethodInfo m : cl.selfMethods()) {
+         boolean good = true;
+         total++;
+-        if (m.checkLevel()) {
++        if (m.checkLevel() && !m.comment().isDeprecated()) {
+           if (!areTagsUseful(m.inlineTags())) {
+-            setHDF(data, base + errors, m.position(), m.name() + m.prettySignature(), MISSING);
++            setHDF(data, base + errors, m.position(), m.prettySignature(), MISSING);
+             good = false;
+           }
+         }
+@@ -122,7 +122,7 @@ public class TodoFile {
+       for (FieldInfo f : cl.enumConstants()) {
+         boolean good = true;
+         total++;
+-        if (f.checkLevel()) {
++        if (f.checkLevel() && !f.comment().isDeprecated()) {
+           if (!areTagsUseful(f.inlineTags())) {
+             setHDF(data, base + errors, f.position(), f.name(), MISSING);
+             good = false;
+@@ -136,7 +136,7 @@ public class TodoFile {
+       for (FieldInfo f : cl.selfFields()) {
+         boolean good = true;
+         total++;
+-        if (f.checkLevel()) {
++        if (f.checkLevel() && !f.comment().isDeprecated()) {
+           if (!areTagsUseful(f.inlineTags())) {
+             setHDF(data, base + errors, f.position(), f.name(), MISSING);
+             good = false;
+-- 
+2.7.0
+

@@ -3,6 +3,11 @@ package android.content.res;
 import android.graphics.drawable.Drawable;
 
 public class TypedArray {
+	/** Only for API stubs creation, DO NOT USE! */
+	/*package*/ TypedArray() {
+		throw new UnsupportedOperationException("STUB");
+	}
+
 	/*package*/ TypedArray(Resources resources, int[] data, int[] indices, int len) {
 		throw new UnsupportedOperationException("STUB");
 	}
