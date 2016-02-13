@@ -61,6 +61,8 @@ task generateDocs(type: Javadoc, dependsOn: 'compileReleaseSources') {
         docletpath = fileTree(dir: 'doclib', include: '**/*.jar').asType(List)
         jFlags '-Dignore.symbol.file'
         addFileOption 'templatedir', ext.templateDir
+        addBooleanOption 'nodefaultassets', true
+        addStringOption 'hdf android.whichdoc', 'offline'
         addStringOption 'federate android', 'http://developer.android.com'
         addFileOption 'federationapi android', fileTree(dir: 'doclib/api', include: 'android_*.txt').singleFile
         addFileOption 'proofread', file("$buildDir/docs/proofread.txt")

@@ -20,7 +20,7 @@
 </div>
 
 <div id="jd-content">
-<p>These are the Android API classes. See all <a href="packages.html">API packages</a>.</p>
+<p>These are the Xposed Framework API classes. See all <a href="packages.html">API packages</a>.</p>
 <div class="jd-letterlist"><?cs each:letter=docs.classes ?>
     <a href="#letter_<?cs name:letter ?>"><?cs name:letter ?></a>&nbsp;&nbsp;<?cs /each?>
 </div>

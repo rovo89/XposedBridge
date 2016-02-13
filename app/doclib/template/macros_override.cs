@@ -34,3 +34,10 @@
     <?cs /each ?>
   </table>
 <?cs /def ?>
+
+<?cs # print the API Level ?><?cs
+def:since_tags(obj) ?><?cs
+if:reference.apilevels && obj.since ?>
+  Added in API level <?cs var:obj.since ?><?cs
+/if ?>
+<?cs /def ?>

@@ -95,8 +95,7 @@ Summary:
 <div class="api-level">
   <?cs call:since_tags(class) ?><?cs
   if:class.deprecatedsince
-    ?><br>Deprecated since <a href="<?cs var:toroot ?>guide/topics/manifest/uses-sdk-element.html#ApiLevels"
-        >API level <?cs var:class.deprecatedsince ?></a><?cs
+    ?><br>Deprecated since API level <?cs var:class.deprecatedsince ?></a><?cs
   /if ?>
   <?cs call:federated_refs(class) ?>
 </div>

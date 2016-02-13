@@ -7150,10 +7150,6 @@ div.jd-descr > .resource-widget[data-section=distribute\/tools] .section-card-me
   }
 }
 
-.about .dac-header, .distribute .dac-header, .develop .dac-header {
-  height: 128px;
-}
-
 .dac-header-inner {
   background: #fff;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.07);
@@ -7172,8 +7168,6 @@ div.jd-descr > .resource-widget[data-section=distribute\/tools] .section-card-me
 
 .dac-header.is-sticky .dac-header-inner {
   position: fixed;
-  -webkit-animation: .3s dac-header-show;
-  animation: .3s dac-header-show;
 }
 
 .dac-header-logo {

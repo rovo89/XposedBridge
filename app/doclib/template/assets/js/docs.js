@@ -32,6 +32,7 @@ $(document).ready(function() {
    // }
   //}
 
+  /*
   // load json file for JD doc search suggestions
   $.getScript(toRoot + 'jd_lists_unified.js');
   // load json file for Android API search suggestions
@@ -53,6 +54,7 @@ $(document).ready(function() {
           });
       }
   });
+  */
 
   // setup keyboard listener for search shortcut
   $('body').keyup(function(event) {
@@ -424,6 +426,7 @@ false; // navigate across topic boundaries only in design docs
 
   if ($('#devdoc-nav').length) {
     setNavBarDimensions();
+    checkSticky();
   }
 
 
@@ -1065,19 +1068,12 @@ $(window).scroll(function(event) {
 });
 
 function checkSticky() {
-  setStickyTop();
   var $headerEl = $('#header');
   // Exit if there's no sidenav
   if ($('#side-nav').length == 0) return;
 
-  var top = $(window).scrollTop();
-  // we set the navbar fixed when the scroll position is beyond the height of the site header...
-  var shouldBeSticky = top > stickyTop;
-  // ... except if the document content is shorter than the sidenav height.
-  // (this is necessary to avoid crazy behavior on OSX Lion due to overscroll bouncing)
-  if ($("#doc-col").height() < $("#side-nav").height()) {
-    shouldBeSticky = false;
-  }
+  var shouldBeSticky = true
+
   // Nor on mobile
   if (window.innerWidth < 720) {
     shouldBeSticky = false;
@@ -2578,6 +2574,7 @@ function hideResults() {
 /* ################  CUSTOM SEARCH ENGINE  ################## */
 /* ########################################################## */
 
+/*
 var searchControl;
 google.load('search', '1', {"callback" : function() {
             searchControl = new google.search.SearchControl();
@@ -2677,6 +2674,7 @@ google.setOnLoadCallback(function(){
     loadSearchResults();
   }
 }, true);
+*/
 
 /* Adjust the scroll position to account for sticky header, only if the hash matches an id.
    This does not handle <a name=""> tags. Some CSS fixes those, but only for reference docs. */
@@ -2789,17 +2787,21 @@ function escapeHTML(string) {
 /* ######################################################## */
 
 /* Initialize some droiddoc stuff, but only if we're in the reference */
+/*
 if (location.pathname.indexOf("/reference") == 0) {
   if(!(location.pathname.indexOf("/reference-gms/packages.html") == 0)
     && !(location.pathname.indexOf("/reference-gcm/packages.html") == 0)
     && !(location.pathname.indexOf("/reference/com/google") == 0)) {
+*/
     $(document).ready(function() {
       // init available apis based on user pref
       changeApiLevel();
       initSidenavHeightResize()
       });
+/*
   }
 }
+*/
 
 var API_LEVEL_COOKIE = "api_level";
 var minLevel = 1;
@@ -2847,7 +2849,7 @@ function updateSidenavFullscreenWidth() {
 function buildApiLevelSelector() {
   maxLevel = SINCE_DATA.length;
   var userApiLevel = parseInt(readCookie(API_LEVEL_COOKIE));
-  userApiLevel = userApiLevel == 0 ? maxLevel : userApiLevel; // If there's no cookie (zero), use the max by default
+  userApiLevel = userApiLevel == 0 ? SINCE_DATA[maxLevel - 1] : userApiLevel; // If there's no cookie (zero), use the max by default
 
   minLevel = parseInt($("#doc-api-level").attr("class"));
   // Handle provisional api levels; the provisional level will always be the highest possible level
@@ -2860,6 +2862,7 @@ function buildApiLevelSelector() {
   for (var i = maxLevel-1; i >= 0; i--) {
     var option = $("<option />").attr("value",""+SINCE_DATA[i]).append(""+SINCE_DATA[i]);
   //  if (SINCE_DATA[i] < minLevel) option.addClass("absent"); // always false for strings (codenames)
+    if (SINCE_DATA[i] == '') option.hide();
     select.append(option);
   }
 
@@ -2870,7 +2873,7 @@ function buildApiLevelSelector() {
 
 function changeApiLevel() {
   maxLevel = SINCE_DATA.length;
-  var selectedLevel = maxLevel;
+  var selectedLevel = SINCE_DATA[maxLevel - 1];
 
   selectedLevel = parseInt($("#apiLevelSelector option:selected").val());
   toggleVisisbleApis(selectedLevel, "body");
@@ -2884,9 +2887,6 @@ function changeApiLevel() {
               + "<p>This document is hidden because your selected API level for the documentation is "
               + selectedLevel + ". You can change the documentation API level with the selector "
               + "above the left navigation.</p>"
-              + "<p>For more information about specifying the API level your app requires, "
-              + "read <a href='" + toRoot + "training/basics/supporting-devices/platforms.html'"
-              + ">Supporting Different Platform Versions</a>.</p>"
               + "<input type='button' value='OK, make this page visible' "
               + "title='Change the API level to " + minLevel + "' "
               + "onclick='$(\"#apiLevelSelector\").val(\"" + minLevel + "\");changeApiLevel();' />"
