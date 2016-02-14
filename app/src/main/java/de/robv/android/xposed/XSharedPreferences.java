@@ -192,6 +192,7 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public Map<String, ?> getAll() {
 		synchronized (this) {
@@ -200,6 +201,7 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public String getString(String key, String defValue) {
 		synchronized (this) {
@@ -209,6 +211,7 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
+	/** @hide */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Set<String> getStringSet(String key, Set<String> defValues) {
@@ -219,6 +222,7 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public int getInt(String key, int defValue) {
 		synchronized (this) {
@@ -228,6 +232,7 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public long getLong(String key, long defValue) {
 		synchronized (this) {
@@ -237,6 +242,7 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public float getFloat(String key, float defValue) {
 		synchronized (this) {
@@ -246,6 +252,7 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public boolean getBoolean(String key, boolean defValue) {
 		synchronized (this) {
@@ -255,6 +262,7 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public boolean contains(String key) {
 		synchronized (this) {
@@ -263,16 +271,22 @@ public final class XSharedPreferences implements SharedPreferences {
 		}
 	}
 
+	/** @deprecated Not supported by this implementation. */
+	@Deprecated
 	@Override
 	public Editor edit() {
 		throw new UnsupportedOperationException("read-only implementation");
 	}
 
+	/** @deprecated Not supported by this implementation. */
+	@Deprecated
 	@Override
 	public void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
 		throw new UnsupportedOperationException("listeners are not supported in this implementation");
 	}
 
+	/** @deprecated Not supported by this implementation. */
+	@Deprecated
 	@Override
 	public void unregisterOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
 		throw new UnsupportedOperationException("listeners are not supported in this implementation");

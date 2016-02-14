@@ -417,6 +417,7 @@ public class XResources extends MiuiResources {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public XmlResourceParser getAnimation(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -439,6 +440,7 @@ public class XResources extends MiuiResources {
 		return super.getAnimation(id);
 	}
 
+	/** @hide */
 	@Override
 	public boolean getBoolean(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -452,6 +454,7 @@ public class XResources extends MiuiResources {
 		return super.getBoolean(id);
 	}
 
+	/** @hide */
 	@Override
 	public int getColor(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -465,6 +468,7 @@ public class XResources extends MiuiResources {
 		return super.getColor(id);
 	}
 
+	/** @hide */
 	@Override
 	public ColorStateList getColorStateList(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -488,6 +492,7 @@ public class XResources extends MiuiResources {
 		return super.getColorStateList(id);
 	}
 
+	/** @hide */
 	@Override
 	public float getDimension(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -501,6 +506,7 @@ public class XResources extends MiuiResources {
 		return super.getDimension(id);
 	}
 
+	/** @hide */
 	@Override
 	public int getDimensionPixelOffset(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -514,6 +520,7 @@ public class XResources extends MiuiResources {
 		return super.getDimensionPixelOffset(id);
 	}
 
+	/** @hide */
 	@Override
 	public int getDimensionPixelSize(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -527,6 +534,7 @@ public class XResources extends MiuiResources {
 		return super.getDimensionPixelSize(id);
 	}
 
+	/** @hide */
 	@Override
 	public Drawable getDrawable(int id) throws NotFoundException {
 		try {
@@ -552,6 +560,7 @@ public class XResources extends MiuiResources {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public Drawable getDrawable(int id, Theme theme) throws NotFoundException {
 		try {
@@ -577,6 +586,7 @@ public class XResources extends MiuiResources {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public Drawable getDrawable(int id, Theme theme, boolean supportComposedIcons) throws NotFoundException {
 		try {
@@ -602,6 +612,7 @@ public class XResources extends MiuiResources {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public Drawable getDrawableForDensity(int id, int density) throws NotFoundException {
 		try {
@@ -627,6 +638,7 @@ public class XResources extends MiuiResources {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public Drawable getDrawableForDensity(int id, int density, Theme theme) throws NotFoundException {
 		try {
@@ -652,6 +664,7 @@ public class XResources extends MiuiResources {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public Drawable getDrawableForDensity(int id, int density, Theme theme, boolean supportComposedIcons) throws NotFoundException {
 		try {
@@ -677,6 +690,7 @@ public class XResources extends MiuiResources {
 		}
 	}
 
+	/** @hide */
 	@Override
 	public float getFraction(int id, int base, int pbase) {
 		Object replacement = getReplacement(id);
@@ -688,6 +702,7 @@ public class XResources extends MiuiResources {
 		return super.getFraction(id, base, pbase);
 	}
 
+	/** @hide */
 	@Override
 	public int getInteger(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -701,6 +716,7 @@ public class XResources extends MiuiResources {
 		return super.getInteger(id);
 	}
 
+	/** @hide */
 	@Override
 	public int[] getIntArray(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -714,6 +730,7 @@ public class XResources extends MiuiResources {
 		return super.getIntArray(id);
 	}
 
+	/** @hide */
 	@Override
 	public XmlResourceParser getLayout(int id) throws NotFoundException {
 		XmlResourceParser result;
@@ -784,6 +801,7 @@ public class XResources extends MiuiResources {
 		return result;
 	}
 
+	/** @hide */
 	@Override
 	public Movie getMovie(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -795,6 +813,7 @@ public class XResources extends MiuiResources {
 		return super.getMovie(id);
 	}
 
+	/** @hide */
 	@Override
 	public CharSequence getQuantityText(int id, int quantity) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -809,6 +828,7 @@ public class XResources extends MiuiResources {
 	// public String getQuantityString(int id, int quantity);
 	// public String getQuantityString(int id, int quantity, Object... formatArgs);
 
+	/** @hide */
 	@Override
 	public String[] getStringArray(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -822,6 +842,7 @@ public class XResources extends MiuiResources {
 		return super.getStringArray(id);
 	}
 
+	/** @hide */
 	@Override
 	public CharSequence getText(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -838,6 +859,7 @@ public class XResources extends MiuiResources {
 	// public String getString(int id);
 	// public String getString(int id, Object... formatArgs);
 
+	/** @hide */
 	@Override
 	public CharSequence getText(int id, CharSequence def) {
 		Object replacement = getReplacement(id);
@@ -851,6 +873,7 @@ public class XResources extends MiuiResources {
 		return super.getText(id, def);
 	}
 
+	/** @hide */
 	@Override
 	public CharSequence[] getTextArray(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
@@ -864,6 +887,7 @@ public class XResources extends MiuiResources {
 		return super.getTextArray(id);
 	}
 
+	/** @hide */
 	@Override
 	public XmlResourceParser getXml(int id) throws NotFoundException {
 		Object replacement = getReplacement(id);
