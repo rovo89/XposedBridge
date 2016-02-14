@@ -139,13 +139,13 @@ public abstract class BaseService {
 	// ----------------------------------------------------------------------------
 	/*package*/ BaseService() {}
 
-	protected static void ensureAbsolutePath(String filename) {
+	/*package*/ static void ensureAbsolutePath(String filename) {
 		if (!filename.startsWith("/")) {
 			throw new IllegalArgumentException("Only absolute filenames are allowed: " + filename);
 		}
 	}
 
-	protected static void throwCommonIOException(int errno, String errorMsg, String filename, String defaultText) throws IOException {
+	/*package*/ static void throwCommonIOException(int errno, String errorMsg, String filename, String defaultText) throws IOException {
 		switch (errno) {
 			case 1: // EPERM
 			case 13: // EACCES

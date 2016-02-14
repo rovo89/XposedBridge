@@ -24,7 +24,9 @@ import external.org.apache.commons.lang3.ClassUtils;
 import external.org.apache.commons.lang3.reflect.MemberUtils;
 import external.org.apache.commons.lang3.reflect.MethodUtils;
 
-public class XposedHelpers {
+public final class XposedHelpers {
+	private XposedHelpers() {}
+
 	private static final HashMap<String, Field> fieldCache = new HashMap<String, Field>();
 	private static final HashMap<String, Method> methodCache = new HashMap<String, Method>();
 	private static final HashMap<String, Constructor<?>> constructorCache = new HashMap<String, Constructor<?>>();
@@ -470,11 +472,15 @@ public class XposedHelpers {
 		return findConstructorBestMatch(clazz, parameterTypes);
 	}
 
-	public static class ClassNotFoundError extends Error {
+	public static final class ClassNotFoundError extends Error {
 		private static final long serialVersionUID = -1070936889459514628L;
+
+		/** @hide */
 		public ClassNotFoundError(Throwable cause) {
 			super(cause);
 		}
+
+		/** @hide */
 		public ClassNotFoundError(String detailMessage, Throwable cause) {
 			super(detailMessage, cause);
 		}
@@ -999,13 +1005,12 @@ public class XposedHelpers {
 		}
 	}
 
-	public static class InvocationTargetError extends Error {
+	public static final class InvocationTargetError extends Error {
 		private static final long serialVersionUID = -1070936889459514628L;
+
+		/** @hide */
 		public InvocationTargetError(Throwable cause) {
 			super(cause);
-		}
-		public InvocationTargetError(String detailMessage, Throwable cause) {
-			super(detailMessage, cause);
 		}
 	}
 

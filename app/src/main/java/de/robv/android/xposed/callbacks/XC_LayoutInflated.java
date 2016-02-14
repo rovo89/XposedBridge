@@ -7,14 +7,17 @@ import android.view.View;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XC_LayoutInflated extends XCallback {
+	@SuppressWarnings("deprecation")
 	public XC_LayoutInflated() {
 		super();
 	}
+
 	public XC_LayoutInflated(int priority) {
 		super(priority);
 	}
 
-	public static class LayoutInflatedParam extends XCallback.Param {
+	public static final class LayoutInflatedParam extends XCallback.Param {
+		/** @hide */
 		public LayoutInflatedParam(CopyOnWriteSortedSet<XC_LayoutInflated> callbacks) {
 			super(callbacks);
 		}
@@ -28,6 +31,7 @@ public abstract class XC_LayoutInflated extends XCallback {
 		public XResources res;
 	}
 
+	/** @hide */
 	@Override
 	protected void call(Param param) throws Throwable {
 		if (param instanceof LayoutInflatedParam)
@@ -40,13 +44,10 @@ public abstract class XC_LayoutInflated extends XCallback {
 		private final String resDir;
 		private final int id;
 
+		/** @hide */
 		public Unhook(String resDir, int id) {
 			this.resDir = resDir;
 			this.id = id;
-		}
-
-		public String getResDir() {
-			return resDir;
 		}
 
 		public int getId() {

@@ -23,7 +23,9 @@ import static de.robv.android.xposed.XposedHelpers.newInstance;
 /**
  * Accessor for package level methods/fields in package android.app
  */
-public class AndroidAppHelper {
+public final class AndroidAppHelper {
+	private AndroidAppHelper() {}
+
 	private static final Class<?> CLASS_RESOURCES_KEY;
 	private static boolean HAS_IS_THEMEABLE = false;
 	private static boolean HAS_THEME_CONFIG_PARAMETER = false;
@@ -102,6 +104,7 @@ public class AndroidAppHelper {
 		}
 	}
 
+	/** @hide */
 	public static void addActiveResource(String resDir, float scale, boolean isThemeable, Resources resources) {
 		ActivityThread thread = ActivityThread.currentActivityThread();
 		if (thread == null)
@@ -147,20 +150,20 @@ public class AndroidAppHelper {
 		return ActivityThread.currentApplication();
 	}
 
-	/** use class {@link XSharedPreferences} instead */
+	/** @deprecated Use {@link XSharedPreferences} instead. */
 	@SuppressWarnings("UnusedParameters")
 	@Deprecated
 	public static SharedPreferences getSharedPreferencesForPackage(String packageName, String prefFileName, int mode) {
 		return new XSharedPreferences(packageName, prefFileName);
 	}
 
-	/** use class {@link XSharedPreferences} instead */
+	/** @deprecated Use {@link XSharedPreferences} instead. */
 	@Deprecated
 	public static SharedPreferences getDefaultSharedPreferencesForPackage(String packageName) {
 		return new XSharedPreferences(packageName);
 	}
 
-	/** use {@link XSharedPreferences#reload()}instead */
+	/** @deprecated Use {@link XSharedPreferences#reload} instead. */
 	@Deprecated
 	public static void reloadSharedPreferencesIfNeeded(SharedPreferences pref) {
 		if (pref instanceof XSharedPreferences) {

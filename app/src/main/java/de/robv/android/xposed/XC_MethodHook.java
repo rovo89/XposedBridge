@@ -6,6 +6,7 @@ import de.robv.android.xposed.callbacks.IXUnhook;
 import de.robv.android.xposed.callbacks.XCallback;
 
 public abstract class XC_MethodHook extends XCallback {
+	@SuppressWarnings("deprecation")
 	public XC_MethodHook() {
 		super();
 	}
@@ -28,7 +29,12 @@ public abstract class XC_MethodHook extends XCallback {
 	protected void afterHookedMethod(MethodHookParam param) throws Throwable {}
 
 
-	public static class MethodHookParam extends XCallback.Param {
+	public static final class MethodHookParam extends XCallback.Param {
+		/** @hide */
+		@SuppressWarnings("deprecation")
+		public MethodHookParam() {
+			super();
+		}
 		/** Description of the hooked method */
 		public Member method;
 		/** The <code>this</code> reference for an instance method, or null for static methods */
@@ -88,7 +94,7 @@ public abstract class XC_MethodHook extends XCallback {
 	public class Unhook implements IXUnhook {
 		private final Member hookMethod;
 
-		public Unhook(Member hookMethod) {
+		/*package*/ Unhook(Member hookMethod) {
 			this.hookMethod = hookMethod;
 		}
 

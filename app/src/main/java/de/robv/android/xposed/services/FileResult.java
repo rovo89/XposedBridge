@@ -36,6 +36,7 @@ public final class FileResult {
 		this.mtime = mtime;
 	}
 
+	/** @hide */
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("{");

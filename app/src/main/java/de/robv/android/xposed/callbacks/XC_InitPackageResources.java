@@ -6,14 +6,17 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XC_InitPackageResources extends XCallback {
+	@SuppressWarnings("deprecation")
 	public XC_InitPackageResources() {
 		super();
 	}
+
 	public XC_InitPackageResources(int priority) {
 		super(priority);
 	}
 
-	public static class InitPackageResourcesParam extends XCallback.Param {
+	public static final class InitPackageResourcesParam extends XCallback.Param {
+		/** @hide */
 		public InitPackageResourcesParam(CopyOnWriteSortedSet<XC_InitPackageResources> callbacks) {
 			super(callbacks);
 		}
@@ -23,6 +26,7 @@ public abstract class XC_InitPackageResources extends XCallback {
 		public XResources res;
 	}
 
+	/** @hide */
 	@Override
 	protected void call(Param param) throws Throwable {
 		if (param instanceof InitPackageResourcesParam)
@@ -32,6 +36,9 @@ public abstract class XC_InitPackageResources extends XCallback {
 	public abstract void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable;
 
 	public class Unhook implements IXUnhook {
+		/** @hide */
+		public Unhook() {}
+
 		public XC_InitPackageResources getCallback() {
 			return XC_InitPackageResources.this;
 		}

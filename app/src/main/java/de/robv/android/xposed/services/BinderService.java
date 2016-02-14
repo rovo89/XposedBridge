@@ -7,6 +7,7 @@ import android.os.ServiceManager;
 
 import java.io.IOException;
 
+/** @hide */
 public final class BinderService extends BaseService {
 	public static final int TARGET_APP = 0;
 	public static final int TARGET_SYSTEM = 1;

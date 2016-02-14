@@ -74,13 +74,13 @@ public class XResources extends MiuiResources {
 	private String mResDir;
 	private String mPackageName;
 
-	// Dummy, will never be called (objects are transferred to this class only).
+	/** Dummy, will never be called (objects are transferred to this class only). */
 	private XResources() {
 		super(null, null, null);
 		throw new UnsupportedOperationException();
 	}
 
-	/** Framework only, don't call this from your module! */
+	/** @hide */
 	public void initObject(String resDir) {
 		if (mIsObjectInited)
 			throw new IllegalStateException("Object has already been initialized");
@@ -101,7 +101,7 @@ public class XResources extends MiuiResources {
 		this.mIsObjectInited = true;
 	}
 
-	/** Framework only, don't call this from your module! */
+	/** @hide */
 	public boolean isFirstLoad() {
 		synchronized (sReplacements) {
 			if (mResDir == null)
@@ -126,11 +126,7 @@ public class XResources extends MiuiResources {
 		}
 	}
 
-	public String getResDir() {
-		return mResDir;
-	}
-
-	/** Framework only, don't call this from your module! */
+	/** @hide */
 	public static void setPackageNameForResDir(String packageName, String resDir) {
 		synchronized (sResDirPackageNames) {
 			sResDirPackageNames.put(resDir, packageName);
@@ -193,7 +189,7 @@ public class XResources extends MiuiResources {
 		return getPackageName(resDir);
 	}
 
-	/** Framework only, don't call this from your module! */
+	/** @hide */
 	public static void init(ThreadLocal<Object> latestResKey) throws Exception {
 		sLatestResKey = latestResKey;
 
@@ -986,14 +982,15 @@ public class XResources extends MiuiResources {
 	//   XTypedArray class
 	// =======================================================
 	/**
-	 * {@link TypedArray} replacement that replaces values on-the-fly.
+	 * {@link android.content.res.TypedArray} replacement that replaces values on-the-fly.
 	 * Mainly used when inflating layouts.
+	 * @hide
 	 */
 	public static class XTypedArray extends TypedArray {
 		private boolean mIsObjectInited;
 		private XResources mRes;
 
-		// Dummy, will never be called (objects are transferred to this class only).
+		/** Dummy, will never be called (objects are transferred to this class only). */
 		private XTypedArray() {
 			super(null, null, null, 0);
 			throw new UnsupportedOperationException();

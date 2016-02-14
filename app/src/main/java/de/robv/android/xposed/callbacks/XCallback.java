@@ -9,21 +9,30 @@ import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XCallback implements Comparable<XCallback> {
 	public final int priority;
+
+	/** @deprecated This method can't be hidden for technical reasons. Nevertheless, don't use it! */
+	@Deprecated
 	public XCallback() {
 		this.priority = PRIORITY_DEFAULT;
 	}
+
+	/** @hide */
 	public XCallback(int priority) {
 		this.priority = priority;
 	}
 
-	public static class Param {
+	public static abstract class Param {
+		/** @hide */
 		public final Object[] callbacks;
 		private Bundle extra;
 
+		/** @deprecated This method can't be hidden for technical reasons. Nevertheless, don't use it! */
+		@Deprecated
 		protected Param() {
 			callbacks = null;
 		}
 
+		/** @hide */
 		protected Param(CopyOnWriteSortedSet<? extends XCallback> callbacks) {
 			this.callbacks = callbacks.getSnapshot();
 		}
@@ -62,6 +71,7 @@ public abstract class XCallback implements Comparable<XCallback> {
 		}
 	}
 
+	/** @hide */
 	public static void callAll(Param param) {
 		if (param.callbacks == null)
 			throw new IllegalStateException("This object was not created for use with callAll");
@@ -73,6 +83,7 @@ public abstract class XCallback implements Comparable<XCallback> {
 		}
 	}
 
+	/** @hide */
 	protected void call(Param param) throws Throwable {}
 
 	@Override

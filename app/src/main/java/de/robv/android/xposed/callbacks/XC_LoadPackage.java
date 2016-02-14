@@ -6,14 +6,17 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 public abstract class XC_LoadPackage extends XCallback {
+	@SuppressWarnings("deprecation")
 	public XC_LoadPackage() {
 		super();
 	}
+
 	public XC_LoadPackage(int priority) {
 		super(priority);
 	}
 
-	public static class LoadPackageParam extends XCallback.Param {
+	public static final class LoadPackageParam extends XCallback.Param {
+		/** @hide */
 		public LoadPackageParam(CopyOnWriteSortedSet<XC_LoadPackage> callbacks) {
 			super(callbacks);
 		}
@@ -29,6 +32,7 @@ public abstract class XC_LoadPackage extends XCallback {
 		public boolean isFirstApplication;
 	}
 
+	/** @hide */
 	@Override
 	protected void call(Param param) throws Throwable {
 		if (param instanceof LoadPackageParam)
@@ -38,6 +42,9 @@ public abstract class XC_LoadPackage extends XCallback {
 	public abstract void handleLoadPackage(LoadPackageParam lpparam) throws Throwable;
 
 	public class Unhook implements IXUnhook {
+		/** @hide */
+		public Unhook() {}
+
 		public XC_LoadPackage getCallback() {
 			return XC_LoadPackage.this;
 		}

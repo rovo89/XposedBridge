@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/** @hide */
 public final class DirectAccessService extends BaseService {
 	@Override
 	public boolean hasDirectFileAccess() {

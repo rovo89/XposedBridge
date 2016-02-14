@@ -10,7 +10,8 @@ public interface IXposedHookInitPackageResources extends IXposedMod {
 	/** @see XC_InitPackageResources#handleInitPackageResources */
 	void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable;
 
-	class Wrapper extends XC_InitPackageResources {
+	/** @hide */
+	final class Wrapper extends XC_InitPackageResources {
 		private final IXposedHookInitPackageResources instance;
 		public Wrapper(IXposedHookInitPackageResources instance) {
 			this.instance = instance;

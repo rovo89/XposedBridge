@@ -10,7 +10,9 @@ public interface IXposedHookZygoteInit extends IXposedMod {
 	 */
 	void initZygote(StartupParam startupParam) throws Throwable;
 
-	class StartupParam {
+	final class StartupParam {
+		/*package*/ StartupParam() {}
+
 		/** The path to the module's APK. */
 		public String modulePath;
 

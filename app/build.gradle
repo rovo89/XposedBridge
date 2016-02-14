@@ -97,6 +97,7 @@ task generateStubs(type: Javadoc, dependsOn: 'compileReleaseSources') {
         addBooleanOption 'nodocs', true
         addFileOption 'stubs', file(ext.stubsDir)
         addFileOption 'api', file('doclib/api/current.txt')
+        addBooleanOption 'hide 111', true
         addBooleanOption 'hide 113', true
     }
 }
@@ -104,6 +105,7 @@ task generateStubs(type: Javadoc, dependsOn: 'compileReleaseSources') {
 task compileStubs(type: JavaCompile, dependsOn: 'generateStubs') {
     source = fileTree(generateStubs.ext.stubsDir)
     destinationDir = file("$buildDir/api/stub-classes")
+    options.compilerArgs += '-XDsuppressNotes'
 }
 
 task jarStubs(type: Jar) {

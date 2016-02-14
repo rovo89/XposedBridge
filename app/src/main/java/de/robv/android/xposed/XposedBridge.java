@@ -54,10 +54,10 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 @SuppressWarnings("JniMissingFunction")
 public final class XposedBridge {
+	/** @hide */
 	public static final String TAG = "Xposed";
-	public static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
 
-	/** Use {@link #getXposedVersion()} instead. */
+	/** @deprecated Use {@link #getXposedVersion()} instead. */
 	@Deprecated
 	public static int XPOSED_BRIDGE_VERSION;
 
@@ -69,12 +69,13 @@ public final class XposedBridge {
 	private static final int RUNTIME_ART = 2;
 
 	private static boolean disableHooks = false;
-	public static boolean disableResources = false;
+	private static boolean disableResources = false;
 
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 	public static final ClassLoader BOOTCLASSLOADER = ClassLoader.getSystemClassLoader();
+	private static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
 	@SuppressLint("SdCardPath")
-	public static final String BASE_DIR = "/data/data/" + INSTALLER_PACKAGE_NAME + "/";
+	private static final String BASE_DIR = "/data/data/" + INSTALLER_PACKAGE_NAME + "/";
 
 	// built-in handlers
 	private static final Map<Member, CopyOnWriteSortedSet<XC_MethodHook>> sHookedMethodCallbacks
@@ -84,8 +85,11 @@ public final class XposedBridge {
 	private static final CopyOnWriteSortedSet<XC_InitPackageResources> sInitPackageResourcesCallbacks
 									= new CopyOnWriteSortedSet<XC_InitPackageResources>();
 
+	private XposedBridge() {}
+
 	/**
 	 * Called when native methods and other things are initialized, but before preloading classes etc.
+	 * @hide
 	 */
 	@SuppressWarnings("deprecation")
 	protected static void main(String[] args) {
@@ -119,7 +123,8 @@ public final class XposedBridge {
 			RuntimeInit.main(args);
 	}
 
-	protected static class ToolEntryPoint {
+	/** @hide */
+	protected static final class ToolEntryPoint {
 		protected static void main(String[] args) {
 			try {
 				startClassName = getStartClassName();
@@ -839,7 +844,8 @@ public final class XposedBridge {
 
 	private static native Object cloneToSubclassNative(Object obj, Class<?> targetClazz);
 
-	public static class CopyOnWriteSortedSet<E> {
+	/** @hide */
+	public static final class CopyOnWriteSortedSet<E> {
 		private transient volatile Object[] elements = EMPTY_ARRAY;
 
 		@SuppressWarnings("UnusedReturnValue")

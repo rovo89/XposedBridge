@@ -9,6 +9,7 @@ public abstract class XC_MethodReplacement extends XC_MethodHook {
 		super(priority);
 	}
 
+	/** @hide */
 	@Override
 	protected final void beforeHookedMethod(MethodHookParam param) throws Throwable {
 		try {
@@ -19,6 +20,7 @@ public abstract class XC_MethodReplacement extends XC_MethodHook {
 		}
 	}
 
+	/** @hide */
 	@SuppressWarnings("EmptyMethod")
 	protected final void afterHookedMethod(MethodHookParam param) throws Throwable {}
 

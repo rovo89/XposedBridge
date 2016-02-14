@@ -11,6 +11,8 @@ import de.robv.android.xposed.services.ZygoteService;
  * A helper to work with (or without) SELinux, abstracting much of its big complexity.
  */
 public final class SELinuxHelper {
+	private SELinuxHelper() {}
+
 	 /**
 	* Determine whether SELinux is disabled or enabled.
 	* @return A boolean indicating whether SELinux is enabled.
