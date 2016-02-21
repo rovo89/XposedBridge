@@ -71,10 +71,10 @@ task fixIml {
 
         // Add the new entry just before it
         moduleComponent.children().add(jdkOrderEntryIndex, new Node(null, 'orderEntry',
-                ['type': 'module', 'module-name': 'hiddenapistubs', 'exported': '']));
+                ['type': 'module', 'module-name': 'hiddenapistubs', 'exported': '']))
 
         // Write the fixed iml file
-        def printer = new XmlNodePrinter(new PrintWriter(new FileWriter(imlFile)));
+        def printer = new XmlNodePrinter(new PrintWriter(new FileWriter(imlFile)))
         printer.preserveWhitespace = true
         printer.print(parse)
     }
