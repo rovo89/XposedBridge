@@ -1,0 +1,334 @@
+package android.app {
+
+  public final class AndroidAppHelper {
+    method public static android.app.Application currentApplication();
+    method public static android.content.pm.ApplicationInfo currentApplicationInfo();
+    method public static java.lang.String currentPackageName();
+    method public static java.lang.String currentProcessName();
+    method public static deprecated android.content.SharedPreferences getDefaultSharedPreferencesForPackage(java.lang.String);
+    method public static deprecated android.content.SharedPreferences getSharedPreferencesForPackage(java.lang.String, java.lang.String, int);
+    method public static deprecated void reloadSharedPreferencesIfNeeded(android.content.SharedPreferences);
+  }
+
+}
+
+package android.content.res {
+
+  public class XModuleResources extends android.content.res.Resources {
+    method public static android.content.res.XModuleResources createInstance(java.lang.String, android.content.res.XResources);
+    method public android.content.res.XResForwarder fwd(int);
+  }
+
+  public class XResForwarder {
+    ctor public XResForwarder(android.content.res.Resources, int);
+    method public int getId();
+    method public android.content.res.Resources getResources();
+  }
+
+  public class XResources extends android.content.res.Resources {
+    method public int addResource(android.content.res.Resources, int);
+    method public static int getFakeResId(java.lang.String);
+    method public static int getFakeResId(android.content.res.Resources, int);
+    method public java.lang.String getPackageName();
+    method public static java.lang.String getPackageNameDuringConstruction();
+    method public de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookLayout(int, de.robv.android.xposed.callbacks.XC_LayoutInflated);
+    method public de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
+    method public de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
+    method public static de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookSystemWideLayout(int, de.robv.android.xposed.callbacks.XC_LayoutInflated);
+    method public static de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookSystemWideLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
+    method public static de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookSystemWideLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
+    method public void setReplacement(int, java.lang.Object);
+    method public void setReplacement(java.lang.String, java.lang.Object);
+    method public void setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object);
+    method public static void setSystemWideReplacement(int, java.lang.Object);
+    method public static void setSystemWideReplacement(java.lang.String, java.lang.Object);
+    method public static void setSystemWideReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object);
+    method public static void unhookLayout(java.lang.String, int, de.robv.android.xposed.callbacks.XC_LayoutInflated);
+  }
+
+  public static class XResources.DimensionReplacement {
+    ctor public XResources.DimensionReplacement(float, int);
+    method public float getDimension(android.util.DisplayMetrics);
+    method public int getDimensionPixelOffset(android.util.DisplayMetrics);
+    method public int getDimensionPixelSize(android.util.DisplayMetrics);
+  }
+
+  public static abstract class XResources.DrawableLoader {
+    ctor public XResources.DrawableLoader();
+    method public abstract android.graphics.drawable.Drawable newDrawable(android.content.res.XResources, int) throws java.lang.Throwable;
+    method public android.graphics.drawable.Drawable newDrawableForDensity(android.content.res.XResources, int, int) throws java.lang.Throwable;
+  }
+
+  public static class XResources.ResourceNames {
+    method public boolean equals(java.lang.String, java.lang.String, java.lang.String, int);
+    field public final java.lang.String fullName;
+    field public final int id;
+    field public final java.lang.String name;
+    field public final java.lang.String pkg;
+    field public final java.lang.String type;
+  }
+
+}
+
+package de.robv.android.xposed {
+
+  public abstract deprecated interface IXposedHookCmdInit {
+    method public abstract void initCmdApp(de.robv.android.xposed.IXposedHookCmdInit.StartupParam) throws java.lang.Throwable;
+  }
+
+  public static final class IXposedHookCmdInit.StartupParam {
+    field public java.lang.String modulePath;
+    field public java.lang.String startClassName;
+  }
+
+  public abstract interface IXposedHookInitPackageResources {
+    method public abstract void handleInitPackageResources(de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam) throws java.lang.Throwable;
+  }
+
+  public abstract interface IXposedHookLoadPackage {
+    method public abstract void handleLoadPackage(de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam) throws java.lang.Throwable;
+  }
+
+  public abstract interface IXposedHookZygoteInit {
+    method public abstract void initZygote(de.robv.android.xposed.IXposedHookZygoteInit.StartupParam) throws java.lang.Throwable;
+  }
+
+  public static final class IXposedHookZygoteInit.StartupParam {
+    field public java.lang.String modulePath;
+  }
+
+  public abstract class XC_MethodHook extends de.robv.android.xposed.callbacks.XCallback {
+    ctor public XC_MethodHook();
+    ctor public XC_MethodHook(int);
+    method protected void afterHookedMethod(de.robv.android.xposed.XC_MethodHook.MethodHookParam) throws java.lang.Throwable;
+    method protected void beforeHookedMethod(de.robv.android.xposed.XC_MethodHook.MethodHookParam) throws java.lang.Throwable;
+  }
+
+  public static final class XC_MethodHook.MethodHookParam extends de.robv.android.xposed.callbacks.XCallback.Param {
+    method public java.lang.Object getResult();
+    method public java.lang.Object getResultOrThrowable() throws java.lang.Throwable;
+    method public java.lang.Throwable getThrowable();
+    method public boolean hasThrowable();
+    method public void setResult(java.lang.Object);
+    method public void setThrowable(java.lang.Throwable);
+    field public java.lang.Object[] args;
+    field public java.lang.reflect.Member method;
+    field public java.lang.Object thisObject;
+  }
+
+  public class XC_MethodHook.Unhook implements de.robv.android.xposed.callbacks.IXUnhook {
+    method public de.robv.android.xposed.XC_MethodHook getCallback();
+    method public java.lang.reflect.Member getHookedMethod();
+    method public void unhook();
+  }
+
+  public abstract class XC_MethodReplacement extends de.robv.android.xposed.XC_MethodHook {
+    ctor public XC_MethodReplacement();
+    ctor public XC_MethodReplacement(int);
+    method protected abstract java.lang.Object replaceHookedMethod(de.robv.android.xposed.XC_MethodHook.MethodHookParam) throws java.lang.Throwable;
+    method public static de.robv.android.xposed.XC_MethodReplacement returnConstant(java.lang.Object);
+    method public static de.robv.android.xposed.XC_MethodReplacement returnConstant(int, java.lang.Object);
+    field public static final de.robv.android.xposed.XC_MethodReplacement DO_NOTHING;
+  }
+
+  public final class XSharedPreferences implements android.content.SharedPreferences {
+    ctor public XSharedPreferences(java.io.File);
+    ctor public XSharedPreferences(java.lang.String);
+    ctor public XSharedPreferences(java.lang.String, java.lang.String);
+    method public boolean contains(java.lang.String);
+    method public deprecated android.content.SharedPreferences.Editor edit();
+    method public java.util.Map<java.lang.String, ?> getAll();
+    method public boolean getBoolean(java.lang.String, boolean);
+    method public java.io.File getFile();
+    method public float getFloat(java.lang.String, float);
+    method public int getInt(java.lang.String, int);
+    method public long getLong(java.lang.String, long);
+    method public java.lang.String getString(java.lang.String, java.lang.String);
+    method public java.util.Set<java.lang.String> getStringSet(java.lang.String, java.util.Set<java.lang.String>);
+    method public synchronized boolean hasFileChanged();
+    method public boolean makeWorldReadable();
+    method public deprecated void registerOnSharedPreferenceChangeListener(android.content.SharedPreferences.OnSharedPreferenceChangeListener);
+    method public void reload();
+    method public deprecated void unregisterOnSharedPreferenceChangeListener(android.content.SharedPreferences.OnSharedPreferenceChangeListener);
+  }
+
+  public final class XposedBridge {
+    method public static java.util.Set<de.robv.android.xposed.XC_MethodHook.Unhook> hookAllConstructors(java.lang.Class<?>, de.robv.android.xposed.XC_MethodHook);
+    method public static java.util.Set<de.robv.android.xposed.XC_MethodHook.Unhook> hookAllMethods(java.lang.Class<?>, java.lang.String, de.robv.android.xposed.XC_MethodHook);
+    method public static de.robv.android.xposed.callbacks.XC_InitPackageResources.Unhook hookInitPackageResources(de.robv.android.xposed.callbacks.XC_InitPackageResources);
+    method public static de.robv.android.xposed.callbacks.XC_LoadPackage.Unhook hookLoadPackage(de.robv.android.xposed.callbacks.XC_LoadPackage);
+    method public static de.robv.android.xposed.XC_MethodHook.Unhook hookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook);
+    method public static java.lang.Object invokeOriginalMethod(java.lang.reflect.Member, java.lang.Object, java.lang.Object[]) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException, java.lang.reflect.InvocationTargetException, java.lang.NullPointerException;
+    method public static synchronized void log(java.lang.String);
+    method public static synchronized void log(java.lang.Throwable);
+    method public static void unhookInitPackageResources(de.robv.android.xposed.callbacks.XC_InitPackageResources);
+    method public static void unhookLoadPackage(de.robv.android.xposed.callbacks.XC_LoadPackage);
+    method public static void unhookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook);
+    field public static final java.lang.ClassLoader BOOTCLASSLOADER;
+    field public static int XPOSED_BRIDGE_VERSION;
+  }
+
+  public final class XposedHelpers {
+    method public static byte[] assetAsByteArray(android.content.res.Resources, java.lang.String) throws java.io.IOException;
+    method public static java.lang.Object callMethod(java.lang.Object, java.lang.String, java.lang.Object...);
+    method public static java.lang.Object callMethod(java.lang.Object, java.lang.String, java.lang.Class<?>[], java.lang.Object...);
+    method public static java.lang.Object callStaticMethod(java.lang.Class<?>, java.lang.String, java.lang.Object...);
+    method public static java.lang.Object callStaticMethod(java.lang.Class<?>, java.lang.String, java.lang.Class<?>[], java.lang.Object...);
+    method public static de.robv.android.xposed.XC_MethodHook.Unhook findAndHookConstructor(java.lang.Class<?>, java.lang.Object...);
+    method public static de.robv.android.xposed.XC_MethodHook.Unhook findAndHookConstructor(java.lang.String, java.lang.ClassLoader, java.lang.Object...);
+    method public static de.robv.android.xposed.XC_MethodHook.Unhook findAndHookMethod(java.lang.Class<?>, java.lang.String, java.lang.Object...);
+    method public static de.robv.android.xposed.XC_MethodHook.Unhook findAndHookMethod(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...);
+    method public static java.lang.Class<?> findClass(java.lang.String, java.lang.ClassLoader);
+    method public static java.lang.reflect.Constructor<?> findConstructorBestMatch(java.lang.Class<?>, java.lang.Class<?>...);
+    method public static java.lang.reflect.Constructor<?> findConstructorBestMatch(java.lang.Class<?>, java.lang.Object...);
+    method public static java.lang.reflect.Constructor<?> findConstructorBestMatch(java.lang.Class<?>, java.lang.Class<?>[], java.lang.Object[]);
+    method public static java.lang.reflect.Constructor<?> findConstructorExact(java.lang.Class<?>, java.lang.Object...);
+    method public static java.lang.reflect.Constructor<?> findConstructorExact(java.lang.String, java.lang.ClassLoader, java.lang.Object...);
+    method public static java.lang.reflect.Constructor<?> findConstructorExact(java.lang.Class<?>, java.lang.Class<?>...);
+    method public static java.lang.reflect.Field findField(java.lang.Class<?>, java.lang.String);
+    method public static java.lang.reflect.Field findFirstFieldByExactType(java.lang.Class<?>, java.lang.Class<?>);
+    method public static java.lang.reflect.Method findMethodBestMatch(java.lang.Class<?>, java.lang.String, java.lang.Class<?>...);
+    method public static java.lang.reflect.Method findMethodBestMatch(java.lang.Class<?>, java.lang.String, java.lang.Object...);
+    method public static java.lang.reflect.Method findMethodBestMatch(java.lang.Class<?>, java.lang.String, java.lang.Class<?>[], java.lang.Object[]);
+    method public static java.lang.reflect.Method findMethodExact(java.lang.Class<?>, java.lang.String, java.lang.Object...);
+    method public static java.lang.reflect.Method findMethodExact(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...);
+    method public static java.lang.reflect.Method findMethodExact(java.lang.Class<?>, java.lang.String, java.lang.Class<?>...);
+    method public static java.lang.reflect.Method[] findMethodsByExactParameters(java.lang.Class<?>, java.lang.Class<?>, java.lang.Class<?>...);
+    method public static java.lang.Object getAdditionalInstanceField(java.lang.Object, java.lang.String);
+    method public static java.lang.Object getAdditionalStaticField(java.lang.Object, java.lang.String);
+    method public static java.lang.Object getAdditionalStaticField(java.lang.Class<?>, java.lang.String);
+    method public static boolean getBooleanField(java.lang.Object, java.lang.String);
+    method public static byte getByteField(java.lang.Object, java.lang.String);
+    method public static char getCharField(java.lang.Object, java.lang.String);
+    method public static java.lang.Class<?>[] getClassesAsArray(java.lang.Class<?>...);
+    method public static double getDoubleField(java.lang.Object, java.lang.String);
+    method public static float getFloatField(java.lang.Object, java.lang.String);
+    method public static int getIntField(java.lang.Object, java.lang.String);
+    method public static long getLongField(java.lang.Object, java.lang.String);
+    method public static java.lang.String getMD5Sum(java.lang.String) throws java.io.IOException;
+    method public static java.lang.Object getObjectField(java.lang.Object, java.lang.String);
+    method public static java.lang.Class<?>[] getParameterTypes(java.lang.Object...);
+    method public static short getShortField(java.lang.Object, java.lang.String);
+    method public static boolean getStaticBooleanField(java.lang.Class<?>, java.lang.String);
+    method public static byte getStaticByteField(java.lang.Class<?>, java.lang.String);
+    method public static char getStaticCharField(java.lang.Class<?>, java.lang.String);
+    method public static double getStaticDoubleField(java.lang.Class<?>, java.lang.String);
+    method public static float getStaticFloatField(java.lang.Class<?>, java.lang.String);
+    method public static int getStaticIntField(java.lang.Class<?>, java.lang.String);
+    method public static long getStaticLongField(java.lang.Class<?>, java.lang.String);
+    method public static java.lang.Object getStaticObjectField(java.lang.Class<?>, java.lang.String);
+    method public static short getStaticShortField(java.lang.Class<?>, java.lang.String);
+    method public static java.lang.Object getSurroundingThis(java.lang.Object);
+    method public static java.lang.Object newInstance(java.lang.Class<?>, java.lang.Object...);
+    method public static java.lang.Object newInstance(java.lang.Class<?>, java.lang.Class<?>[], java.lang.Object...);
+    method public static java.lang.Object removeAdditionalInstanceField(java.lang.Object, java.lang.String);
+    method public static java.lang.Object removeAdditionalStaticField(java.lang.Object, java.lang.String);
+    method public static java.lang.Object removeAdditionalStaticField(java.lang.Class<?>, java.lang.String);
+    method public static java.lang.Object setAdditionalInstanceField(java.lang.Object, java.lang.String, java.lang.Object);
+    method public static java.lang.Object setAdditionalStaticField(java.lang.Object, java.lang.String, java.lang.Object);
+    method public static java.lang.Object setAdditionalStaticField(java.lang.Class<?>, java.lang.String, java.lang.Object);
+    method public static void setBooleanField(java.lang.Object, java.lang.String, boolean);
+    method public static void setByteField(java.lang.Object, java.lang.String, byte);
+    method public static void setCharField(java.lang.Object, java.lang.String, char);
+    method public static void setDoubleField(java.lang.Object, java.lang.String, double);
+    method public static void setFloatField(java.lang.Object, java.lang.String, float);
+    method public static void setIntField(java.lang.Object, java.lang.String, int);
+    method public static void setLongField(java.lang.Object, java.lang.String, long);
+    method public static void setObjectField(java.lang.Object, java.lang.String, java.lang.Object);
+    method public static void setShortField(java.lang.Object, java.lang.String, short);
+    method public static void setStaticBooleanField(java.lang.Class<?>, java.lang.String, boolean);
+    method public static void setStaticByteField(java.lang.Class<?>, java.lang.String, byte);
+    method public static void setStaticCharField(java.lang.Class<?>, java.lang.String, char);
+    method public static void setStaticDoubleField(java.lang.Class<?>, java.lang.String, double);
+    method public static void setStaticFloatField(java.lang.Class<?>, java.lang.String, float);
+    method public static void setStaticIntField(java.lang.Class<?>, java.lang.String, int);
+    method public static void setStaticLongField(java.lang.Class<?>, java.lang.String, long);
+    method public static void setStaticObjectField(java.lang.Class<?>, java.lang.String, java.lang.Object);
+    method public static void setStaticShortField(java.lang.Class<?>, java.lang.String, short);
+  }
+
+  public static final class XposedHelpers.ClassNotFoundError extends java.lang.Error {
+  }
+
+  public static final class XposedHelpers.InvocationTargetError extends java.lang.Error {
+  }
+
+}
+
+package de.robv.android.xposed.callbacks {
+
+  public abstract interface IXUnhook {
+    method public abstract void unhook();
+  }
+
+  public abstract class XC_InitPackageResources extends de.robv.android.xposed.callbacks.XCallback {
+    ctor public XC_InitPackageResources();
+    ctor public XC_InitPackageResources(int);
+    method public abstract void handleInitPackageResources(de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam) throws java.lang.Throwable;
+  }
+
+  public static final class XC_InitPackageResources.InitPackageResourcesParam extends de.robv.android.xposed.callbacks.XCallback.Param {
+    field public java.lang.String packageName;
+    field public android.content.res.XResources res;
+  }
+
+  public class XC_InitPackageResources.Unhook implements de.robv.android.xposed.callbacks.IXUnhook {
+    method public de.robv.android.xposed.callbacks.XC_InitPackageResources getCallback();
+    method public void unhook();
+  }
+
+  public abstract class XC_LayoutInflated extends de.robv.android.xposed.callbacks.XCallback {
+    ctor public XC_LayoutInflated();
+    ctor public XC_LayoutInflated(int);
+    method public abstract void handleLayoutInflated(de.robv.android.xposed.callbacks.XC_LayoutInflated.LayoutInflatedParam) throws java.lang.Throwable;
+  }
+
+  public static final class XC_LayoutInflated.LayoutInflatedParam extends de.robv.android.xposed.callbacks.XCallback.Param {
+    field public android.content.res.XResources res;
+    field public android.content.res.XResources.ResourceNames resNames;
+    field public java.lang.String variant;
+    field public android.view.View view;
+  }
+
+  public class XC_LayoutInflated.Unhook implements de.robv.android.xposed.callbacks.IXUnhook {
+    method public de.robv.android.xposed.callbacks.XC_LayoutInflated getCallback();
+    method public int getId();
+    method public void unhook();
+  }
+
+  public abstract class XC_LoadPackage extends de.robv.android.xposed.callbacks.XCallback {
+    ctor public XC_LoadPackage();
+    ctor public XC_LoadPackage(int);
+    method public abstract void handleLoadPackage(de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam) throws java.lang.Throwable;
+  }
+
+  public static final class XC_LoadPackage.LoadPackageParam extends de.robv.android.xposed.callbacks.XCallback.Param {
+    field public android.content.pm.ApplicationInfo appInfo;
+    field public java.lang.ClassLoader classLoader;
+    field public boolean isFirstApplication;
+    field public java.lang.String packageName;
+    field public java.lang.String processName;
+  }
+
+  public class XC_LoadPackage.Unhook implements de.robv.android.xposed.callbacks.IXUnhook {
+    method public de.robv.android.xposed.callbacks.XC_LoadPackage getCallback();
+    method public void unhook();
+  }
+
+  public abstract class XCallback {
+    ctor public deprecated XCallback();
+    field public static final int PRIORITY_DEFAULT = 50; // 0x32
+    field public static final int PRIORITY_HIGHEST = 10000; // 0x2710
+    field public static final int PRIORITY_LOWEST = -10000; // 0xffffd8f0
+    field public final int priority;
+  }
+
+  public static abstract class XCallback.Param {
+    ctor protected deprecated XCallback.Param();
+    method public synchronized android.os.Bundle getExtra();
+    method public java.lang.Object getObjectExtra(java.lang.String);
+    method public void setObjectExtra(java.lang.String, java.lang.Object);
+  }
+
+}
+

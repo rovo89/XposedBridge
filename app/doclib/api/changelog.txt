@@ -1,0 +1,44 @@
+This file lists the changes in the Xposed Framework API:
+--------------------------------------------------------
+
+v65:
+  added XposedBridge.getXposedVersion()
+  deprecated XposedBridge.XPOSED_BRIDGE_VERSION
+
+v63:
+  added XposedHelpers.incrementMethodDepth()
+  added XposedHelpers.decrementMethodDepth()
+  added XposedHelpers.getMethodDepth()
+
+v60:
+  added IXposedHookZygoteInit.StartupParam.startsSystemServer
+  added class de.robv.android.xposed.SELinuxHelper
+  added class de.robv.android.xposed.services.BaseService
+  added class de.robv.android.xposed.services.FileResult
+
+v53:
+  added XSharedPreferences.getFile()
+  added XSharedPreferences.hasFileChanged()
+
+v52:
+  added XResources.getPackageNameDuringConstruction()
+
+v51:
+  deprecated class de.robv.android.xposed.IXposedHookCmdInit
+  added XposedHelpers.findAndHookConstructor()
+  added XposedHelpers.findConstructorExact() variants
+
+v50:
+  added class android.content.res.XResources.DimensionReplacement
+
+v42:
+  added XposedHelpers.findFirstFieldByExactType()
+
+v39:
+  added XCallback.Param.getExtra()
+
+v37:
+  added XposedBridge.XPOSED_BRIDGE_VERSION (deprecated again in v65)
+
+v36:
+  added XposedHelpers.findMethodsByExactParameters()

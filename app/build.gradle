@@ -67,6 +67,9 @@ task generateDocs(type: Javadoc, dependsOn: 'compileReleaseSources') {
         addFileOption 'federationapi android', fileTree(dir: 'doclib/api', include: 'android_*.txt').singleFile
         addFileOption 'proofread', file("$buildDir/docs/proofread.txt")
         addStringOption 'todo', 'reference/todo.html'
+        fileTree(dir: 'doclib/api', include: 'xposed_*.txt').visit {
+            addStringOption 'since ' + it.file, it.name.replaceFirst(/^xposed_0*(\d*)\.txt$/, '$1')
+        }
 
         // The sources of the Android SDK are added to the sourcepath.
         // This ensures that Javadoc can be inherited properly, but it
