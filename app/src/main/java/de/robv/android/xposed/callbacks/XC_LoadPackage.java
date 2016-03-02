@@ -41,10 +41,11 @@ public abstract class XC_LoadPackage extends XCallback {
 
 	public abstract void handleLoadPackage(LoadPackageParam lpparam) throws Throwable;
 
-	public class Unhook implements IXUnhook {
+	public class Unhook implements IXUnhook<XC_LoadPackage> {
 		/** @hide */
 		public Unhook() {}
 
+		@Override
 		public XC_LoadPackage getCallback() {
 			return XC_LoadPackage.this;
 		}

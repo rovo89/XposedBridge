@@ -35,10 +35,11 @@ public abstract class XC_InitPackageResources extends XCallback {
 
 	public abstract void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable;
 
-	public class Unhook implements IXUnhook {
+	public class Unhook implements IXUnhook<XC_InitPackageResources> {
 		/** @hide */
 		public Unhook() {}
 
+		@Override
 		public XC_InitPackageResources getCallback() {
 			return XC_InitPackageResources.this;
 		}

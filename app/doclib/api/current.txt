@@ -270,6 +270,7 @@ package de.robv.android.xposed {
 package de.robv.android.xposed.callbacks {
 
   public abstract interface IXUnhook {
+    method public abstract T getCallback();
     method public abstract void unhook();
   }
 

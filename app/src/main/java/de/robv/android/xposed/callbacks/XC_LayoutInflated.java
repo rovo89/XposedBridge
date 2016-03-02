@@ -40,7 +40,7 @@ public abstract class XC_LayoutInflated extends XCallback {
 
 	public abstract void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable;
 
-	public class Unhook implements IXUnhook {
+	public class Unhook implements IXUnhook<XC_LayoutInflated> {
 		private final String resDir;
 		private final int id;
 
@@ -54,6 +54,7 @@ public abstract class XC_LayoutInflated extends XCallback {
 			return id;
 		}
 
+		@Override
 		public XC_LayoutInflated getCallback() {
 			return XC_LayoutInflated.this;
 		}

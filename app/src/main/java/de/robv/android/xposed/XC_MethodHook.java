@@ -91,7 +91,7 @@ public abstract class XC_MethodHook extends XCallback {
 		}
 	}
 
-	public class Unhook implements IXUnhook {
+	public class Unhook implements IXUnhook<XC_MethodHook> {
 		private final Member hookMethod;
 
 		/*package*/ Unhook(Member hookMethod) {
@@ -102,6 +102,7 @@ public abstract class XC_MethodHook extends XCallback {
 			return hookMethod;
 		}
 
+		@Override
 		public XC_MethodHook getCallback() {
 			return XC_MethodHook.this;
 		}
