@@ -1165,9 +1165,10 @@ public class XposedHelpers {
 	}
 	
 	public static PackageInfo getPackageInfo(String packageName) {
-		Object activityThread = callStaticMethod(("android.app.ActivityThread", null), "currentActivityThread");
+		Object activityThread = callStaticMethod(findClass("android.app.ActivityThread", null), "currentActivityThread");
+	        if (activityThread == null) return null;
 	        Context context = (Context) callMethod(activityThread, "getSystemContext");
-	        if (context == NULL) return NULL;
+	        if (context == null) return null;
 	        return context.getPackageManager().getPackageInfo(packageName, 0);
 	        
 	}
