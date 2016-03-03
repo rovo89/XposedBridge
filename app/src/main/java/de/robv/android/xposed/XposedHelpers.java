@@ -1,5 +1,7 @@
 package de.robv.android.xposed;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.content.res.Resources;
 
 import java.io.ByteArrayOutputStream;
@@ -1160,6 +1162,14 @@ public class XposedHelpers {
 		} catch (NoSuchAlgorithmException e) {
 			return "";
 		}
+	}
+	
+	public static PackageInfo getPackageInfo(String packageName) {
+		Object activityThread = callStaticMethod(("android.app.ActivityThread", null), "currentActivityThread");
+	        Context context = (Context) callMethod(activityThread, "getSystemContext");
+	        if (context == NULL) return NULL;
+	        return context.getPackageManager().getPackageInfo(packageName, 0);
+	        
 	}
 
 	//#################################################################################################
