@@ -2,10 +2,11 @@ package de.robv.android.xposed.callbacks;
 
 import android.content.pm.ApplicationInfo;
 
+import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
-public abstract class XC_LoadPackage extends XCallback {
+public abstract class XC_LoadPackage extends XCallback implements IXposedHookLoadPackage {
 	@SuppressWarnings("deprecation")
 	public XC_LoadPackage() {
 		super();
@@ -38,8 +39,6 @@ public abstract class XC_LoadPackage extends XCallback {
 		if (param instanceof LoadPackageParam)
 			handleLoadPackage((LoadPackageParam) param);
 	}
-
-	public abstract void handleLoadPackage(LoadPackageParam lpparam) throws Throwable;
 
 	public class Unhook implements IXUnhook<XC_LoadPackage> {
 		/** @hide */

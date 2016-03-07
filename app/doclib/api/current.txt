@@ -274,10 +274,9 @@ package de.robv.android.xposed.callbacks {
     method public abstract void unhook();
   }
 
-  public abstract class XC_InitPackageResources extends de.robv.android.xposed.callbacks.XCallback {
+  public abstract class XC_InitPackageResources extends de.robv.android.xposed.callbacks.XCallback implements de.robv.android.xposed.IXposedHookInitPackageResources {
     ctor public XC_InitPackageResources();
     ctor public XC_InitPackageResources(int);
-    method public abstract void handleInitPackageResources(de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam) throws java.lang.Throwable;
   }
 
   public static final class XC_InitPackageResources.InitPackageResourcesParam extends de.robv.android.xposed.callbacks.XCallback.Param {
@@ -309,10 +308,9 @@ package de.robv.android.xposed.callbacks {
     method public void unhook();
   }
 
-  public abstract class XC_LoadPackage extends de.robv.android.xposed.callbacks.XCallback {
+  public abstract class XC_LoadPackage extends de.robv.android.xposed.callbacks.XCallback implements de.robv.android.xposed.IXposedHookLoadPackage {
     ctor public XC_LoadPackage();
     ctor public XC_LoadPackage(int);
-    method public abstract void handleLoadPackage(de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam) throws java.lang.Throwable;
   }
 
   public static final class XC_LoadPackage.LoadPackageParam extends de.robv.android.xposed.callbacks.XCallback.Param {
