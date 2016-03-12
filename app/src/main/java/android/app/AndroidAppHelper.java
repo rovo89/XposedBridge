@@ -21,7 +21,10 @@ import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.newInstance;
 
 /**
- * Accessor for package level methods/fields in package android.app
+ * Contains various methods for information about the current app.
+ *
+ * <p>For historical reasons, this class is in the {@code android.app} package. It can't be moved
+ * without breaking compatibility with existing modules.
  */
 public final class AndroidAppHelper {
 	private AndroidAppHelper() {}
@@ -122,6 +125,9 @@ public final class AndroidAppHelper {
 			getActiveResources(thread).put(resourcesKey, new WeakReference<Resources>(resources));
 	}
 
+	/**
+	 * Returns the name of the current process. It's usually the same as the main package name.
+	 */
 	public static String currentProcessName() {
 		String processName = ActivityThread.currentPackageName();
 		if (processName == null)
@@ -129,6 +135,13 @@ public final class AndroidAppHelper {
 		return processName;
 	}
 
+	/**
+	 * Returns information about the main application in the current process.
+	 *
+	 * <p>In a few cases, multiple apps might run in the same process, e.g. the SystemUI and the
+	 * Keyguard which both have {@code android:process="com.android.systemui"} set in their
+	 * manifest. In those cases, the first application that was initialized will be returned.
+	 */
 	public static ApplicationInfo currentApplicationInfo() {
 		ActivityThread am = ActivityThread.currentActivityThread();
 		if (am == null)
@@ -141,11 +154,25 @@ public final class AndroidAppHelper {
 		return (ApplicationInfo) getObjectField(boundApplication, "appInfo");
 	}
 
+	/**
+	 * Returns the Android package name of the main application in the current process.
+	 *
+	 * <p>In a few cases, multiple apps might run in the same process, e.g. the SystemUI and the
+	 * Keyguard which both have {@code android:process="com.android.systemui"} set in their
+	 * manifest. In those cases, the first application that was initialized will be returned.
+	 */
 	public static String currentPackageName() {
 		ApplicationInfo ai = currentApplicationInfo();
 		return (ai != null) ? ai.packageName : "android";
 	}
 
+	/**
+	 * Returns the main {@link android.app.Application} object in the current process.
+	 *
+	 * <p>In a few cases, multiple apps might run in the same process, e.g. the SystemUI and the
+	 * Keyguard which both have {@code android:process="com.android.systemui"} set in their
+	 * manifest. In those cases, the first application that was initialized will be returned.
+	 */
 	public static Application currentApplication() {
 		return ActivityThread.currentApplication();
 	}

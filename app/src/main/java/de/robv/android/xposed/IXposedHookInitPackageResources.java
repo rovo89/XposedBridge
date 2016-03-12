@@ -1,13 +1,25 @@
 package de.robv.android.xposed;
 
+import android.content.res.XResources;
+
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 
 /**
- * Use the module class as a handler for {@link XC_InitPackageResources#handleInitPackageResources}
+ * Get notified when the resources for an app are initialized.
+ * In {@link #handleInitPackageResources}, resource replacements can be created.
+ *
+ * <p>This interface should be implemented by the module's main class. Xposed will take care of
+ * registering it as a callback automatically.
  */
 public interface IXposedHookInitPackageResources extends IXposedMod {
-	/** @see XC_InitPackageResources#handleInitPackageResources */
+	/**
+	 * This method is called when resources for an app are being initialized.
+	 * Modules can call special methods of the {@link XResources} class in order to replace resources.
+	 *
+	 * @param resparam Information about the resources.
+	 * @throws Throwable Everything the callback throws is caught and logged.
+	 */
 	void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable;
 
 	/** @hide */

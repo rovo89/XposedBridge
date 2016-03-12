@@ -3,10 +3,13 @@ package android.content.res;
 import android.app.AndroidAppHelper;
 import android.util.DisplayMetrics;
 
-import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.IXposedHookInitPackageResources;
+import de.robv.android.xposed.IXposedHookZygoteInit;
+import de.robv.android.xposed.IXposedHookZygoteInit.StartupParam;
+import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 
 /**
- * Resources that can be created for an Xposed module.
+ * Provides access to resources from a certain path (usually the module's own path).
  */
 public class XModuleResources extends Resources {
 	private XModuleResources(AssetManager assets, DisplayMetrics metrics, Configuration config) {
@@ -14,16 +17,23 @@ public class XModuleResources extends Resources {
 	}
 
 	/**
-	 * Usually called with the automatically injected {@code MODULE_PATH} constant of the first parameter
-	 * and the resources received in the callback for {@link XposedBridge#hookInitPackageResources} (or
-	 * {@code null} for system-wide replacements.
+	 * Creates a new instance.
+	 *
+	 * <p>This is usually called with {@link StartupParam#modulePath} from
+	 * {@link IXposedHookZygoteInit#initZygote} and {@link InitPackageResourcesParam#res} from
+	 * {@link IXposedHookInitPackageResources#handleInitPackageResources} (or {@code null} for
+	 * system-wide replacements).
+	 *
+	 * @param path The path to the APK from which the resources should be loaded.
+	 * @param origRes The resources object from which settings like the display metrics and the
+	 *                configuration should be copied. May be {@code null}.
 	 */
-	public static XModuleResources createInstance(String modulePath, XResources origRes) {
-		if (modulePath == null)
-			throw new IllegalArgumentException("modulePath must not be null");
+	public static XModuleResources createInstance(String path, XResources origRes) {
+		if (path == null)
+			throw new IllegalArgumentException("path must not be null");
 
 		AssetManager assets = new AssetManager();
-		assets.addAssetPath(modulePath);
+		assets.addAssetPath(path);
 
 		XModuleResources res;
 		if (origRes != null)
@@ -31,12 +41,12 @@ public class XModuleResources extends Resources {
 		else
 			res = new XModuleResources(assets, null, null);
 
-		AndroidAppHelper.addActiveResource(modulePath, res.hashCode(), false, res);
+		AndroidAppHelper.addActiveResource(path, res.hashCode(), false, res);
 		return res;
 	}
 
 	/**
-	 * Create an {@link XResForwarder} instances that forwards requests to {@code id} in this resource.
+	 * Creates an {@link XResForwarder} instance that forwards requests to {@code id} in this resource.
 	 */
 	public XResForwarder fwd(int id) {
 		return new XResForwarder(this, id);

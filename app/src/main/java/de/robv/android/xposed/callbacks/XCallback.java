@@ -7,10 +7,24 @@ import java.io.Serializable;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
+/**
+ * Base class for Xposed callbacks.
+ *
+ * This class only keeps a priority for ordering multiple callbacks.
+ * The actual (abstract) callback methods are added by subclasses.
+ */
 public abstract class XCallback implements Comparable<XCallback> {
+	/**
+	 * Callback priority, higher number means earlier execution.
+	 *
+	 * <p>This is usually set to {@link #PRIORITY_DEFAULT}. However, in case a certain callback should
+	 * be executed earlier or later a value between {@link #PRIORITY_HIGHEST} and {@link #PRIORITY_LOWEST}
+	 * can be set instead. The values are just for orientation though, Xposed doesn't enforce any
+	 * boundaries on the priority values.
+	 */
 	public final int priority;
 
-	/** @deprecated This method can't be hidden for technical reasons. Nevertheless, don't use it! */
+	/** @deprecated This constructor can't be hidden for technical reasons. Nevertheless, don't use it! */
 	@Deprecated
 	public XCallback() {
 		this.priority = PRIORITY_DEFAULT;
@@ -21,12 +35,15 @@ public abstract class XCallback implements Comparable<XCallback> {
 		this.priority = priority;
 	}
 
+	/**
+	 * Base class for Xposed callback parameters.
+	 */
 	public static abstract class Param {
 		/** @hide */
 		public final Object[] callbacks;
 		private Bundle extra;
 
-		/** @deprecated This method can't be hidden for technical reasons. Nevertheless, don't use it! */
+		/** @deprecated This constructor can't be hidden for technical reasons. Nevertheless, don't use it! */
 		@Deprecated
 		protected Param() {
 			callbacks = null;
@@ -38,10 +55,13 @@ public abstract class XCallback implements Comparable<XCallback> {
 		}
 
 		/**
-		 * This can be used to store anything for the scope of the callback.
-		 * Use this instead of instance variables.
-		 * @see #getObjectExtra
+		 * This can be used to store any data for the scope of the callback.
+		 *
+		 * <p>Use this instead of instance variables, as it has a clear reference to e.g. each
+		 * separate call to a method, even when the same method is called recursively.
+		 *
 		 * @see #setObjectExtra
+		 * @see #getObjectExtra
 		 */
 		public synchronized Bundle getExtra() {
 			if (extra == null)
@@ -49,7 +69,9 @@ public abstract class XCallback implements Comparable<XCallback> {
 			return extra;
 		}
 
-		/** @see #setObjectExtra */
+		/**
+		 * Returns an object stored with {@link #setObjectExtra}.
+		 */
 		public Object getObjectExtra(String key) {
 			Serializable o = getExtra().getSerializable(key);
 			if (o instanceof SerializeWrapper)
@@ -57,7 +79,10 @@ public abstract class XCallback implements Comparable<XCallback> {
 			return null;
 		}
 
-		/** Provides a wrapper to store <code>Object</code>s in <code>extra</code>. */
+		/**
+		 * Stores any object for the scope of the callback. For data types that support it, use
+		 * the {@link Bundle} returned by {@link #getExtra} instead.
+		 */
 		public void setObjectExtra(String key, Object o) {
 			getExtra().putSerializable(key, new SerializeWrapper(o));
 		}
@@ -102,9 +127,12 @@ public abstract class XCallback implements Comparable<XCallback> {
 			return 1;
 	}
 
+	/** The default priority, see {@link #priority}. */
 	public static final int PRIORITY_DEFAULT = 50;
-	/** Call this handler last */
+
+	 /** Execute this callback late, see {@link #priority}. */
 	public static final int PRIORITY_LOWEST = -10000;
-	/** Call this handler first */
+
+	/** Execute this callback early, see {@link #priority}. */
 	public static final int PRIORITY_HIGHEST = 10000;
 }

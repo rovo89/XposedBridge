@@ -52,8 +52,20 @@ import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
 import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
+/**
+ * This class contains most of Xposed's central logic, such as initialization and callbacks used by
+ * the native side. It also includes methods to add new hooks.
+ */
 @SuppressWarnings("JniMissingFunction")
 public final class XposedBridge {
+	/**
+	 * The system class loader which can be used to locate Android framework classes.
+	 * Application classes cannot be retrieved from it.
+	 *
+	 * @see ClassLoader#getSystemClassLoader
+	 */
+	public static final ClassLoader BOOTCLASSLOADER = ClassLoader.getSystemClassLoader();
+
 	/** @hide */
 	public static final String TAG = "Xposed";
 
@@ -72,7 +84,7 @@ public final class XposedBridge {
 	private static boolean disableResources = false;
 
 	private static final Object[] EMPTY_ARRAY = new Object[0];
-	public static final ClassLoader BOOTCLASSLOADER = ClassLoader.getSystemClassLoader();
+
 	private static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
 	@SuppressLint("SdCardPath")
 	private static final String BASE_DIR = "/data/data/" + INSTALLER_PACKAGE_NAME + "/";
@@ -522,7 +534,7 @@ public final class XposedBridge {
 	/**
 	 * Writes a message to the Xposed error log.
 	 *
-	 * <p>DON'T FLOOD THE LOG!!! This is only meant for error logging.
+	 * <p class="warning"><b>DON'T FLOOD THE LOG!!!</b> This is only meant for error logging.
 	 * If you want to write information/debug messages, use logcat.
 	 *
 	 * @param text The log message.
@@ -534,7 +546,7 @@ public final class XposedBridge {
 	/**
 	 * Logs a stack trace to the Xposed error log.
 	 *
-	 * <p>DON'T FLOOD THE LOG!!! This is only meant for error logging.
+	 * <p class="warning"><b>DON'T FLOOD THE LOG!!!</b> This is only meant for error logging.
 	 * If you want to write information/debug messages, use logcat.
 	 *
 	 * @param t The Throwable object for the stack trace.
@@ -544,10 +556,19 @@ public final class XposedBridge {
 	}
 
 	/**
-	 * Hook any method with the specified callback
+	 * Hook any method (or constructor) with the specified callback. See below for some wrappers
+	 * that make it easier to find a method/constructor in one step.
 	 *
-	 * @param hookMethod The method to be hooked
-	 * @param callback
+	 * @param hookMethod The method to be hooked.
+	 * @param callback The callback to be executed when the hooked method is called.
+	 * @return An object that can be used to remove the hook.
+	 *
+	 * @see XposedHelpers#findAndHookMethod(String, ClassLoader, String, Object...)
+	 * @see XposedHelpers#findAndHookMethod(Class, String, Object...)
+	 * @see #hookAllMethods
+	 * @see XposedHelpers#findAndHookConstructor(String, ClassLoader, Object...)
+	 * @see XposedHelpers#findAndHookConstructor(Class, Object...)
+	 * @see #hookAllConstructors
 	 */
 	public static XC_MethodHook.Unhook hookMethod(Member hookMethod, XC_MethodHook callback) {
 		if (!(hookMethod instanceof Method) && !(hookMethod instanceof Constructor<?>)) {
@@ -597,9 +618,10 @@ public final class XposedBridge {
 	}
 
 	/**
-	 * Removes the callback for a hooked method
-	 * @param hookMethod The method for which the callback should be removed
-	 * @param callback The reference to the callback as specified in {@link #hookMethod}
+	 * Removes the callback for a hooked method/constructor.
+	 *
+	 * @param hookMethod The method for which the callback should be removed.
+	 * @param callback The reference to the callback as specified in {@link #hookMethod}.
 	 */
 	public static void unhookMethod(Member hookMethod, XC_MethodHook callback) {
 		CopyOnWriteSortedSet<XC_MethodHook> callbacks;
@@ -611,6 +633,16 @@ public final class XposedBridge {
 		callbacks.remove(callback);
 	}
 
+	/**
+	 * Hooks all methods with a certain name that were declared in the specified class. Inherited
+	 * methods and constructors are not considered. For constructors, use
+	 * {@link #hookAllConstructors} instead.
+	 *
+	 * @param hookClass The class to check for declared methods.
+	 * @param methodName The name of the method(s) to hook.
+	 * @param callback The callback to be executed when the hooked methods are called.
+	 * @return A set containing one object for each found method which can be used to unhook it.
+	 */
 	@SuppressWarnings("UnusedReturnValue")
 	public static Set<XC_MethodHook.Unhook> hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
 		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
@@ -620,6 +652,13 @@ public final class XposedBridge {
 		return unhooks;
 	}
 
+	/**
+	 * Hook all constructors of the specified class.
+	 *
+	 * @param hookClass The class to check for constructors.
+	 * @param callback The callback to be executed when the hooked constructors are called.
+	 * @return A set containing one object for each found constructor which can be used to unhook it.
+	 */
 	@SuppressWarnings("UnusedReturnValue")
 	public static Set<XC_MethodHook.Unhook> hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
 		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
@@ -718,7 +757,12 @@ public final class XposedBridge {
 	}
 
 	/**
-	 * Get notified when a package is loaded. This is especially useful to hook some package-specific methods.
+	 * Adds a callback to be executed when an app ("Android package") is loaded.
+	 *
+	 * <p class="note">You probably don't need to call this. Simply implement {@link IXposedHookLoadPackage}
+	 * in your module class and Xposed will take care of registering it as a callback.
+	 *
+	 * @param callback The callback to be executed.
 	 */
 	@SuppressWarnings("UnusedReturnValue")
 	public static XC_LoadPackage.Unhook hookLoadPackage(XC_LoadPackage callback) {
@@ -728,6 +772,11 @@ public final class XposedBridge {
 		return callback.new Unhook();
 	}
 
+	/**
+	 * Removes a callback registered with {@link #hookLoadPackage}.
+	 *
+	 * @param callback The callback which should be removed.
+	 */
 	public static void unhookLoadPackage(XC_LoadPackage callback) {
 		synchronized (sLoadedPackageCallbacks) {
 			sLoadedPackageCallbacks.remove(callback);
@@ -735,8 +784,12 @@ public final class XposedBridge {
 	}
 
 	/**
-	 * Get notified when the resources for a package are loaded. In callbacks, resource replacements can be created.
-	 * @return
+	 * Adds a callback to be executed when the resources for an app are initialized.
+	 *
+	 * <p class="note">You probably don't need to call this. Simply implement {@link IXposedHookInitPackageResources}
+	 * in your module class and Xposed will take care of registering it as a callback.
+	 *
+	 * @param callback The callback to be executed.
 	 */
 	@SuppressWarnings("UnusedReturnValue")
 	public static XC_InitPackageResources.Unhook hookInitPackageResources(XC_InitPackageResources callback) {
@@ -746,6 +799,11 @@ public final class XposedBridge {
 		return callback.new Unhook();
 	}
 
+	/**
+	 * Removes a callback registered with {@link #hookInitPackageResources}.
+	 *
+	 * @param callback The callback which should be removed.
+	 */
 	public static void unhookInitPackageResources(XC_InitPackageResources callback) {
 		synchronized (sInitPackageResourcesCallbacks) {
 			sInitPackageResourcesCallbacks.remove(callback);
@@ -768,10 +826,16 @@ public final class XposedBridge {
 	 * Basically the same as {@link Method#invoke}, but calls the original method
 	 * as it was before the interception by Xposed. Also, access permissions are not checked.
 	 *
-	 * @param method Method to be called
-	 * @param thisObject For non-static calls, the "this" pointer
-	 * @param args Arguments for the method call as Object[] array
-	 * @return The result returned from the invoked method
+	 * <p class="caution">There are very few cases where this method is needed. A common mistake is
+	 * to replace a method and then invoke the original one based on dynamic conditions. This
+	 * creates overhead and skips further hooks by other modules. Instead, just hook (don't replace)
+	 * the method and call {@code param.setResult(null)} in {@link XC_MethodHook#beforeHookedMethod}
+	 * if the original method should be skipped.
+	 *
+	 * @param method The method to be called.
+	 * @param thisObject For non-static calls, the "this" pointer, otherwise {@code null}.
+	 * @param args Arguments for the method call as Object[] array.
+	 * @return The result returned from the invoked method.
 	 * @throws NullPointerException
 	 *             if {@code receiver == null} for a non-static method
 	 * @throws IllegalAccessException
@@ -782,7 +846,6 @@ public final class XposedBridge {
 	 *             or converted by a widening conversion to the corresponding parameter type
 	 * @throws InvocationTargetException
 	 *             if an exception was thrown by the invoked method
-
 	 */
 	public static Object invokeOriginalMethod(Member method, Object thisObject, Object[] args)
 			throws NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -808,7 +871,6 @@ public final class XposedBridge {
 		return invokeOriginalMethodNative(method, 0, parameterTypes, returnType, thisObject, args);
 	}
 
-	/** Framework only, don't call this from your module! */
 	private static void setObjectClass(Object obj, Class<?> clazz) {
 		if (obj == null)
 			return;
@@ -831,7 +893,6 @@ public final class XposedBridge {
 	private static native void setObjectClassNative(Object obj, Class<?> clazz);
 	/*package*/ static native void dumpObjectNative(Object obj);
 
-	/** Framework only, don't call this from your module! */
 	private static Object cloneToSubclass(Object obj, Class<?> targetClazz) {
 		if (obj == null)
 			return null;
