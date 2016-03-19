@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
+import java.io.InputStream;
+
 public class Resources {
 	@SuppressWarnings("serial")
 	public static class NotFoundException extends RuntimeException {
@@ -181,6 +183,10 @@ public class Resources {
 	}
 
 	public XmlResourceParser getXml(int id) throws NotFoundException {
+		throw new UnsupportedOperationException("STUB");
+	}
+
+	public InputStream openRawResource(int id) throws NotFoundException {
 		throw new UnsupportedOperationException("STUB");
 	}
 }
