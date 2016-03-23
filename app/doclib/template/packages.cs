@@ -1,3 +1,4 @@
+<?cs set:page.title = '' ?>
 <?cs include:"doctype.cs" ?>
 <?cs include:"macros.cs" ?>
 <html<?cs if:devsite ?> devsite<?cs /if ?>>
@@ -15,7 +16,7 @@
 <div class="col-12" id="doc-col">
 
 <div id="jd-header">
-<h1><?cs var:page.title ?></h1>
+<h1>Overview</h1>
 </div>
 
 <div id="jd-content">
@@ -24,6 +25,7 @@
 <p><?cs call:tag_list(root.descr) ?></p>
 </div>
 
+<h2>Packages Index:</h2>
 <?cs set:count = #1 ?>
 <table class="jd-sumtable">
 <?cs each:pkg = docs.packages ?>

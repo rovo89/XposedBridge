@@ -53,7 +53,9 @@ android {
 task generateDocs(type: Javadoc, dependsOn: 'compileReleaseSources') {
     source = file('src/main/java')
     ext.templateDir = file('doclib/template')
+    ext.overviewFile = file('doclib/overview.html')
     inputs.dir ext.templateDir
+    inputs.file ext.overviewFile
     title = null
 
     options {
@@ -61,6 +63,7 @@ task generateDocs(type: Javadoc, dependsOn: 'compileReleaseSources') {
         docletpath = fileTree(dir: 'doclib', include: '**/*.jar').asType(List)
         jFlags '-Dignore.symbol.file'
         addFileOption 'templatedir', ext.templateDir
+        addFileOption 'overview', ext.overviewFile
         addBooleanOption 'nodefaultassets', true
         addStringOption 'hdf android.whichdoc', 'offline'
         addStringOption 'federate android', 'http://developer.android.com'
