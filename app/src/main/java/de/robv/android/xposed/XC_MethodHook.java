@@ -150,6 +150,7 @@ public abstract class XC_MethodHook extends XCallback {
 			return XC_MethodHook.this;
 		}
 
+		@SuppressWarnings("deprecation")
 		@Override
 		public void unhook() {
 			XposedBridge.unhookMethod(hookMethod, XC_MethodHook.this);

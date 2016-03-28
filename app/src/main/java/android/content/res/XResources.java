@@ -1717,6 +1717,7 @@ public class XResources extends MiuiResources {
 		return callback.new Unhook(resDir, id);
 	}
 
+	/** @hide */
 	public static void unhookLayout(String resDir, int id, XC_LayoutInflated callback) {
 		HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>> inner;
 		synchronized (sLayoutCallbacks) {

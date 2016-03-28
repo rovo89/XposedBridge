@@ -43,7 +43,6 @@ package android.content.res {
     method public static void setSystemWideReplacement(int, java.lang.Object);
     method public static void setSystemWideReplacement(java.lang.String, java.lang.Object);
     method public static void setSystemWideReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object);
-    method public static void unhookLayout(java.lang.String, int, de.robv.android.xposed.callbacks.XC_LayoutInflated);
   }
 
   public static class XResources.DimensionReplacement {
@@ -164,15 +163,11 @@ package de.robv.android.xposed {
     method public static int getXposedVersion();
     method public static java.util.Set<de.robv.android.xposed.XC_MethodHook.Unhook> hookAllConstructors(java.lang.Class<?>, de.robv.android.xposed.XC_MethodHook);
     method public static java.util.Set<de.robv.android.xposed.XC_MethodHook.Unhook> hookAllMethods(java.lang.Class<?>, java.lang.String, de.robv.android.xposed.XC_MethodHook);
-    method public static de.robv.android.xposed.callbacks.XC_InitPackageResources.Unhook hookInitPackageResources(de.robv.android.xposed.callbacks.XC_InitPackageResources);
-    method public static de.robv.android.xposed.callbacks.XC_LoadPackage.Unhook hookLoadPackage(de.robv.android.xposed.callbacks.XC_LoadPackage);
     method public static de.robv.android.xposed.XC_MethodHook.Unhook hookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook);
     method public static java.lang.Object invokeOriginalMethod(java.lang.reflect.Member, java.lang.Object, java.lang.Object[]) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException, java.lang.reflect.InvocationTargetException, java.lang.NullPointerException;
     method public static synchronized void log(java.lang.String);
     method public static synchronized void log(java.lang.Throwable);
-    method public static void unhookInitPackageResources(de.robv.android.xposed.callbacks.XC_InitPackageResources);
-    method public static void unhookLoadPackage(de.robv.android.xposed.callbacks.XC_LoadPackage);
-    method public static void unhookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook);
+    method public static deprecated void unhookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook);
     field public static final java.lang.ClassLoader BOOTCLASSLOADER;
     field public static deprecated int XPOSED_BRIDGE_VERSION;
   }
@@ -275,18 +270,11 @@ package de.robv.android.xposed.callbacks {
   }
 
   public abstract class XC_InitPackageResources extends de.robv.android.xposed.callbacks.XCallback implements de.robv.android.xposed.IXposedHookInitPackageResources {
-    ctor public XC_InitPackageResources();
-    ctor public XC_InitPackageResources(int);
   }
 
   public static final class XC_InitPackageResources.InitPackageResourcesParam extends de.robv.android.xposed.callbacks.XCallback.Param {
     field public java.lang.String packageName;
     field public android.content.res.XResources res;
-  }
-
-  public class XC_InitPackageResources.Unhook implements de.robv.android.xposed.callbacks.IXUnhook {
-    method public de.robv.android.xposed.callbacks.XC_InitPackageResources getCallback();
-    method public void unhook();
   }
 
   public abstract class XC_LayoutInflated extends de.robv.android.xposed.callbacks.XCallback {
@@ -309,8 +297,6 @@ package de.robv.android.xposed.callbacks {
   }
 
   public abstract class XC_LoadPackage extends de.robv.android.xposed.callbacks.XCallback implements de.robv.android.xposed.IXposedHookLoadPackage {
-    ctor public XC_LoadPackage();
-    ctor public XC_LoadPackage(int);
   }
 
   public static final class XC_LoadPackage.LoadPackageParam extends de.robv.android.xposed.callbacks.XCallback.Param {
@@ -319,11 +305,6 @@ package de.robv.android.xposed.callbacks {
     field public boolean isFirstApplication;
     field public java.lang.String packageName;
     field public java.lang.String processName;
-  }
-
-  public class XC_LoadPackage.Unhook implements de.robv.android.xposed.callbacks.IXUnhook {
-    method public de.robv.android.xposed.callbacks.XC_LoadPackage getCallback();
-    method public void unhook();
   }
 
   public abstract class XCallback {

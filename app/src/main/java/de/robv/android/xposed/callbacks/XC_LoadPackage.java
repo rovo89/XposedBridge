@@ -3,18 +3,16 @@ package de.robv.android.xposed.callbacks;
 import android.content.pm.ApplicationInfo;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 
 /**
- * Stand-alone callback for {@link XposedBridge#hookLoadPackage}.
- *
- * <p class="warning">It's highly recommended to implement {@link IXposedHookLoadPackage}
- * in the module's main class instead!
+ * This class is only used for internal purposes, except for the {@link LoadPackageParam}
+ * subclass.
  */
 public abstract class XC_LoadPackage extends XCallback implements IXposedHookLoadPackage {
 	/**
 	 * Creates a new callback with default priority.
+	 * @hide
 	 */
 	@SuppressWarnings("deprecation")
 	public XC_LoadPackage() {
@@ -25,6 +23,7 @@ public abstract class XC_LoadPackage extends XCallback implements IXposedHookLoa
 	 * Creates a new callback with a specific priority.
 	 *
 	 * @param priority See {@link XCallback#priority}.
+	 * @hide
 	 */
 	public XC_LoadPackage(int priority) {
 		super(priority);
@@ -60,23 +59,5 @@ public abstract class XC_LoadPackage extends XCallback implements IXposedHookLoa
 	protected void call(Param param) throws Throwable {
 		if (param instanceof LoadPackageParam)
 			handleLoadPackage((LoadPackageParam) param);
-	}
-
-	/**
-	 * An object with which the callback can be removed.
-	 */
-	public class Unhook implements IXUnhook<XC_LoadPackage> {
-		/** @hide */
-		public Unhook() {}
-
-		@Override
-		public XC_LoadPackage getCallback() {
-			return XC_LoadPackage.this;
-		}
-
-		@Override
-		public void unhook() {
-			XposedBridge.unhookLoadPackage(XC_LoadPackage.this);
-		}
 	}
 }

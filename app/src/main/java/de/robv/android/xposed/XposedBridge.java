@@ -620,9 +620,13 @@ public final class XposedBridge {
 	/**
 	 * Removes the callback for a hooked method/constructor.
 	 *
+	 * @deprecated Use {@link XC_MethodHook.Unhook#unhook} instead. An instance of the {@code Unhook}
+	 * class is returned when you hook the method.
+	 *
 	 * @param hookMethod The method for which the callback should be removed.
 	 * @param callback The reference to the callback as specified in {@link #hookMethod}.
 	 */
+	@Deprecated
 	public static void unhookMethod(Member hookMethod, XC_MethodHook callback) {
 		CopyOnWriteSortedSet<XC_MethodHook> callbacks;
 		synchronized (sHookedMethodCallbacks) {
@@ -763,23 +767,11 @@ public final class XposedBridge {
 	 * in your module class and Xposed will take care of registering it as a callback.
 	 *
 	 * @param callback The callback to be executed.
+	 * @hide
 	 */
-	@SuppressWarnings("UnusedReturnValue")
-	public static XC_LoadPackage.Unhook hookLoadPackage(XC_LoadPackage callback) {
+	public static void hookLoadPackage(XC_LoadPackage callback) {
 		synchronized (sLoadedPackageCallbacks) {
 			sLoadedPackageCallbacks.add(callback);
-		}
-		return callback.new Unhook();
-	}
-
-	/**
-	 * Removes a callback registered with {@link #hookLoadPackage}.
-	 *
-	 * @param callback The callback which should be removed.
-	 */
-	public static void unhookLoadPackage(XC_LoadPackage callback) {
-		synchronized (sLoadedPackageCallbacks) {
-			sLoadedPackageCallbacks.remove(callback);
 		}
 	}
 
@@ -790,23 +782,11 @@ public final class XposedBridge {
 	 * in your module class and Xposed will take care of registering it as a callback.
 	 *
 	 * @param callback The callback to be executed.
+	 * @hide
 	 */
-	@SuppressWarnings("UnusedReturnValue")
-	public static XC_InitPackageResources.Unhook hookInitPackageResources(XC_InitPackageResources callback) {
+	public static void hookInitPackageResources(XC_InitPackageResources callback) {
 		synchronized (sInitPackageResourcesCallbacks) {
 			sInitPackageResourcesCallbacks.add(callback);
-		}
-		return callback.new Unhook();
-	}
-
-	/**
-	 * Removes a callback registered with {@link #hookInitPackageResources}.
-	 *
-	 * @param callback The callback which should be removed.
-	 */
-	public static void unhookInitPackageResources(XC_InitPackageResources callback) {
-		synchronized (sInitPackageResourcesCallbacks) {
-			sInitPackageResourcesCallbacks.remove(callback);
 		}
 	}
 
