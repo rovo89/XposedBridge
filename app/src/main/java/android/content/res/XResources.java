@@ -344,10 +344,13 @@ public class XResources extends MiuiResources {
 	/**
 	 * Sets a replacement for an individual resource. See {@link #setReplacement(String, String, String, Object)}.
 	 *
+	 * @deprecated Use {@link #setReplacement(String, String, String, Object)} instead.
+	 *
 	 * @param fullName The full resource name, e.g. {@code com.example.myapplication:string/app_name}.
 	 *                 See {@link #getResourceName}.
 	 * @param replacement The replacement.
 	 */
+	@Deprecated
 	public void setReplacement(String fullName, Object replacement) {
 		int id = getIdentifier(fullName, null, null);
 		if (id == 0)
@@ -515,10 +518,13 @@ public class XResources extends MiuiResources {
 	 * Sets a replacement for an individual Android framework resource (in the {@code android} package).
 	 * See {@link #setSystemWideReplacement(String, String, String, Object)}.
 	 *
+	 * @deprecated Use {@link #setSystemWideReplacement(String, String, String, Object)} instead.
+	 *
 	 * @param fullName The full resource name, e.g. {@code android:string/yes}.
 	 *                 See {@link #getResourceName}.
 	 * @param replacement The replacement.
 	 */
+	@Deprecated
 	public static void setSystemWideReplacement(String fullName, Object replacement) {
 		int id = getSystem().getIdentifier(fullName, null, null);
 		if (id == 0)
@@ -1601,11 +1607,14 @@ public class XResources extends MiuiResources {
 	/**
 	 * Hook the inflation of a layout.
 	 *
+	 * @deprecated Use {@link #hookLayout(String, String, String, XC_LayoutInflated)} instead.
+	 *
 	 * @param fullName The full resource name, e.g. {@code com.android.systemui:layout/statusbar}.
 	 *                 See {@link #getResourceName}.
 	 * @param callback The callback to be executed when the layout has been inflated.
 	 * @return An object which can be used to remove the callback again.
 	 */
+	@Deprecated
 	public XC_LayoutInflated.Unhook hookLayout(String fullName, XC_LayoutInflated callback) {
 		int id = getIdentifier(fullName, null, null);
 		if (id == 0)
@@ -1650,11 +1659,14 @@ public class XResources extends MiuiResources {
 	 * Hook the inflation of an Android framework layout (in the {@code android} package).
 	 * See {@link #hookSystemWideLayout(String, String, String, XC_LayoutInflated)}.
 	 *
+	 * @deprecated Use {@link #hookSystemWideLayout(String, String, String, XC_LayoutInflated)} instead.
+	 *
 	 * @param fullName The full resource name, e.g. {@code android:layout/simple_list_item_1}.
 	 *                 See {@link #getResourceName}.
 	 * @param callback The callback to be executed when the layout has been inflated.
 	 * @return An object which can be used to remove the callback again.
 	 */
+	@Deprecated
 	public static XC_LayoutInflated.Unhook hookSystemWideLayout(String fullName, XC_LayoutInflated callback) {
 		int id = getSystem().getIdentifier(fullName, null, null);
 		if (id == 0)

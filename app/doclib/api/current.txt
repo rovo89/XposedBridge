@@ -32,16 +32,16 @@ package android.content.res {
     method public java.lang.String getPackageName();
     method public static java.lang.String getPackageNameDuringConstruction();
     method public de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookLayout(int, de.robv.android.xposed.callbacks.XC_LayoutInflated);
-    method public de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
+    method public deprecated de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
     method public de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
     method public static de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookSystemWideLayout(int, de.robv.android.xposed.callbacks.XC_LayoutInflated);
-    method public static de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookSystemWideLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
+    method public static deprecated de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookSystemWideLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
     method public static de.robv.android.xposed.callbacks.XC_LayoutInflated.Unhook hookSystemWideLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated);
     method public void setReplacement(int, java.lang.Object);
-    method public void setReplacement(java.lang.String, java.lang.Object);
+    method public deprecated void setReplacement(java.lang.String, java.lang.Object);
     method public void setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object);
     method public static void setSystemWideReplacement(int, java.lang.Object);
-    method public static void setSystemWideReplacement(java.lang.String, java.lang.Object);
+    method public static deprecated void setSystemWideReplacement(java.lang.String, java.lang.Object);
     method public static void setSystemWideReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object);
   }
 
