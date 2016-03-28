@@ -460,7 +460,6 @@ public final class XposedBridge {
 	 * Load a module from an APK by calling the init(String) method for all classes defined
 	 * in <code>assets/xposed_init</code>.
 	 */
-	@SuppressWarnings("deprecation")
 	private static void loadModule(String apk) {
 		log("Loading modules from " + apk);
 

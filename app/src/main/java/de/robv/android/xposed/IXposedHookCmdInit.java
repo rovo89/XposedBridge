@@ -4,10 +4,9 @@ package de.robv.android.xposed;
 /**
  * Hook the initialization of Java-based command-line tools (like pm).
  *
- * @deprecated Xposed no longer hooks command-line tools, therefore this interface shouldn't be
+ * @hide Xposed no longer hooks command-line tools, therefore this interface shouldn't be
  * implemented anymore.
  */
-@Deprecated
 public interface IXposedHookCmdInit extends IXposedMod {
 	/**
 	 * Called very early during startup of a command-line tool.

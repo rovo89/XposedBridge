@@ -71,15 +71,6 @@ package android.content.res {
 
 package de.robv.android.xposed {
 
-  public abstract deprecated interface IXposedHookCmdInit {
-    method public abstract void initCmdApp(de.robv.android.xposed.IXposedHookCmdInit.StartupParam) throws java.lang.Throwable;
-  }
-
-  public static final class IXposedHookCmdInit.StartupParam {
-    field public java.lang.String modulePath;
-    field public java.lang.String startClassName;
-  }
-
   public abstract interface IXposedHookInitPackageResources {
     method public abstract void handleInitPackageResources(de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam) throws java.lang.Throwable;
   }
