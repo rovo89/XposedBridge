@@ -1,6 +1,14 @@
 This file lists the changes in the Xposed Framework API:
 --------------------------------------------------------
 
+v81:
+  added IXUnhook.getCallback()
+  deprecated XposedBridge.unhookMethod(), use IXUnhook instead
+  deprecated full-name variants of XResources.hookLayout() etc.
+  removed several other unhooking methods, use IXUnhook instead
+  removed XC_LoadPackage / XC_InitPackageResources constructors
+  removed class de.robv.android.xposed.IXposedHookCmdInit
+
 v65:
   added XposedBridge.getXposedVersion()
   deprecated XposedBridge.XPOSED_BRIDGE_VERSION
@@ -24,7 +32,7 @@ v52:
   added XResources.getPackageNameDuringConstruction()
 
 v51:
-  deprecated class de.robv.android.xposed.IXposedHookCmdInit
+  deprecated class de.robv.android.xposed.IXposedHookCmdInit (removed in v81)
   added XposedHelpers.findAndHookConstructor()
   added XposedHelpers.findConstructorExact() variants
 
