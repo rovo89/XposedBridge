@@ -1,0 +1,3571 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+
+<link rel="shortcut icon" type="image/x-icon" href="../../../../assets/images/favicon.ico" />
+<title>XResources | Xposed Framework API</title>
+
+<!-- STYLESHEETS -->
+<link rel="stylesheet"
+href="http://fonts.googleapis.com/css?family=Roboto+Condensed">
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:light,regular,medium,thin,italic,mediumitalic,bold"
+  title="roboto">
+
+<link href="../../../../assets/css/default.css?v=7" rel="stylesheet" type="text/css">
+
+
+<!-- FULLSCREEN STYLESHEET -->
+<link href="../../../../assets/css/fullscreen.css" rel="stylesheet" class="fullscreen"
+type="text/css">
+
+
+<!-- JAVASCRIPT -->
+<script src="../../../../assets/js/android_3p-bundle.js" type="text/javascript"></script>
+<script type="text/javascript">
+  var toRoot = "../../../../";
+  var metaTags = [];
+  var devsite = false;
+</script>
+<script src="../../../../assets/js/docs.js?v=6" type="text/javascript"></script>
+
+</head>
+
+<body class="gc-documentation 
+  develop reference" itemscope itemtype="http://schema.org/Article">
+  <div id="doc-api-level" class="" style="display:none"></div>
+  <a name="top"></a>
+
+<a name="top"></a>
+
+<!-- Header -->
+<div id="header-wrapper">
+  <div class="dac-header" id="header">
+    <div class="dac-header-inner">
+      <a class="dac-header-logo" href="../../../../reference/packages.html">
+        <img class="dac-header-logo-image" src="../../../../assets/images/xposed_logo.png"
+          srcset="../../../../assets/images/xposed_logo@2x.png 2x"
+          width="36" height="36" alt="Xposed logo" /> Xposed Framework API
+      </a>
+    </div>
+  </div>
+</div><!-- headerwrapper -->
+
+
+
+  <div class="wrap clearfix" id="body-content"><div class="cols">
+    <div class="col-4 dac-hidden-mobile" id="side-nav" itemscope itemtype="http://schema.org/SiteNavigationElement">
+      <div id="devdoc-nav">
+      <div id="api-nav-header">
+        <div id="api-level-toggle">
+          <label for="apiLevelCheckbox" class="disabled"
+            title="Select your target API level to dim unavailable APIs">API level: </label>
+          <div class="select-wrapper">
+            <select id="apiLevelSelector">
+              <!-- option elements added by buildApiLevelSelector() -->
+            </select>
+          </div>
+        </div><!-- end toggle -->
+        <div id="api-nav-title">Xposed</div>
+        </div><!-- end nav header -->
+      <script>
+        var SINCE_DATA = [ '', '36', '37', '39', '42', '50', '51', '52', '53', '60', '63', '65', '81' ];
+        buildApiLevelSelector();
+      </script>
+
+      <div id="swapper">
+        <div id="nav-panels">
+          <div id="resize-packages-nav">
+            <div id="packages-nav" class="scroll-pane">
+
+              <ul>
+                
+    <li class="api apilevel-">
+  <a href="../../../../reference/android/app/package-summary.html">android.app</a></li>
+    <li class="selected api apilevel-">
+  <a href="../../../../reference/android/content/res/package-summary.html">android.content.res</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../reference/de/robv/android/xposed/package-summary.html">de.robv.android.xposed</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../reference/de/robv/android/xposed/callbacks/package-summary.html">de.robv.android.xposed.callbacks</a></li>
+    <li class="api apilevel-60">
+  <a href="../../../../reference/de/robv/android/xposed/services/package-summary.html">de.robv.android.xposed.services</a></li>
+              </ul><br/>
+
+            </div> <!-- end packages-nav -->
+          </div> <!-- end resize-packages -->
+          <div id="classes-nav" class="scroll-pane">
+
+
+
+            <ul>
+              
+              
+              
+    <li><h2>Classes</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../../reference/android/content/res/XModuleResources.html">XModuleResources</a></li>
+          <li class="api apilevel-"><a href="../../../../reference/android/content/res/XResForwarder.html">XResForwarder</a></li>
+          <li class="selected api apilevel-"><a href="../../../../reference/android/content/res/XResources.html">XResources</a></li>
+          <li class="api apilevel-50"><a href="../../../../reference/android/content/res/XResources.DimensionReplacement.html">XResources.DimensionReplacement</a></li>
+          <li class="api apilevel-"><a href="../../../../reference/android/content/res/XResources.DrawableLoader.html">XResources.DrawableLoader</a></li>
+          <li class="api apilevel-"><a href="../../../../reference/android/content/res/XResources.ResourceNames.html">XResources.ResourceNames</a></li>
+      </ul>
+    </li>
+              
+              
+              
+            </ul><br/>
+
+
+          </div><!-- end classes -->
+        </div><!-- end nav-panels -->
+        <div id="nav-tree" style="display:none" class="scroll-pane">
+          <div id="tree-list"></div>
+        </div><!-- end nav-tree -->
+      </div><!-- end swapper -->
+      <div id="nav-swap">
+      <a class="fullscreen">fullscreen</a>
+      <a href='#' onclick='swapNav();return false;'><span id='tree-link'>Use Tree Navigation</span><span id='panel-link' style='display:none'>Use Panel Navigation</span></a>
+      </div>
+    </div> <!-- end devdoc-nav -->
+    </div> <!-- end side-nav -->
+    <script type="text/javascript">
+      // init fullscreen based on user pref
+      var fullscreen = readCookie("fullscreen");
+      if (fullscreen != 0) {
+        if (fullscreen == "false") {
+          toggleFullscreen(false);
+        } else {
+          toggleFullscreen(true);
+        }
+      }
+      // init nav version for mobile
+      if (isMobile) {
+        swapNav(); // tree view should be used on mobile
+        $('#nav-swap').hide();
+      } else {
+        chooseDefaultNav();
+        if ($("#nav-tree").is(':visible')) {
+          init_default_navtree("../../../../");
+        }
+      }
+      // scroll the selected page into view
+      $(document).ready(function() {
+        scrollIntoView("packages-nav");
+        scrollIntoView("classes-nav");
+        });
+    </script>
+
+     
+
+
+
+<div class="col-12"  id="doc-col">
+
+<div id="api-info-block">
+
+
+
+  
+   
+  
+  
+  
+  
+
+  
+   
+  
+  
+  
+  
+
+
+<div class="sum-details-links">
+
+Summary:
+
+  <a href="#nestedclasses">Nested Classes</a>
+  
+
+
+
+
+
+
+
+
+
+
+
+  &#124; <a href="#pubmethods">Methods</a>
+  
+
+
+
+  &#124; <a href="#inhmethods">Inherited Methods</a>
+
+&#124; <a href="#" onclick="return toggleAllClassInherited()" id="toggleAllClassInherited">[Expand All]</a>
+
+</div><!-- end sum-details-links -->
+<div class="api-level">
+  
+
+  
+  
+
+</div>
+</div><!-- end api-info-block -->
+
+
+<!-- ======== START OF CLASS DATA ======== -->
+
+<div id="jd-header">
+    public
+     
+     
+    
+    class
+<h1 itemprop="name">XResources</h1>
+
+
+
+  
+  
+  
+
+  
+    extends <a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a><br/>
+  
+  
+  
+
+  
+  
+  
+
+
+    
+
+
+</div><!-- end header -->
+
+<div id="naMessage"></div>
+
+<div id="jd-content" class="api apilevel-">
+<table class="jd-inheritance-table">
+
+
+    <tr>
+         	
+        <td colspan="3" class="jd-inheritance-class-cell"><a href="http://developer.android.com/reference/java/lang/Object.html">java.lang.Object</a></td>
+    </tr>
+    
+
+    <tr>
+        
+            <td class="jd-inheritance-space">&nbsp;&nbsp;&nbsp;&#x21b3;</td>
+         	
+        <td colspan="2" class="jd-inheritance-class-cell"><a href="http://developer.android.com/reference/android/content/res/Resources.html">android.content.res.Resources</a></td>
+    </tr>
+    
+
+    <tr>
+        
+            <td class="jd-inheritance-space">&nbsp;</td>
+        
+            <td class="jd-inheritance-space">&nbsp;&nbsp;&nbsp;&#x21b3;</td>
+         	
+        <td colspan="1" class="jd-inheritance-class-cell">android.content.res.XResources</td>
+    </tr>
+    
+
+</table>
+
+
+
+
+
+
+
+<div class="jd-descr">
+
+
+<h2>Class Overview</h2>
+<p itemprop="articleBody"><code><a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a></code> subclass that allows replacing individual resources.
+
+ <p>Xposed replaces the standard resources with this class, which overrides the methods used for
+ retrieving individual resources and adds possibilities to replace them. These replacements can
+ be set using the methods made available via the API methods in this class.
+</p>
+
+
+
+
+
+</div><!-- jd-descr -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="jd-descr">
+
+
+<h2>Summary</h2>
+
+
+
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<table id="nestedclasses" class="jd-sumtable"><tr><th colspan="12">Nested Classes</th></tr>
+
+
+  
+    <tr class="alt-color api apilevel-50" >
+      <td class="jd-typecol"><nobr>
+        
+         
+         
+        
+        class</nobr></td>
+      <td class="jd-linkcol"><a href="../../../../reference/android/content/res/XResources.DimensionReplacement.html">XResources.DimensionReplacement</a></td>
+      <td class="jd-descrcol" width="100%">
+        Callback for dimension replacements.&nbsp;
+        
+    
+
+      </td>
+    </tr>
+    
+    
+    <tr class=" api apilevel-" >
+      <td class="jd-typecol"><nobr>
+        
+         
+         
+        
+        class</nobr></td>
+      <td class="jd-linkcol"><a href="../../../../reference/android/content/res/XResources.DrawableLoader.html">XResources.DrawableLoader</a></td>
+      <td class="jd-descrcol" width="100%">
+        Callback for drawable replacements.&nbsp;
+        
+    
+
+      </td>
+    </tr>
+    
+    
+    <tr class="alt-color api apilevel-" >
+      <td class="jd-typecol"><nobr>
+        
+         
+         
+        
+        class</nobr></td>
+      <td class="jd-linkcol"><a href="../../../../reference/android/content/res/XResources.ResourceNames.html">XResources.ResourceNames</a></td>
+      <td class="jd-descrcol" width="100%">
+        Wrapper for information about an indiviual resource.&nbsp;
+        
+    
+
+      </td>
+    </tr>
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="pubmethods" class="jd-sumtable"><tr><th colspan="12">Public Methods</th></tr>
+
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#addResource(android.content.res.Resources, int)">addResource</a></span>(<a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a> res, int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Makes any individual resource available from another <code><a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a></code>
+ instance available in this <code><a href="../../../../reference/android/content/res/XResources.html">XResources</a></code> instance.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#getFakeResId(java.lang.String)">getFakeResId</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> resName)</nobr>
+        
+        <div class="jd-descrdiv">
+          Generates a fake resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#getFakeResId(android.content.res.Resources, int)">getFakeResId</a></span>(<a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a> res, int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Generates a fake resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#getPackageName()">getPackageName</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns the name of the package that these resources belong to, or "android" for system resources.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-52" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#getPackageNameDuringConstruction()">getPackageNameDuringConstruction</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Special case of <code><a href="../../../../reference/android/content/res/XResources.html#getPackageName()">getPackageName()</a></code> during object creation.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#hookLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookLayout</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> pkg, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> type, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          Hook the inflation of a layout.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#hookLayout(int, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookLayout</a></span>(int id, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          Hook the inflation of a layout.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#hookLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookLayout</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> fullName, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method was deprecated
+      in API level 81.
+    Use <code><a href="../../../../reference/android/content/res/XResources.html#hookLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookLayout(String, String, String, XC_LayoutInflated)</a></code> instead.</em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#hookSystemWideLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookSystemWideLayout</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> fullName, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method was deprecated
+      in API level 81.
+    Use <code><a href="../../../../reference/android/content/res/XResources.html#hookSystemWideLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookSystemWideLayout(String, String, String, XC_LayoutInflated)</a></code> instead.</em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#hookSystemWideLayout(int, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookSystemWideLayout</a></span>(int id, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          Hook the inflation of an Android framework layout (in the <code>android</code> package).
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#hookSystemWideLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookSystemWideLayout</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> pkg, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> type, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          Hook the inflation of an Android framework layout (in the <code>android</code> package).
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#setReplacement(java.lang.String, java.lang.Object)">setReplacement</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> fullName, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method was deprecated
+      in API level 81.
+    Use <code><a href="../../../../reference/android/content/res/XResources.html#setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setReplacement(String, String, String, Object)</a></code> instead.</em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setReplacement</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> pkg, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> type, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</nobr>
+        
+        <div class="jd-descrdiv">
+          Sets a replacement for an individual resource.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#setReplacement(int, java.lang.Object)">setReplacement</a></span>(int id, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</nobr>
+        
+        <div class="jd-descrdiv">
+          Sets a replacement for an individual resource.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#setSystemWideReplacement(java.lang.String, java.lang.Object)">setSystemWideReplacement</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> fullName, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method was deprecated
+      in API level 81.
+    Use <code><a href="../../../../reference/android/content/res/XResources.html#setSystemWideReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setSystemWideReplacement(String, String, String, Object)</a></code> instead.</em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#setSystemWideReplacement(int, java.lang.Object)">setSystemWideReplacement</a></span>(int id, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</nobr>
+        
+        <div class="jd-descrdiv">
+          Sets a replacement for an individual Android framework resource (in the <code>android</code> package).
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../reference/android/content/res/XResources.html#setSystemWideReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setSystemWideReplacement</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> pkg, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> type, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</nobr>
+        
+        <div class="jd-descrdiv">
+          Sets a replacement for an individual Android framework resource (in the <code>android</code> package).
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+
+</table>
+
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="inhmethods" class="jd-sumtable"><tr><th>
+  <a href="#" class="toggle-all" onclick="return toggleAllInherited(this, null)">[Expand]</a>
+  <div style="clear:left;">Inherited Methods</div></th></tr>
+
+
+<tr class="api apilevel-" >
+<td colspan="12">
+  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-android.content.res.Resources" class="jd-expando-trigger closed"
+          ><img id="inherited-methods-android.content.res.Resources-trigger"
+          src="../../../../assets/images/triangle-closed.png"
+          class="jd-expando-trigger-img" /></a>
+From class
+
+  <a href="http://developer.android.com/reference/android/content/res/Resources.html">android.content.res.Resources</a>
+
+<div id="inherited-methods-android.content.res.Resources">
+  <div id="inherited-methods-android.content.res.Resources-list"
+        class="jd-inheritedlinks">
+  </div>
+  <div id="inherited-methods-android.content.res.Resources-summary" style="display: none;">
+    <table class="jd-sumtable-expando">
+    
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">finishPreloading</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Called by zygote when it is done preloading resources, to change back
+ to normal Resources operation.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">flushLayoutCache</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Call this to remove all cached loaded layout resources from the
+ Resources object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/XmlResourceParser.html">XmlResourceParser</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getAnimation</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return an XmlResourceParser through which you can read an animation
+ description for the given resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            <a href="http://developer.android.com/reference/android/content/res/AssetManager.html">AssetManager</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getAssets</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve underlying AssetManager storage for these resources.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getBoolean</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return a boolean associated with a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getColor</span>(int id, <a href="http://developer.android.com/reference/android/content/res/Resources.Theme.html">Resources.Theme</a> theme)</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns a themed color integer associated with a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getColor</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method is deprecated.
+    Use <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getColor(int, android.content.res.Resources.Theme)">getColor(int, Theme)</a></code> instead.
+</em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/ColorStateList.html">ColorStateList</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getColorStateList</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method is deprecated.
+    Use <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getColorStateList(int, android.content.res.Resources.Theme)">getColorStateList(int, Theme)</a></code> instead.
+</em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/ColorStateList.html">ColorStateList</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getColorStateList</span>(int id, <a href="http://developer.android.com/reference/android/content/res/Resources.Theme.html">Resources.Theme</a> theme)</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns a themed color state list associated with a particular resource
+ ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/Configuration.html">Configuration</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getConfiguration</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the current configuration that is in effect for this resource 
+ object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            float</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getDimension</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a dimensional for a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getDimensionPixelOffset</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a dimensional for a particular resource ID for use
+ as an offset in raw pixels.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getDimensionPixelSize</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a dimensional for a particular resource ID for use
+ as a size in raw pixels.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/util/DisplayMetrics.html">DisplayMetrics</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getDisplayMetrics</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the current display metrics that are in effect for this resource 
+ object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/graphics/drawable/Drawable.html">Drawable</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getDrawable</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method is deprecated.
+    Use <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getDrawable(int, android.content.res.Resources.Theme)">getDrawable(int, Theme)</a></code> instead.
+</em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/graphics/drawable/Drawable.html">Drawable</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getDrawable</span>(int id, <a href="http://developer.android.com/reference/android/content/res/Resources.Theme.html">Resources.Theme</a> theme)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return a drawable object associated with a particular resource ID and
+ styled for the specified theme.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/graphics/drawable/Drawable.html">Drawable</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getDrawableForDensity</span>(int id, int density)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method is deprecated.
+    Use <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getDrawableForDensity(int, int, android.content.res.Resources.Theme)">getDrawableForDensity(int, int, Theme)</a></code> instead.
+</em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/graphics/drawable/Drawable.html">Drawable</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getDrawableForDensity</span>(int id, int density, <a href="http://developer.android.com/reference/android/content/res/Resources.Theme.html">Resources.Theme</a> theme)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return a drawable object associated with a particular resource ID for the
+ given screen density in DPI and styled for the specified theme.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            float</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getFraction</span>(int id, int base, int pbase)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a fractional unit for a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getIdentifier</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> defType, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> defPackage)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return a resource identifier for the given resource name.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int[]</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getIntArray</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the int array associated with a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getInteger</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return an integer associated with a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/XmlResourceParser.html">XmlResourceParser</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getLayout</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return an XmlResourceParser through which you can read a view layout
+ description for the given resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/graphics/Movie.html">Movie</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getMovie</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return a movie object associated with the particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getQuantityString</span>(int id, int quantity, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> formatArgs)</nobr>
+        
+        <div class="jd-descrdiv">
+          Formats the string necessary for grammatically correct pluralization
+ of the given resource ID for the given quantity, using the given arguments.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getQuantityString</span>(int id, int quantity)</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns the string necessary for grammatically correct pluralization
+ of the given resource ID for the given quantity.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/CharSequence.html">CharSequence</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getQuantityText</span>(int id, int quantity)</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns the character sequence necessary for grammatically correct pluralization
+ of the given resource ID for the given quantity.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getResourceEntryName</span>(int resid)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the entry name for a given resource identifier.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getResourceName</span>(int resid)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the full name for a given resource identifier.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getResourcePackageName</span>(int resid)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the package name for a given resource identifier.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getResourceTypeName</span>(int resid)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the type name for a given resource identifier.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getString</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the string value associated with a particular resource ID.  It
+ will be stripped of any styled text information.
+ 
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getString</span>(int id, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> formatArgs)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the string value associated with a particular resource ID,
+ substituting the format arguments as defined in <code><a href="http://developer.android.com/reference/java/util/Formatter.html">Formatter</a></code>
+ and <code><a href="http://developer.android.com/reference/java/lang/String.html#format(java.lang.String, java.lang.Object...)">String.format(String, Object...)</a></code>. It will be stripped of any styled text
+ information.
+ 
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String[]</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getStringArray</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the string array associated with a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getSystem</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Return a global shared Resources object that provides access to only
+ system resources (no application resources), and is not configured for
+ the current screen (can not use dimension units, does not change based
+ on orientation, etc).
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/CharSequence.html">CharSequence</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getText</span>(int id, <a href="http://developer.android.com/reference/java/lang/CharSequence.html">CharSequence</a> def)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the string value associated with a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/CharSequence.html">CharSequence</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getText</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the string value associated with a particular resource ID.  The
+ returned object will be a String if this is a plain string; it will be
+ some other type of CharSequence if it is styled.
+ 
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/CharSequence.html">CharSequence[]</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getTextArray</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the styled text array associated with a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getValue</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="http://developer.android.com/reference/android/util/TypedValue.html">TypedValue</a> outValue, boolean resolveRefs)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the raw data associated with a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getValue</span>(int id, <a href="http://developer.android.com/reference/android/util/TypedValue.html">TypedValue</a> outValue, boolean resolveRefs)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return the raw data associated with a particular resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getValueForDensity</span>(int id, int density, <a href="http://developer.android.com/reference/android/util/TypedValue.html">TypedValue</a> outValue, boolean resolveRefs)</nobr>
+        
+        <div class="jd-descrdiv">
+          Get the raw value associated with a resource with associated density.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/XmlResourceParser.html">XmlResourceParser</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getXml</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return an XmlResourceParser through which you can read a generic XML
+ resource for the given resource ID.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            <a href="http://developer.android.com/reference/android/content/res/Resources.Theme.html">Resources.Theme</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">newTheme</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Generate a new Theme object for this set of Resources.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/TypedArray.html">TypedArray</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">obtainAttributes</span>(<a href="http://developer.android.com/reference/android/util/AttributeSet.html">AttributeSet</a> set, int[] attrs)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a set of basic attribute values from an AttributeSet, not
+ performing styling of them using a theme and/or style resources.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/TypedArray.html">TypedArray</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">obtainTypedArray</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Return an array of heterogeneous values.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/io/InputStream.html">InputStream</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">openRawResource</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Open a data stream for reading a raw resource.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/io/InputStream.html">InputStream</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">openRawResource</span>(int id, <a href="http://developer.android.com/reference/android/util/TypedValue.html">TypedValue</a> value)</nobr>
+        
+        <div class="jd-descrdiv">
+          Open a data stream for reading a raw resource.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/res/AssetFileDescriptor.html">AssetFileDescriptor</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">openRawResourceFd</span>(int id)</nobr>
+        
+        <div class="jd-descrdiv">
+          Open a file descriptor for reading a raw resource.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">parseBundleExtra</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> tagName, <a href="http://developer.android.com/reference/android/util/AttributeSet.html">AttributeSet</a> attrs, <a href="http://developer.android.com/reference/android/os/Bundle.html">Bundle</a> outBundle)</nobr>
+        
+        <div class="jd-descrdiv">
+          Parse a name/value pair out of an XML tag holding that data.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">parseBundleExtras</span>(<a href="http://developer.android.com/reference/android/content/res/XmlResourceParser.html">XmlResourceParser</a> parser, <a href="http://developer.android.com/reference/android/os/Bundle.html">Bundle</a> outBundle)</nobr>
+        
+        <div class="jd-descrdiv">
+          Parse a series of <code><a href="../../../../">ERROR(&lt;extra&gt;/android.R.styleable#Extra &lt;extra&gt;)</a></code> tags from
+ an XML file.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">updateConfiguration</span>(<a href="http://developer.android.com/reference/android/content/res/Configuration.html">Configuration</a> config, <a href="http://developer.android.com/reference/android/util/DisplayMetrics.html">DisplayMetrics</a> metrics)</nobr>
+        
+        <div class="jd-descrdiv">
+          Store the newly updated configuration.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+</table>
+  </div>
+</div>
+</td></tr>
+
+
+
+<tr class="api apilevel-" >
+<td colspan="12">
+  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-java.lang.Object" class="jd-expando-trigger closed"
+          ><img id="inherited-methods-java.lang.Object-trigger"
+          src="../../../../assets/images/triangle-closed.png"
+          class="jd-expando-trigger-img" /></a>
+From class
+
+  <a href="http://developer.android.com/reference/java/lang/Object.html">java.lang.Object</a>
+
+<div id="inherited-methods-java.lang.Object">
+  <div id="inherited-methods-java.lang.Object-list"
+        class="jd-inheritedlinks">
+  </div>
+  <div id="inherited-methods-java.lang.Object-summary" style="display: none;">
+    <table class="jd-sumtable-expando">
+    
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">clone</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Creates and returns a copy of this <code>Object</code>.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">equals</span>(<a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> o)</nobr>
+        
+        <div class="jd-descrdiv">
+          Compares this instance with the specified object and indicates if they
+ are equal.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">finalize</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Invoked when the garbage collector has detected that this instance is no longer reachable.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            <a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getClass</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns the unique instance of <code><a href="http://developer.android.com/reference/java/lang/Class.html">Class</a></code> that represents this
+ object's class.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">hashCode</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns an integer hash code for this object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">notify</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes a thread which is waiting on this object's monitor (by means of
+ calling one of the <code>wait()</code> methods) to be woken up.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">notifyAll</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes all threads which are waiting on this object's monitor (by means
+ of calling one of the <code>wait()</code> methods) to be woken up.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">toString</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns a string containing a concise, human-readable description of this
+ object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>(long millis, int nanos)</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object or until the
+ specified timeout expires.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>(long millis)</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object or until the
+ specified timeout expires.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+</table>
+  </div>
+</div>
+</td></tr>
+
+
+</table>
+
+
+</div><!-- jd-descr (summary) -->
+
+<!-- Details -->
+
+
+
+
+
+
+
+
+<!-- XML Attributes -->
+
+
+<!-- Enum Values -->
+
+
+<!-- Constants -->
+
+
+<!-- Fields -->
+
+
+<!-- Public ctors -->
+
+
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<!-- Protected ctors -->
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+<!-- Public methdos -->
+
+<h2>Public Methods</h2>
+
+
+
+<A NAME="addResource(android.content.res.Resources, int)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        int
+      </span>
+      <span class="sympad">addResource</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a> res, int id)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Makes any individual resource available from another <code><a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a></code>
+ instance available in this <code><a href="../../../../reference/android/content/res/XResources.html">XResources</a></code> instance.
+
+ <p>This method combines calls to <code><a href="../../../../reference/android/content/res/XResources.html#getFakeResId(android.content.res.Resources, int)">getFakeResId(Resources, int)</a></code> and
+ <code><a href="../../../../reference/android/content/res/XResources.html#setReplacement(int, java.lang.Object)">setReplacement(int, Object)</a></code> to generate a fake resource ID and set up a replacement
+ for it which forwards to the given resource.
+
+ <p>The returned ID can only be used to retrieve the resource, it won't work for methods like
+ <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceName(int)">Resources.getResourceName(int)</a></code> etc.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>res</td>
+          <td>The target <code><a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a></code> instance.</td>
+        </tr>
+        <tr>
+          <th>id</td>
+          <td>The target resource ID.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>The fake resource ID (see above).
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="getFakeResId(java.lang.String)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        int
+      </span>
+      <span class="sympad">getFakeResId</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> resName)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Generates a fake resource ID.
+
+ <p>The parameter is just hashed, it doesn't have a deeper meaning. However, it's recommended
+ to use values with a low risk for conflicts, such as a full resource name. Calling this
+ method multiple times will return the same ID.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>resName</td>
+          <td>A used for hashing, see above.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>The fake resource ID.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="getFakeResId(android.content.res.Resources, int)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        int
+      </span>
+      <span class="sympad">getFakeResId</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a> res, int id)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Generates a fake resource ID.
+
+ <p>This variant uses the result of <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceName(int)">Resources.getResourceName(int)</a></code> to create the hash that the ID is
+ based on. The given resource doesn't need to match the <code><a href="../../../../reference/android/content/res/XResources.html">XResources</a></code> instance for which
+ the fake resource ID is going to be used.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>res</td>
+          <td>The <code><a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a></code> object to be used for hashing.</td>
+        </tr>
+        <tr>
+          <th>id</td>
+          <td>The resource ID to be used for hashing.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>The fake resource ID.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="getPackageName()"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        <a href="http://developer.android.com/reference/java/lang/String.html">String</a>
+      </span>
+      <span class="sympad">getPackageName</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Returns the name of the package that these resources belong to, or "android" for system resources.
+</p></div>
+
+    </div>
+</div>
+
+
+<A NAME="getPackageNameDuringConstruction()"></A>
+
+<div class="jd-details api apilevel-52"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/lang/String.html">String</a>
+      </span>
+      <span class="sympad">getPackageNameDuringConstruction</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 52
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Special case of <code><a href="../../../../reference/android/content/res/XResources.html#getPackageName()">getPackageName()</a></code> during object creation.
+
+ <p>For a short moment during/after the creation of a new <code><a href="../../../../reference/android/content/res/package-summary.html">Resources</a></code>
+ object, it isn't an instance of <code><a href="../../../../reference/android/content/res/XResources.html">XResources</a></code> yet. For any hooks that need information
+ about the just created object during this particular stage, this method will return the
+ package name.
+
+ <p class="warning">If you call this method outside of <code>getTopLevelResources()</code>, it
+ throws an <code>IllegalStateException</code>.
+</p></div>
+
+    </div>
+</div>
+
+
+<A NAME="hookLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a>
+      </span>
+      <span class="sympad">hookLayout</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> pkg, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> type, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Hook the inflation of a layout.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>pkg</td>
+          <td>The package name, e.g. <code>com.android.systemui</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourcePackageName(int)">Resources.getResourcePackageName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>type</td>
+          <td>The type name, e.g. <code>layout</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceTypeName(int)">Resources.getResourceTypeName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>name</td>
+          <td>The entry name, e.g. <code>statusbar</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceEntryName(int)">Resources.getResourceEntryName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The callback to be executed when the layout has been inflated.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>An object which can be used to remove the callback again.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="hookLayout(int, de.robv.android.xposed.callbacks.XC_LayoutInflated)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a>
+      </span>
+      <span class="sympad">hookLayout</span>
+      <span class="normal">(int id, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Hook the inflation of a layout.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>id</td>
+          <td>The ID of the resource which should be replaced.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The callback to be executed when the layout has been inflated.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>An object which can be used to remove the callback again.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="hookLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a>
+      </span>
+      <span class="sympad">hookLayout</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> fullName, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      <p>
+  <p class="caution"><strong>
+      This method was deprecated
+      in API level 81.</strong><br/>
+    Use <code><a href="../../../../reference/android/content/res/XResources.html#hookLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookLayout(String, String, String, XC_LayoutInflated)</a></code> instead.
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p>Hook the inflation of a layout.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>fullName</td>
+          <td>The full resource name, e.g. <code>com.android.systemui:layout/statusbar</code>.
+                 See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceName(int)">Resources.getResourceName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The callback to be executed when the layout has been inflated.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>An object which can be used to remove the callback again.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="hookSystemWideLayout(java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a>
+      </span>
+      <span class="sympad">hookSystemWideLayout</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> fullName, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      <p>
+  <p class="caution"><strong>
+      This method was deprecated
+      in API level 81.</strong><br/>
+    Use <code><a href="../../../../reference/android/content/res/XResources.html#hookSystemWideLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookSystemWideLayout(String, String, String, XC_LayoutInflated)</a></code> instead.
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p>Hook the inflation of an Android framework layout (in the <code>android</code> package).
+ See <code><a href="../../../../reference/android/content/res/XResources.html#hookSystemWideLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookSystemWideLayout(String, String, String, XC_LayoutInflated)</a></code>.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>fullName</td>
+          <td>The full resource name, e.g. <code>android:layout/simple_list_item_1</code>.
+                 See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceName(int)">Resources.getResourceName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The callback to be executed when the layout has been inflated.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>An object which can be used to remove the callback again.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="hookSystemWideLayout(int, de.robv.android.xposed.callbacks.XC_LayoutInflated)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a>
+      </span>
+      <span class="sympad">hookSystemWideLayout</span>
+      <span class="normal">(int id, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Hook the inflation of an Android framework layout (in the <code>android</code> package).
+ See <code><a href="../../../../reference/android/content/res/XResources.html#hookSystemWideLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookSystemWideLayout(String, String, String, XC_LayoutInflated)</a></code>.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>id</td>
+          <td>The ID of the resource which should be replaced.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The callback to be executed when the layout has been inflated.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>An object which can be used to remove the callback again.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="hookSystemWideLayout(java.lang.String, java.lang.String, java.lang.String, de.robv.android.xposed.callbacks.XC_LayoutInflated)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.Unhook.html">XC_LayoutInflated.Unhook</a>
+      </span>
+      <span class="sympad">hookSystemWideLayout</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> pkg, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> type, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="../../../../reference/de/robv/android/xposed/callbacks/XC_LayoutInflated.html">XC_LayoutInflated</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Hook the inflation of an Android framework layout (in the <code>android</code> package).
+
+ <p>Some layouts are part of the Android framework and can be used in any app. They're
+ accessible via <code><a href="http://developer.android.com/reference/android/R.layout.html">android.R.layout</a></code> and are not bound to a specific
+ <code><a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a></code> instance. Such resources can be replaced in
+ <code><a href="../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.html#initZygote(de.robv.android.xposed.IXposedHookZygoteInit.StartupParam)">initZygote()</a></code> for all apps. As there is no
+ <code><a href="../../../../reference/android/content/res/XResources.html">XResources</a></code> object easily available in that scope, this static method can be used
+ to hook layouts.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>pkg</td>
+          <td>The package name, e.g. <code>android</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourcePackageName(int)">Resources.getResourcePackageName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>type</td>
+          <td>The type name, e.g. <code>layout</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceTypeName(int)">Resources.getResourceTypeName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>name</td>
+          <td>The entry name, e.g. <code>simple_list_item_1</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceEntryName(int)">Resources.getResourceEntryName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The callback to be executed when the layout has been inflated.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>An object which can be used to remove the callback again.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="setReplacement(java.lang.String, java.lang.Object)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        void
+      </span>
+      <span class="sympad">setReplacement</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> fullName, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      <p>
+  <p class="caution"><strong>
+      This method was deprecated
+      in API level 81.</strong><br/>
+    Use <code><a href="../../../../reference/android/content/res/XResources.html#setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setReplacement(String, String, String, Object)</a></code> instead.
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p>Sets a replacement for an individual resource. See <code><a href="../../../../reference/android/content/res/XResources.html#setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setReplacement(String, String, String, Object)</a></code>.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>fullName</td>
+          <td>The full resource name, e.g. <code>com.example.myapplication:string/app_name</code>.
+                 See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceName(int)">Resources.getResourceName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>replacement</td>
+          <td>The replacement.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        void
+      </span>
+      <span class="sympad">setReplacement</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> pkg, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> type, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Sets a replacement for an individual resource. If called more than once for the same ID, the
+ replacement from the last call is used. Setting the replacement to <code>null</code> removes it.
+
+ <p>The allowed replacements depend on the type of the source. All types accept an
+ <code><a href="../../../../reference/android/content/res/XResForwarder.html">XResForwarder</a></code> object, which is usually created with <code><a href="../../../../reference/android/content/res/XModuleResources.html#fwd(int)">XModuleResources.fwd(int)</a></code>.
+ The resource request will then be forwarded to another <code><a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a></code>
+ object. In addition to that, the following replacement types are accepted:
+
+ <table>
+     <thead>
+     <tr><th>Resource type</th> <th>Additional allowed replacement types (*)</th> <th>Returned from (**)</th></tr>
+     </thead>
+
+     <tbody>
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/animation-resource.html">Animation</a></td>
+         <td>&nbsp;<i>none</i></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getAnimation(int)">Resources.getAnimation(int)</a></code></td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/more-resources.html#Bool">Bool</a></td>
+         <td><code><a href="http://developer.android.com/reference/java/lang/Boolean.html">Boolean</a></code></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getBoolean(int)">Resources.getBoolean(int)</a></code></td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/more-resources.html#Color">Color</a></td>
+         <td><code><a href="http://developer.android.com/reference/java/lang/Integer.html">Integer</a></code> (you might want to use <code><a href="http://developer.android.com/reference/android/graphics/Color.html#parseColor(java.lang.String)">Color.parseColor(String)</a></code>)</td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getColor(int)">Resources.getColor(int)</a></code><br>
+             <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getDrawable(int)">Resources.getDrawable(int)</a></code> (creates a <code><a href="http://developer.android.com/reference/android/graphics/drawable/ColorDrawable.html">ColorDrawable</a></code>)<br>
+             <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getColorStateList(int)">Resources.getColorStateList(int)</a></code> (calls <code><a href="http://developer.android.com/reference/android/content/res/ColorStateList.html#valueOf(int)">ColorStateList.valueOf(int)</a></code>)
+         </td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/color-list-resource.html">Color State List</a></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/ColorStateList.html">ColorStateList</a></code><br>
+             <code><a href="http://developer.android.com/reference/java/lang/Integer.html">Integer</a></code> (calls <code><a href="http://developer.android.com/reference/android/content/res/ColorStateList.html#valueOf(int)">ColorStateList.valueOf(int)</a></code>)
+         </td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getColorStateList(int)">Resources.getColorStateList(int)</a></code></td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/more-resources.html#Dimension">Dimension</a></td>
+         <td><code><a href="../../../../reference/android/content/res/XResources.DimensionReplacement.html">XResources.DimensionReplacement</a></code> <i>(since v50)</i></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getDimension(int)">Resources.getDimension(int)</a></code><br>
+             <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getDimensionPixelOffset(int)">Resources.getDimensionPixelOffset(int)</a></code><br>
+             <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getDimensionPixelSize(int)">Resources.getDimensionPixelSize(int)</a></code>
+         </td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/drawable-resource.html">Drawable</a>
+             (including <a href="http://developer.android.com/tools/projects/index.html#mipmap">mipmap</a>)</td>
+         <td><code><a href="../../../../reference/android/content/res/XResources.DrawableLoader.html">XResources.DrawableLoader</a></code><br>
+             <code><a href="http://developer.android.com/reference/java/lang/Integer.html">Integer</a></code> (creates a <code><a href="http://developer.android.com/reference/android/graphics/drawable/ColorDrawable.html">ColorDrawable</a></code>)
+         </td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getDrawable(int)">Resources.getDrawable(int)</a></code><br>
+             <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getDrawableForDensity(int, int)">Resources.getDrawableForDensity(int, int)</a></code>
+         </td>
+     </tr>
+
+     <tr><td>Fraction</td>
+         <td>&nbsp;<i>none</i></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getFraction(int, int, int)">Resources.getFraction(int, int, int)</a></code></td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/more-resources.html#Integer">Integer</a></td>
+         <td><code><a href="http://developer.android.com/reference/java/lang/Integer.html">Integer</a></code></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getInteger(int)">Resources.getInteger(int)</a></code></td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/more-resources.html#IntegerArray">Integer Array</a></td>
+         <td><code>int[]</code></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getIntArray(int)">Resources.getIntArray(int)</a></code></td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/layout-resource.html">Layout</a></td>
+         <td>&nbsp;<i>none, but see <code><a href="../../../../reference/android/content/res/XResources.html#hookLayout(int, de.robv.android.xposed.callbacks.XC_LayoutInflated)">hookLayout(int, XC_LayoutInflated)</a></code></i></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getLayout(int)">Resources.getLayout(int)</a></code></td>
+     </tr>
+
+     <tr><td>Movie</td>
+         <td>&nbsp;<i>none</i></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getMovie(int)">Resources.getMovie(int)</a></code></td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/string-resource.html#Plurals">Quantity Strings (Plurals)</a></td>
+         <td>&nbsp;<i>none</i></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getQuantityString(int, int)">Resources.getQuantityString(int, int)</a></code><br>
+             <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getQuantityText(int, int)">Resources.getQuantityText(int, int)</a></code>
+         </td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/string-resource.html#String">String</a></td>
+         <td><code><a href="http://developer.android.com/reference/java/lang/String.html">String</a></code><br>
+             <code><a href="http://developer.android.com/reference/java/lang/CharSequence.html">CharSequence</a></code> (for styled texts, see also <code><a href="http://developer.android.com/reference/android/text/Html.html#fromHtml(java.lang.String)">Html.fromHtml(String)</a></code>)
+         </td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getString(int)">Resources.getString(int)</a></code><br>
+             <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getText(int)">Resources.getText(int)</a></code>
+         </td>
+     </tr>
+
+     <tr><td><a href="http://developer.android.com/guide/topics/resources/string-resource.html#StringArray">String Array</a></td>
+         <td><code>String[]</code><br>
+             <code>CharSequence[]</code> (for styled texts, see also <code><a href="http://developer.android.com/reference/android/text/Html.html#fromHtml(java.lang.String)">Html.fromHtml(String)</a></code>)
+         </td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getStringArray(int)">Resources.getStringArray(int)</a></code><br>
+             <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getTextArray(int)">Resources.getTextArray(int)</a></code>
+         </td>
+     </tr>
+
+     <tr><td>XML</td>
+         <td>&nbsp;<i>none</i></td>
+         <td><code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getXml(int)">Resources.getXml(int)</a></code><br>
+             <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getQuantityText(int, int)">Resources.getQuantityText(int, int)</a></code>
+         </td>
+     </tr>
+
+     </tbody>
+ </table>
+
+ <p>Other resource types, such as
+ <a href="http://developer.android.com/guide/topics/resources/style-resource.html">styles/themes</a>,
+ <a href="http://developer.android.com/reference/android/content/res/Resources.html#openRawResource(int)">raw resources</a></a> and
+ <a href="http://developer.android.com/guide/topics/resources/more-resources.html#TypedArray">typed arrays</a>
+ can't be replaced.
+
+ <p><i>
+    * Auto-boxing allows you to use literals like <code>123</code> where an <code><a href="http://developer.android.com/reference/java/lang/Integer.html">Integer</a></code> is
+      accepted, so you don't neeed to call methods like <code><a href="http://developer.android.com/reference/java/lang/Integer.html#valueOf(int)">Integer.valueOf(int)</a></code> manually.<br>
+    ** Some of these methods have multiple variants, only one of them is mentioned here.
+ </i></p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>pkg</td>
+          <td>The package name, e.g. <code>com.example.myapplication</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourcePackageName(int)">Resources.getResourcePackageName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>type</td>
+          <td>The type name, e.g. <code>string</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceTypeName(int)">Resources.getResourceTypeName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>name</td>
+          <td>The entry name, e.g. <code>app_name</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceEntryName(int)">Resources.getResourceEntryName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>replacement</td>
+          <td>The replacement.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="setReplacement(int, java.lang.Object)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        void
+      </span>
+      <span class="sympad">setReplacement</span>
+      <span class="normal">(int id, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Sets a replacement for an individual resource. See <code><a href="../../../../reference/android/content/res/XResources.html#setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setReplacement(String, String, String, Object)</a></code>.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>id</td>
+          <td>The ID of the resource which should be replaced.</td>
+        </tr>
+        <tr>
+          <th>replacement</td>
+          <td>The replacement, see above.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="setSystemWideReplacement(java.lang.String, java.lang.Object)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        void
+      </span>
+      <span class="sympad">setSystemWideReplacement</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> fullName, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      <p>
+  <p class="caution"><strong>
+      This method was deprecated
+      in API level 81.</strong><br/>
+    Use <code><a href="../../../../reference/android/content/res/XResources.html#setSystemWideReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setSystemWideReplacement(String, String, String, Object)</a></code> instead.
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p>Sets a replacement for an individual Android framework resource (in the <code>android</code> package).
+ See <code><a href="../../../../reference/android/content/res/XResources.html#setSystemWideReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setSystemWideReplacement(String, String, String, Object)</a></code>.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>fullName</td>
+          <td>The full resource name, e.g. <code>android:string/yes</code>.
+                 See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceName(int)">Resources.getResourceName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>replacement</td>
+          <td>The replacement.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="setSystemWideReplacement(int, java.lang.Object)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        void
+      </span>
+      <span class="sympad">setSystemWideReplacement</span>
+      <span class="normal">(int id, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Sets a replacement for an individual Android framework resource (in the <code>android</code> package).
+ See <code><a href="../../../../reference/android/content/res/XResources.html#setSystemWideReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setSystemWideReplacement(String, String, String, Object)</a></code>.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>id</td>
+          <td>The ID of the resource which should be replaced.</td>
+        </tr>
+        <tr>
+          <th>replacement</td>
+          <td>The replacement.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="setSystemWideReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        void
+      </span>
+      <span class="sympad">setSystemWideReplacement</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> pkg, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> type, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> name, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> replacement)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Sets a replacement for an individual Android framework resource (in the <code>android</code> package).
+
+ <p>Some resources are part of the Android framework and can be used in any app. They're
+ accessible via <code><a href="http://developer.android.com/reference/android/R.html">android.R</a></code> and are not bound to a specific
+ <code><a href="http://developer.android.com/reference/android/content/res/Resources.html">Resources</a></code> instance. Such resources can be replaced in
+ <code><a href="../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.html#initZygote(de.robv.android.xposed.IXposedHookZygoteInit.StartupParam)">initZygote()</a></code> for all apps. As there is no
+ <code><a href="../../../../reference/android/content/res/XResources.html">XResources</a></code> object easily available in that scope, this static method can be used
+ to set resource replacements. All other details (e.g. how certain types can be replaced) are
+ mentioned in <code><a href="../../../../reference/android/content/res/XResources.html#setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">setReplacement(String, String, String, Object)</a></code>.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>pkg</td>
+          <td>The package name, should always be <code>android</code> here.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourcePackageName(int)">Resources.getResourcePackageName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>type</td>
+          <td>The type name, e.g. <code>string</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceTypeName(int)">Resources.getResourceTypeName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>name</td>
+          <td>The entry name, e.g. <code>yes</code>.
+            See <code><a href="http://developer.android.com/reference/android/content/res/Resources.html#getResourceEntryName(int)">Resources.getResourceEntryName(int)</a></code>.</td>
+        </tr>
+        <tr>
+          <th>replacement</td>
+          <td>The replacement.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+
+
+
+<!-- ========= END OF CLASS DATA ========= -->
+<A NAME="navbar_top"></A>
+</div> <!-- jd-content -->
+
+
+</div><!-- end doc-content -->
+
+
+
+</body>
+</html>

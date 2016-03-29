@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+
+<link rel="shortcut icon" type="image/x-icon" href="../../../../../../assets/images/favicon.ico" />
+<title>BaseService | Xposed Framework API</title>
+
+<!-- STYLESHEETS -->
+<link rel="stylesheet"
+href="http://fonts.googleapis.com/css?family=Roboto+Condensed">
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:light,regular,medium,thin,italic,mediumitalic,bold"
+  title="roboto">
+
+<link href="../../../../../../assets/css/default.css?v=7" rel="stylesheet" type="text/css">
+
+
+<!-- FULLSCREEN STYLESHEET -->
+<link href="../../../../../../assets/css/fullscreen.css" rel="stylesheet" class="fullscreen"
+type="text/css">
+
+
+<!-- JAVASCRIPT -->
+<script src="../../../../../../assets/js/android_3p-bundle.js" type="text/javascript"></script>
+<script type="text/javascript">
+  var toRoot = "../../../../../../";
+  var metaTags = [];
+  var devsite = false;
+</script>
+<script src="../../../../../../assets/js/docs.js?v=6" type="text/javascript"></script>
+
+</head>
+
+<body class="gc-documentation 
+  develop reference" itemscope itemtype="http://schema.org/Article">
+  <div id="doc-api-level" class="60" style="display:none"></div>
+  <a name="top"></a>
+
+<a name="top"></a>
+
+<!-- Header -->
+<div id="header-wrapper">
+  <div class="dac-header" id="header">
+    <div class="dac-header-inner">
+      <a class="dac-header-logo" href="../../../../../../reference/packages.html">
+        <img class="dac-header-logo-image" src="../../../../../../assets/images/xposed_logo.png"
+          srcset="../../../../../../assets/images/xposed_logo@2x.png 2x"
+          width="36" height="36" alt="Xposed logo" /> Xposed Framework API
+      </a>
+    </div>
+  </div>
+</div><!-- headerwrapper -->
+
+
+
+  <div class="wrap clearfix" id="body-content"><div class="cols">
+    <div class="col-4 dac-hidden-mobile" id="side-nav" itemscope itemtype="http://schema.org/SiteNavigationElement">
+      <div id="devdoc-nav">
+      <div id="api-nav-header">
+        <div id="api-level-toggle">
+          <label for="apiLevelCheckbox" class="disabled"
+            title="Select your target API level to dim unavailable APIs">API level: </label>
+          <div class="select-wrapper">
+            <select id="apiLevelSelector">
+              <!-- option elements added by buildApiLevelSelector() -->
+            </select>
+          </div>
+        </div><!-- end toggle -->
+        <div id="api-nav-title">Xposed</div>
+        </div><!-- end nav header -->
+      <script>
+        var SINCE_DATA = [ '', '36', '37', '39', '42', '50', '51', '52', '53', '60', '63', '65', '81' ];
+        buildApiLevelSelector();
+      </script>
+
+      <div id="swapper">
+        <div id="nav-panels">
+          <div id="resize-packages-nav">
+            <div id="packages-nav" class="scroll-pane">
+
+              <ul>
+                
+    <li class="api apilevel-">
+  <a href="../../../../../../reference/android/app/package-summary.html">android.app</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../../reference/android/content/res/package-summary.html">android.content.res</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../../reference/de/robv/android/xposed/package-summary.html">de.robv.android.xposed</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../../reference/de/robv/android/xposed/callbacks/package-summary.html">de.robv.android.xposed.callbacks</a></li>
+    <li class="selected api apilevel-60">
+  <a href="../../../../../../reference/de/robv/android/xposed/services/package-summary.html">de.robv.android.xposed.services</a></li>
+              </ul><br/>
+
+            </div> <!-- end packages-nav -->
+          </div> <!-- end resize-packages -->
+          <div id="classes-nav" class="scroll-pane">
+
+
+
+            <ul>
+              
+              
+              
+    <li><h2>Classes</h2>
+      <ul>
+          <li class="selected api apilevel-60"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html">BaseService</a></li>
+          <li class="api apilevel-60"><a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a></li>
+      </ul>
+    </li>
+              
+              
+              
+            </ul><br/>
+
+
+          </div><!-- end classes -->
+        </div><!-- end nav-panels -->
+        <div id="nav-tree" style="display:none" class="scroll-pane">
+          <div id="tree-list"></div>
+        </div><!-- end nav-tree -->
+      </div><!-- end swapper -->
+      <div id="nav-swap">
+      <a class="fullscreen">fullscreen</a>
+      <a href='#' onclick='swapNav();return false;'><span id='tree-link'>Use Tree Navigation</span><span id='panel-link' style='display:none'>Use Panel Navigation</span></a>
+      </div>
+    </div> <!-- end devdoc-nav -->
+    </div> <!-- end side-nav -->
+    <script type="text/javascript">
+      // init fullscreen based on user pref
+      var fullscreen = readCookie("fullscreen");
+      if (fullscreen != 0) {
+        if (fullscreen == "false") {
+          toggleFullscreen(false);
+        } else {
+          toggleFullscreen(true);
+        }
+      }
+      // init nav version for mobile
+      if (isMobile) {
+        swapNav(); // tree view should be used on mobile
+        $('#nav-swap').hide();
+      } else {
+        chooseDefaultNav();
+        if ($("#nav-tree").is(':visible')) {
+          init_default_navtree("../../../../../../");
+        }
+      }
+      // scroll the selected page into view
+      $(document).ready(function() {
+        scrollIntoView("packages-nav");
+        scrollIntoView("classes-nav");
+        });
+    </script>
+
+     
+
+
+
+<div class="col-12"  id="doc-col">
+
+<div id="api-info-block">
+
+
+
+  
+   
+  
+  
+  
+  
+
+
+<div class="sum-details-links">
+
+Summary:
+
+
+
+
+
+  <a href="#constants">Constants</a>
+  
+
+
+
+
+
+
+
+  &#124; <a href="#pubmethods">Methods</a>
+  
+
+
+
+  &#124; <a href="#inhmethods">Inherited Methods</a>
+
+&#124; <a href="#" onclick="return toggleAllClassInherited()" id="toggleAllClassInherited">[Expand All]</a>
+
+</div><!-- end sum-details-links -->
+<div class="api-level">
+  
+  Added in API level 60
+
+  
+  
+
+</div>
+</div><!-- end api-info-block -->
+
+
+<!-- ======== START OF CLASS DATA ======== -->
+
+<div id="jd-header">
+    public
+     
+     
+    abstract
+    class
+<h1 itemprop="name">BaseService</h1>
+
+
+
+  
+    extends <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a><br/>
+  
+  
+  
+
+  
+  
+  
+
+
+    
+
+
+</div><!-- end header -->
+
+<div id="naMessage"></div>
+
+<div id="jd-content" class="api apilevel-60">
+<table class="jd-inheritance-table">
+
+
+    <tr>
+         	
+        <td colspan="2" class="jd-inheritance-class-cell"><a href="http://developer.android.com/reference/java/lang/Object.html">java.lang.Object</a></td>
+    </tr>
+    
+
+    <tr>
+        
+            <td class="jd-inheritance-space">&nbsp;&nbsp;&nbsp;&#x21b3;</td>
+         	
+        <td colspan="1" class="jd-inheritance-class-cell">de.robv.android.xposed.services.BaseService</td>
+    </tr>
+    
+
+</table>
+
+
+
+
+
+
+
+<div class="jd-descr">
+
+
+<h2>Class Overview</h2>
+<p itemprop="articleBody">General definition of a file access service provided by the Xposed framework.
+
+ <p>References to a concrete subclass should generally be retrieved from <code><a href="../../../../../../reference/de/robv/android/xposed/SELinuxHelper.html">SELinuxHelper</a></code>.
+</p>
+
+
+
+
+
+</div><!-- jd-descr -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="jd-descr">
+
+
+<h2>Summary</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- =========== ENUM CONSTANT SUMMARY =========== -->
+<table id="constants" class="jd-sumtable"><tr><th colspan="12">Constants</th></tr>
+
+
+    
+    <tr class="alt-color api apilevel-60" >
+        <td class="jd-typecol">int</td>
+        <td class="jd-linkcol"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#F_OK">F_OK</a></td>
+        <td class="jd-descrcol" width="100%">
+          Flag for <code><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileAccess(java.lang.String, int)">checkFileAccess(String, int)</a></code>: File/directory exists.
+          
+    
+
+        </td>
+    </tr>
+    
+    
+    <tr class=" api apilevel-60" >
+        <td class="jd-typecol">int</td>
+        <td class="jd-linkcol"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#R_OK">R_OK</a></td>
+        <td class="jd-descrcol" width="100%">
+          Flag for <code><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileAccess(java.lang.String, int)">checkFileAccess(String, int)</a></code>: Read access.
+          
+    
+
+        </td>
+    </tr>
+    
+    
+    <tr class="alt-color api apilevel-60" >
+        <td class="jd-typecol">int</td>
+        <td class="jd-linkcol"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#W_OK">W_OK</a></td>
+        <td class="jd-descrcol" width="100%">
+          Flag for <code><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileAccess(java.lang.String, int)">checkFileAccess(String, int)</a></code>: Write access.
+          
+    
+
+        </td>
+    </tr>
+    
+    
+    <tr class=" api apilevel-60" >
+        <td class="jd-typecol">int</td>
+        <td class="jd-linkcol"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#X_OK">X_OK</a></td>
+        <td class="jd-descrcol" width="100%">
+          Flag for <code><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileAccess(java.lang.String, int)">checkFileAccess(String, int)</a></code>: Executable access.
+          
+    
+
+        </td>
+    </tr>
+    
+    
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="pubmethods" class="jd-sumtable"><tr><th colspan="12">Public Methods</th></tr>
+
+
+
+	 
+    <tr class="alt-color api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileAccess(java.lang.String, int)">checkFileAccess</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename, int mode)</nobr>
+        
+        <div class="jd-descrdiv">
+          Check whether a file is accessible.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileExists(java.lang.String)">checkFileExists</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</nobr>
+        
+        <div class="jd-descrdiv">
+          Check whether a file exists.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#getFileInputStream(java.lang.String, long, long)">getFileInputStream</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename, long previousSize, long previousTime)</nobr>
+        
+        <div class="jd-descrdiv">
+          Get a stream to the file content, but only if it has changed since the last time.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/io/InputStream.html">InputStream</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#getFileInputStream(java.lang.String)">getFileInputStream</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</nobr>
+        
+        <div class="jd-descrdiv">
+          Get a stream to the file content.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            long</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#getFileModificationTime(java.lang.String)">getFileModificationTime</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</nobr>
+        
+        <div class="jd-descrdiv">
+          Determine the size time of a file.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            long</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#getFileSize(java.lang.String)">getFileSize</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</nobr>
+        
+        <div class="jd-descrdiv">
+          Determine the size time of a file.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#hasDirectFileAccess()">hasDirectFileAccess</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Checks whether the services accesses files directly (instead of using IPC).
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            byte[]</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#readFile(java.lang.String)">readFile</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</nobr>
+        
+        <div class="jd-descrdiv">
+          Read a file into memory.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            <a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#readFile(java.lang.String, long, long)">readFile</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename, long previousSize, long previousTime)</nobr>
+        
+        <div class="jd-descrdiv">
+          Read a file into memory, but only if it has changed since the last time.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            <a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#readFile(java.lang.String, int, int, long, long)">readFile</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename, int offset, int length, long previousSize, long previousTime)</nobr>
+        
+        <div class="jd-descrdiv">
+          Read a file into memory, optionally only if it has changed since the last time.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-60" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            <a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#statFile(java.lang.String)">statFile</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</nobr>
+        
+        <div class="jd-descrdiv">
+          Determine the size and modification time of a file.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+
+</table>
+
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="inhmethods" class="jd-sumtable"><tr><th>
+  <a href="#" class="toggle-all" onclick="return toggleAllInherited(this, null)">[Expand]</a>
+  <div style="clear:left;">Inherited Methods</div></th></tr>
+
+
+<tr class="api apilevel-" >
+<td colspan="12">
+  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-java.lang.Object" class="jd-expando-trigger closed"
+          ><img id="inherited-methods-java.lang.Object-trigger"
+          src="../../../../../../assets/images/triangle-closed.png"
+          class="jd-expando-trigger-img" /></a>
+From class
+
+  <a href="http://developer.android.com/reference/java/lang/Object.html">java.lang.Object</a>
+
+<div id="inherited-methods-java.lang.Object">
+  <div id="inherited-methods-java.lang.Object-list"
+        class="jd-inheritedlinks">
+  </div>
+  <div id="inherited-methods-java.lang.Object-summary" style="display: none;">
+    <table class="jd-sumtable-expando">
+    
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">clone</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Creates and returns a copy of this <code>Object</code>.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">equals</span>(<a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> o)</nobr>
+        
+        <div class="jd-descrdiv">
+          Compares this instance with the specified object and indicates if they
+ are equal.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">finalize</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Invoked when the garbage collector has detected that this instance is no longer reachable.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            <a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getClass</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns the unique instance of <code><a href="http://developer.android.com/reference/java/lang/Class.html">Class</a></code> that represents this
+ object's class.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">hashCode</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns an integer hash code for this object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">notify</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes a thread which is waiting on this object's monitor (by means of
+ calling one of the <code>wait()</code> methods) to be woken up.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">notifyAll</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes all threads which are waiting on this object's monitor (by means
+ of calling one of the <code>wait()</code> methods) to be woken up.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">toString</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns a string containing a concise, human-readable description of this
+ object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>(long millis, int nanos)</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object or until the
+ specified timeout expires.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>(long millis)</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object or until the
+ specified timeout expires.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+</table>
+  </div>
+</div>
+</td></tr>
+
+
+</table>
+
+
+</div><!-- jd-descr (summary) -->
+
+<!-- Details -->
+
+
+
+
+
+
+
+
+<!-- XML Attributes -->
+
+
+<!-- Enum Values -->
+
+
+<!-- Constants -->
+
+
+<!-- ========= ENUM CONSTANTS DETAIL ======== -->
+<h2>Constants</h2>
+
+
+
+
+<A NAME="F_OK"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+        static 
+        final 
+        int
+      </span>
+        F_OK
+    </h4>
+      <div class="api-level">
+        
+  Added in API level 60
+
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Flag for <code><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileAccess(java.lang.String, int)">checkFileAccess(String, int)</a></code>: File/directory exists. </p></div>
+
+    
+        <div class="jd-tagdata">
+        <span class="jd-tagtitle">Constant Value: </span>
+        <span>
+            
+                0
+                (0x00000000)
+            
+        </span>
+        </div>
+    
+    </div>
+</div>
+
+
+
+<A NAME="R_OK"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+        static 
+        final 
+        int
+      </span>
+        R_OK
+    </h4>
+      <div class="api-level">
+        
+  Added in API level 60
+
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Flag for <code><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileAccess(java.lang.String, int)">checkFileAccess(String, int)</a></code>: Read access. </p></div>
+
+    
+        <div class="jd-tagdata">
+        <span class="jd-tagtitle">Constant Value: </span>
+        <span>
+            
+                4
+                (0x00000004)
+            
+        </span>
+        </div>
+    
+    </div>
+</div>
+
+
+
+<A NAME="W_OK"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+        static 
+        final 
+        int
+      </span>
+        W_OK
+    </h4>
+      <div class="api-level">
+        
+  Added in API level 60
+
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Flag for <code><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileAccess(java.lang.String, int)">checkFileAccess(String, int)</a></code>: Write access. </p></div>
+
+    
+        <div class="jd-tagdata">
+        <span class="jd-tagtitle">Constant Value: </span>
+        <span>
+            
+                2
+                (0x00000002)
+            
+        </span>
+        </div>
+    
+    </div>
+</div>
+
+
+
+<A NAME="X_OK"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+        static 
+        final 
+        int
+      </span>
+        X_OK
+    </h4>
+      <div class="api-level">
+        
+  Added in API level 60
+
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Flag for <code><a href="../../../../../../reference/de/robv/android/xposed/services/BaseService.html#checkFileAccess(java.lang.String, int)">checkFileAccess(String, int)</a></code>: Executable access. </p></div>
+
+    
+        <div class="jd-tagdata">
+        <span class="jd-tagtitle">Constant Value: </span>
+        <span>
+            
+                1
+                (0x00000001)
+            
+        </span>
+        </div>
+    
+    </div>
+</div>
+
+
+
+
+<!-- Fields -->
+
+
+<!-- Public ctors -->
+
+
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<!-- Protected ctors -->
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+<!-- Public methdos -->
+
+<h2>Public Methods</h2>
+
+
+
+<A NAME="checkFileAccess(java.lang.String, int)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        abstract
+        
+        
+        
+        boolean
+      </span>
+      <span class="sympad">checkFileAccess</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename, int mode)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Check whether a file is accessible. SELinux might enforce stricter checks.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to check.</td>
+        </tr>
+        <tr>
+          <th>mode</td>
+          <td>The mode for POSIX's <code>access()</code> function.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>The result of the <code>access()</code> function.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="checkFileExists(java.lang.String)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        boolean
+      </span>
+      <span class="sympad">checkFileExists</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Check whether a file exists.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to check.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>The result of the <code>access()</code> function.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="getFileInputStream(java.lang.String, long, long)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        <a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a>
+      </span>
+      <span class="sympad">getFileInputStream</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename, long previousSize, long previousTime)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Get a stream to the file content, but only if it has changed since the last time.
+ Depending on the service, it may or may not be read completely into memory.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to read.</td>
+        </tr>
+        <tr>
+          <th>previousSize</td>
+          <td>Optional: File size of last read.</td>
+        </tr>
+        <tr>
+          <th>previousTime</td>
+          <td>Optional: File modification time of last read.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A <code><a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a></code> object holding the result.
+         <p>The <code><a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html#stream">FileResult.stream</a></code> field might be <code>null</code> if the file
+         is unmodified (<code>previousSize</code> and <code>previousTime</code> are still valid).</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/io/IOException.html">IOException</a></td>
+            <td>In case an error occurred while reading the file.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="getFileInputStream(java.lang.String)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        <a href="http://developer.android.com/reference/java/io/InputStream.html">InputStream</a>
+      </span>
+      <span class="sympad">getFileInputStream</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Get a stream to the file content.
+ Depending on the service, it may or may not be read completely into memory.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to read.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>An <code><a href="http://developer.android.com/reference/java/io/InputStream.html">InputStream</a></code> to the file content.</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/io/IOException.html">IOException</a></td>
+            <td>In case an error occurred while reading the file.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="getFileModificationTime(java.lang.String)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        long
+      </span>
+      <span class="sympad">getFileModificationTime</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Determine the size time of a file.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to check.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>The file modification time.</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/io/IOException.html">IOException</a></td>
+            <td>In case an error occurred while retrieving the information.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="getFileSize(java.lang.String)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        long
+      </span>
+      <span class="sympad">getFileSize</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Determine the size time of a file.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to check.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>The file size.</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/io/IOException.html">IOException</a></td>
+            <td>In case an error occurred while retrieving the information.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="hasDirectFileAccess()"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        boolean
+      </span>
+      <span class="sympad">hasDirectFileAccess</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Checks whether the services accesses files directly (instead of using IPC).</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li><code>true</code> in case direct access is possible.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="readFile(java.lang.String)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        abstract
+        
+        
+        
+        byte[]
+      </span>
+      <span class="sympad">readFile</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Read a file into memory.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to read.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A <code>byte</code> array with the file content.</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/io/IOException.html">IOException</a></td>
+            <td>In case an error occurred while reading the file.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="readFile(java.lang.String, long, long)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        abstract
+        
+        
+        
+        <a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a>
+      </span>
+      <span class="sympad">readFile</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename, long previousSize, long previousTime)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Read a file into memory, but only if it has changed since the last time.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to read.</td>
+        </tr>
+        <tr>
+          <th>previousSize</td>
+          <td>File size of last read.</td>
+        </tr>
+        <tr>
+          <th>previousTime</td>
+          <td>File modification time of last read.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A <code><a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a></code> object holding the result.
+         <p>The <code><a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html#content">FileResult.content</a></code> field might be <code>null</code> if the file
+         is unmodified (<code>previousSize</code> and <code>previousTime</code> are still valid).</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/io/IOException.html">IOException</a></td>
+            <td>In case an error occurred while reading the file.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="readFile(java.lang.String, int, int, long, long)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        abstract
+        
+        
+        
+        <a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a>
+      </span>
+      <span class="sympad">readFile</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename, int offset, int length, long previousSize, long previousTime)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Read a file into memory, optionally only if it has changed since the last time.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to read.</td>
+        </tr>
+        <tr>
+          <th>offset</td>
+          <td>Number of bytes to skip at the beginning of the file.</td>
+        </tr>
+        <tr>
+          <th>length</td>
+          <td>Number of bytes to read (0 means read to end of file).</td>
+        </tr>
+        <tr>
+          <th>previousSize</td>
+          <td>Optional: File size of last read.</td>
+        </tr>
+        <tr>
+          <th>previousTime</td>
+          <td>Optional: File modification time of last read.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A <code><a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a></code> object holding the result.
+         <p>The <code><a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html#content">FileResult.content</a></code> field might be <code>null</code> if the file
+         is unmodified (<code>previousSize</code> and <code>previousTime</code> are still valid).</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/io/IOException.html">IOException</a></td>
+            <td>In case an error occurred while reading the file.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="statFile(java.lang.String)"></A>
+
+<div class="jd-details api apilevel-60"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        abstract
+        
+        
+        
+        <a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a>
+      </span>
+      <span class="sympad">statFile</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> filename)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 60
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Determine the size and modification time of a file.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>filename</td>
+          <td>The absolute path of the file to check.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A <code><a href="../../../../../../reference/de/robv/android/xposed/services/FileResult.html">FileResult</a></code> object holding the result.</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/io/IOException.html">IOException</a></td>
+            <td>In case an error occurred while retrieving the information.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+
+
+
+<!-- ========= END OF CLASS DATA ========= -->
+<A NAME="navbar_top"></A>
+</div> <!-- jd-content -->
+
+
+</div><!-- end doc-content -->
+
+
+
+</body>
+</html>

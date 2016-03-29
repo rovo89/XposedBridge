@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+
+<link rel="shortcut icon" type="image/x-icon" href="../../../../../assets/images/favicon.ico" />
+<title>XSharedPreferences | Xposed Framework API</title>
+
+<!-- STYLESHEETS -->
+<link rel="stylesheet"
+href="http://fonts.googleapis.com/css?family=Roboto+Condensed">
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:light,regular,medium,thin,italic,mediumitalic,bold"
+  title="roboto">
+
+<link href="../../../../../assets/css/default.css?v=7" rel="stylesheet" type="text/css">
+
+
+<!-- FULLSCREEN STYLESHEET -->
+<link href="../../../../../assets/css/fullscreen.css" rel="stylesheet" class="fullscreen"
+type="text/css">
+
+
+<!-- JAVASCRIPT -->
+<script src="../../../../../assets/js/android_3p-bundle.js" type="text/javascript"></script>
+<script type="text/javascript">
+  var toRoot = "../../../../../";
+  var metaTags = [];
+  var devsite = false;
+</script>
+<script src="../../../../../assets/js/docs.js?v=6" type="text/javascript"></script>
+
+</head>
+
+<body class="gc-documentation 
+  develop reference" itemscope itemtype="http://schema.org/Article">
+  <div id="doc-api-level" class="" style="display:none"></div>
+  <a name="top"></a>
+
+<a name="top"></a>
+
+<!-- Header -->
+<div id="header-wrapper">
+  <div class="dac-header" id="header">
+    <div class="dac-header-inner">
+      <a class="dac-header-logo" href="../../../../../reference/packages.html">
+        <img class="dac-header-logo-image" src="../../../../../assets/images/xposed_logo.png"
+          srcset="../../../../../assets/images/xposed_logo@2x.png 2x"
+          width="36" height="36" alt="Xposed logo" /> Xposed Framework API
+      </a>
+    </div>
+  </div>
+</div><!-- headerwrapper -->
+
+
+
+  <div class="wrap clearfix" id="body-content"><div class="cols">
+    <div class="col-4 dac-hidden-mobile" id="side-nav" itemscope itemtype="http://schema.org/SiteNavigationElement">
+      <div id="devdoc-nav">
+      <div id="api-nav-header">
+        <div id="api-level-toggle">
+          <label for="apiLevelCheckbox" class="disabled"
+            title="Select your target API level to dim unavailable APIs">API level: </label>
+          <div class="select-wrapper">
+            <select id="apiLevelSelector">
+              <!-- option elements added by buildApiLevelSelector() -->
+            </select>
+          </div>
+        </div><!-- end toggle -->
+        <div id="api-nav-title">Xposed</div>
+        </div><!-- end nav header -->
+      <script>
+        var SINCE_DATA = [ '', '36', '37', '39', '42', '50', '51', '52', '53', '60', '63', '65', '81' ];
+        buildApiLevelSelector();
+      </script>
+
+      <div id="swapper">
+        <div id="nav-panels">
+          <div id="resize-packages-nav">
+            <div id="packages-nav" class="scroll-pane">
+
+              <ul>
+                
+    <li class="api apilevel-">
+  <a href="../../../../../reference/android/app/package-summary.html">android.app</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../reference/android/content/res/package-summary.html">android.content.res</a></li>
+    <li class="selected api apilevel-">
+  <a href="../../../../../reference/de/robv/android/xposed/package-summary.html">de.robv.android.xposed</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../reference/de/robv/android/xposed/callbacks/package-summary.html">de.robv.android.xposed.callbacks</a></li>
+    <li class="api apilevel-60">
+  <a href="../../../../../reference/de/robv/android/xposed/services/package-summary.html">de.robv.android.xposed.services</a></li>
+              </ul><br/>
+
+            </div> <!-- end packages-nav -->
+          </div> <!-- end resize-packages -->
+          <div id="classes-nav" class="scroll-pane">
+
+
+
+            <ul>
+              
+              
+    <li><h2>Interfaces</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookInitPackageResources.html">IXposedHookInitPackageResources</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookLoadPackage.html">IXposedHookLoadPackage</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.html">IXposedHookZygoteInit</a></li>
+      </ul>
+    </li>
+              
+    <li><h2>Classes</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.StartupParam.html">IXposedHookZygoteInit.StartupParam</a></li>
+          <li class="api apilevel-60"><a href="../../../../../reference/de/robv/android/xposed/SELinuxHelper.html">SELinuxHelper</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.MethodHookParam.html">XC_MethodHook.MethodHookParam</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodReplacement.html">XC_MethodReplacement</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html">XposedBridge</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html">XposedHelpers</a></li>
+          <li class="selected api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html">XSharedPreferences</a></li>
+      </ul>
+    </li>
+              
+              
+              
+    <li><h2>Errors</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.ClassNotFoundError.html">XposedHelpers.ClassNotFoundError</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.InvocationTargetError.html">XposedHelpers.InvocationTargetError</a></li>
+      </ul>
+    </li>
+            </ul><br/>
+
+
+          </div><!-- end classes -->
+        </div><!-- end nav-panels -->
+        <div id="nav-tree" style="display:none" class="scroll-pane">
+          <div id="tree-list"></div>
+        </div><!-- end nav-tree -->
+      </div><!-- end swapper -->
+      <div id="nav-swap">
+      <a class="fullscreen">fullscreen</a>
+      <a href='#' onclick='swapNav();return false;'><span id='tree-link'>Use Tree Navigation</span><span id='panel-link' style='display:none'>Use Panel Navigation</span></a>
+      </div>
+    </div> <!-- end devdoc-nav -->
+    </div> <!-- end side-nav -->
+    <script type="text/javascript">
+      // init fullscreen based on user pref
+      var fullscreen = readCookie("fullscreen");
+      if (fullscreen != 0) {
+        if (fullscreen == "false") {
+          toggleFullscreen(false);
+        } else {
+          toggleFullscreen(true);
+        }
+      }
+      // init nav version for mobile
+      if (isMobile) {
+        swapNav(); // tree view should be used on mobile
+        $('#nav-swap').hide();
+      } else {
+        chooseDefaultNav();
+        if ($("#nav-tree").is(':visible')) {
+          init_default_navtree("../../../../../");
+        }
+      }
+      // scroll the selected page into view
+      $(document).ready(function() {
+        scrollIntoView("packages-nav");
+        scrollIntoView("classes-nav");
+        });
+    </script>
+
+     
+
+
+
+<div class="col-12"  id="doc-col">
+
+<div id="api-info-block">
+
+
+
+  
+   
+  
+  
+  
+  
+
+  
+   
+  
+  
+  
+  
+
+
+<div class="sum-details-links">
+
+Summary:
+
+
+
+
+
+
+
+
+
+  <a href="#pubctors">Ctors</a>
+  
+
+
+
+  &#124; <a href="#pubmethods">Methods</a>
+  
+
+
+
+  &#124; <a href="#inhmethods">Inherited Methods</a>
+
+&#124; <a href="#" onclick="return toggleAllClassInherited()" id="toggleAllClassInherited">[Expand All]</a>
+
+</div><!-- end sum-details-links -->
+<div class="api-level">
+  
+
+  
+  
+
+</div>
+</div><!-- end api-info-block -->
+
+
+<!-- ======== START OF CLASS DATA ======== -->
+
+<div id="jd-header">
+    public
+     
+    final 
+    
+    class
+<h1 itemprop="name">XSharedPreferences</h1>
+
+
+
+  
+    extends <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a><br/>
+  
+  
+  
+
+  
+  
+      implements 
+      
+        <a href="http://developer.android.com/reference/android/content/SharedPreferences.html">SharedPreferences</a> 
+      
+  
+  
+
+
+    
+
+
+</div><!-- end header -->
+
+<div id="naMessage"></div>
+
+<div id="jd-content" class="api apilevel-">
+<table class="jd-inheritance-table">
+
+
+    <tr>
+         	
+        <td colspan="2" class="jd-inheritance-class-cell"><a href="http://developer.android.com/reference/java/lang/Object.html">java.lang.Object</a></td>
+    </tr>
+    
+
+    <tr>
+        
+            <td class="jd-inheritance-space">&nbsp;&nbsp;&nbsp;&#x21b3;</td>
+         	
+        <td colspan="1" class="jd-inheritance-class-cell">de.robv.android.xposed.XSharedPreferences</td>
+    </tr>
+    
+
+</table>
+
+
+
+
+
+
+
+<div class="jd-descr">
+
+
+<h2>Class Overview</h2>
+<p itemprop="articleBody">This class is basically the same as SharedPreferencesImpl from AOSP, but
+ read-only and without listeners support. Instead, it is made to be
+ compatible with all ROMs.
+</p>
+
+
+
+
+
+</div><!-- jd-descr -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="jd-descr">
+
+
+<h2>Summary</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<table id="pubctors" class="jd-sumtable"><tr><th colspan="12">Public Constructors</th></tr>
+
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            </nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#XSharedPreferences(java.io.File)">XSharedPreferences</a></span>(<a href="http://developer.android.com/reference/java/io/File.html">File</a> prefFile)</nobr>
+        
+        <div class="jd-descrdiv">
+          Read settings from the specified file.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            </nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#XSharedPreferences(java.lang.String)">XSharedPreferences</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> packageName)</nobr>
+        
+        <div class="jd-descrdiv">
+          Read settings from the default preferences for a package.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            </nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#XSharedPreferences(java.lang.String, java.lang.String)">XSharedPreferences</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> packageName, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> prefFileName)</nobr>
+        
+        <div class="jd-descrdiv">
+          Read settings from a custom preferences file for a package.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+
+</table>
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="pubmethods" class="jd-sumtable"><tr><th colspan="12">Public Methods</th></tr>
+
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/SharedPreferences.Editor.html">SharedPreferences.Editor</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#edit()">edit</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method is deprecated.
+    Not supported by this implementation. </em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-53" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/io/File.html">File</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#getFile()">getFile</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns the file that is backing these preferences.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-53" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#hasFileChanged()">hasFileChanged</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Check whether the file has changed since the last time it has been loaded.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#makeWorldReadable()">makeWorldReadable</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Tries to make the preferences file world-readable.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#registerOnSharedPreferenceChangeListener(android.content.SharedPreferences.OnSharedPreferenceChangeListener)">registerOnSharedPreferenceChangeListener</a></span>(<a href="http://developer.android.com/reference/android/content/SharedPreferences.OnSharedPreferenceChangeListener.html">SharedPreferences.OnSharedPreferenceChangeListener</a> listener)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method is deprecated.
+    Not supported by this implementation. </em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#reload()">reload</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Reload the settings from file if they have changed.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html#unregisterOnSharedPreferenceChangeListener(android.content.SharedPreferences.OnSharedPreferenceChangeListener)">unregisterOnSharedPreferenceChangeListener</a></span>(<a href="http://developer.android.com/reference/android/content/SharedPreferences.OnSharedPreferenceChangeListener.html">SharedPreferences.OnSharedPreferenceChangeListener</a> listener)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method is deprecated.
+    Not supported by this implementation. </em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+
+</table>
+
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="inhmethods" class="jd-sumtable"><tr><th>
+  <a href="#" class="toggle-all" onclick="return toggleAllInherited(this, null)">[Expand]</a>
+  <div style="clear:left;">Inherited Methods</div></th></tr>
+
+
+<tr class="api apilevel-" >
+<td colspan="12">
+  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-java.lang.Object" class="jd-expando-trigger closed"
+          ><img id="inherited-methods-java.lang.Object-trigger"
+          src="../../../../../assets/images/triangle-closed.png"
+          class="jd-expando-trigger-img" /></a>
+From class
+
+  <a href="http://developer.android.com/reference/java/lang/Object.html">java.lang.Object</a>
+
+<div id="inherited-methods-java.lang.Object">
+  <div id="inherited-methods-java.lang.Object-list"
+        class="jd-inheritedlinks">
+  </div>
+  <div id="inherited-methods-java.lang.Object-summary" style="display: none;">
+    <table class="jd-sumtable-expando">
+    
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">clone</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Creates and returns a copy of this <code>Object</code>.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">equals</span>(<a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> o)</nobr>
+        
+        <div class="jd-descrdiv">
+          Compares this instance with the specified object and indicates if they
+ are equal.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">finalize</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Invoked when the garbage collector has detected that this instance is no longer reachable.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            <a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getClass</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns the unique instance of <code><a href="http://developer.android.com/reference/java/lang/Class.html">Class</a></code> that represents this
+ object's class.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">hashCode</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns an integer hash code for this object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">notify</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes a thread which is waiting on this object's monitor (by means of
+ calling one of the <code>wait()</code> methods) to be woken up.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">notifyAll</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes all threads which are waiting on this object's monitor (by means
+ of calling one of the <code>wait()</code> methods) to be woken up.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">toString</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns a string containing a concise, human-readable description of this
+ object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>(long millis, int nanos)</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object or until the
+ specified timeout expires.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>(long millis)</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object or until the
+ specified timeout expires.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+</table>
+  </div>
+</div>
+</td></tr>
+
+
+
+<tr class="api apilevel-" >
+<td colspan="12">
+  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-android.content.SharedPreferences" class="jd-expando-trigger closed"
+          ><img id="inherited-methods-android.content.SharedPreferences-trigger"
+          src="../../../../../assets/images/triangle-closed.png"
+          class="jd-expando-trigger-img" /></a>
+From interface
+
+  <a href="http://developer.android.com/reference/android/content/SharedPreferences.html">android.content.SharedPreferences</a>
+
+<div id="inherited-methods-android.content.SharedPreferences">
+  <div id="inherited-methods-android.content.SharedPreferences-list"
+        class="jd-inheritedlinks">
+  </div>
+  <div id="inherited-methods-android.content.SharedPreferences-summary" style="display: none;">
+    <table class="jd-sumtable-expando">
+    
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">contains</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> key)</nobr>
+        
+        <div class="jd-descrdiv">
+          Checks whether the preferences contains a preference.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/android/content/SharedPreferences.Editor.html">SharedPreferences.Editor</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">edit</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Create a new Editor for these preferences, through which you can make
+ modifications to the data in the preferences and atomically commit those
+ changes back to the SharedPreferences object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/util/Map.html">Map</a>&lt;<a href="http://developer.android.com/reference/java/lang/String.html">String</a>,&nbsp;?&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getAll</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve all values from the preferences.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getBoolean</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> key, boolean defValue)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a boolean value from the preferences.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            float</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getFloat</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> key, float defValue)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a float value from the preferences.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getInt</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> key, int defValue)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve an int value from the preferences.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            long</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getLong</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> key, long defValue)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a long value from the preferences.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getString</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> key, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> defValue)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a String value from the preferences.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/util/Set.html">Set</a>&lt;<a href="http://developer.android.com/reference/java/lang/String.html">String</a>&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getStringSet</span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> key, <a href="http://developer.android.com/reference/java/util/Set.html">Set</a>&lt;<a href="http://developer.android.com/reference/java/lang/String.html">String</a>&gt; defValues)</nobr>
+        
+        <div class="jd-descrdiv">
+          Retrieve a set of String values from the preferences.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">registerOnSharedPreferenceChangeListener</span>(<a href="http://developer.android.com/reference/android/content/SharedPreferences.OnSharedPreferenceChangeListener.html">SharedPreferences.OnSharedPreferenceChangeListener</a> listener)</nobr>
+        
+        <div class="jd-descrdiv">
+          Registers a callback to be invoked when a change happens to a preference.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            abstract
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">unregisterOnSharedPreferenceChangeListener</span>(<a href="http://developer.android.com/reference/android/content/SharedPreferences.OnSharedPreferenceChangeListener.html">SharedPreferences.OnSharedPreferenceChangeListener</a> listener)</nobr>
+        
+        <div class="jd-descrdiv">
+          Unregisters a previous callback.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+</table>
+  </div>
+</div>
+</td></tr>
+
+
+</table>
+
+
+</div><!-- jd-descr (summary) -->
+
+<!-- Details -->
+
+
+
+
+
+
+
+
+<!-- XML Attributes -->
+
+
+<!-- Enum Values -->
+
+
+<!-- Constants -->
+
+
+<!-- Fields -->
+
+
+<!-- Public ctors -->
+
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<h2>Public Constructors</h2>
+
+
+
+<A NAME="XSharedPreferences(java.io.File)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        
+      </span>
+      <span class="sympad">XSharedPreferences</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/io/File.html">File</a> prefFile)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Read settings from the specified file.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>prefFile</td>
+          <td>The file to read the preferences from.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="XSharedPreferences(java.lang.String)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        
+      </span>
+      <span class="sympad">XSharedPreferences</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> packageName)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Read settings from the default preferences for a package.
+ These preferences are returned by <code><a href="http://developer.android.com/reference/android/preference/PreferenceManager.html#getDefaultSharedPreferences(android.content.Context)">PreferenceManager.getDefaultSharedPreferences(Context)</a></code>.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>packageName</td>
+          <td>The package name.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="XSharedPreferences(java.lang.String, java.lang.String)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        
+      </span>
+      <span class="sympad">XSharedPreferences</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> packageName, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> prefFileName)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Read settings from a custom preferences file for a package.
+ These preferences are returned by <code><a href="http://developer.android.com/reference/android/content/Context.html#getSharedPreferences(java.lang.String, int)">Context.getSharedPreferences(String, int)</a></code>.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>packageName</td>
+          <td>The package name.</td>
+        </tr>
+        <tr>
+          <th>prefFileName</td>
+          <td>The file name without ".xml".
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<!-- Protected ctors -->
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+<!-- Public methdos -->
+
+<h2>Public Methods</h2>
+
+
+
+<A NAME="edit()"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        <a href="http://developer.android.com/reference/android/content/SharedPreferences.Editor.html">SharedPreferences.Editor</a>
+      </span>
+      <span class="sympad">edit</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      <p>
+  <p class="caution"><strong>
+      This method is deprecated.</strong><br/>
+    Not supported by this implementation. 
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p>Create a new Editor for these preferences, through which you can make
+ modifications to the data in the preferences and atomically commit those
+ changes back to the SharedPreferences object.
+ 
+ <p>Note that you <em>must</em> call <code><a href="http://developer.android.com/reference/android/content/SharedPreferences.Editor.html#commit()">SharedPreferences.Editor.commit()</a></code> to have any
+ changes you perform in the Editor actually show up in the
+ SharedPreferences.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>Returns a new instance of the <code><a href="http://developer.android.com/reference/android/content/SharedPreferences.Editor.html">SharedPreferences.Editor</a></code> interface, allowing
+ you to modify the values in this SharedPreferences object.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="getFile()"></A>
+
+<div class="jd-details api apilevel-53"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        <a href="http://developer.android.com/reference/java/io/File.html">File</a>
+      </span>
+      <span class="sympad">getFile</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 53
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Returns the file that is backing these preferences.
+
+ <p><strong>Warning:</strong> The file might not be accessible directly.
+</p></div>
+
+    </div>
+</div>
+
+
+<A NAME="hasFileChanged()"></A>
+
+<div class="jd-details api apilevel-53"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        boolean
+      </span>
+      <span class="sympad">hasFileChanged</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 53
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Check whether the file has changed since the last time it has been loaded.
+
+ <p><strong>Warning:</strong> With enforcing SELinux, this call might be quite expensive.
+</p></div>
+
+    </div>
+</div>
+
+
+<A NAME="makeWorldReadable()"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        boolean
+      </span>
+      <span class="sympad">makeWorldReadable</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Tries to make the preferences file world-readable.
+
+ <p><strong>Warning:</strong> This is only meant to work around permission "fix" functions that are part
+ of some recoveries. It doesn't replace the need to open preferences with <code>MODE_WORLD_READABLE</code>
+ in the module's UI code. Otherwise, Android will set stricter permissions again during the next save.
+
+ <p>This will only work if executed as root (e.g. <code>initZygote()</code>) and only if SELinux is disabled.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li><code>true</code> in case the file could be made world-readable.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="registerOnSharedPreferenceChangeListener(android.content.SharedPreferences.OnSharedPreferenceChangeListener)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        void
+      </span>
+      <span class="sympad">registerOnSharedPreferenceChangeListener</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/android/content/SharedPreferences.OnSharedPreferenceChangeListener.html">SharedPreferences.OnSharedPreferenceChangeListener</a> listener)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      <p>
+  <p class="caution"><strong>
+      This method is deprecated.</strong><br/>
+    Not supported by this implementation. 
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p>Registers a callback to be invoked when a change happens to a preference.
+
+ <p class="caution"><strong>Caution:</strong> The preference manager does
+ not currently store a strong reference to the listener. You must store a
+ strong reference to the listener, or it will be susceptible to garbage
+ collection. We recommend you keep a reference to the listener in the
+ instance data of an object that will exist as long as you need the
+ listener.</p></p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>listener</td>
+          <td>The callback that will run.</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="reload()"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        void
+      </span>
+      <span class="sympad">reload</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Reload the settings from file if they have changed.
+
+ <p><strong>Warning:</strong> With enforcing SELinux, this call might be quite expensive.
+</p></div>
+
+    </div>
+</div>
+
+
+<A NAME="unregisterOnSharedPreferenceChangeListener(android.content.SharedPreferences.OnSharedPreferenceChangeListener)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        
+        
+        void
+      </span>
+      <span class="sympad">unregisterOnSharedPreferenceChangeListener</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/android/content/SharedPreferences.OnSharedPreferenceChangeListener.html">SharedPreferences.OnSharedPreferenceChangeListener</a> listener)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      <p>
+  <p class="caution"><strong>
+      This method is deprecated.</strong><br/>
+    Not supported by this implementation. 
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p>Unregisters a previous callback.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>listener</td>
+          <td>The callback that should be unregistered.</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+
+
+
+<!-- ========= END OF CLASS DATA ========= -->
+<A NAME="navbar_top"></A>
+</div> <!-- jd-content -->
+
+
+</div><!-- end doc-content -->
+
+
+
+</body>
+</html>

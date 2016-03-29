@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+
+<link rel="shortcut icon" type="image/x-icon" href="../../../../../assets/images/favicon.ico" />
+<title>de.robv.android.xposed | Xposed Framework API</title>
+
+<!-- STYLESHEETS -->
+<link rel="stylesheet"
+href="http://fonts.googleapis.com/css?family=Roboto+Condensed">
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:light,regular,medium,thin,italic,mediumitalic,bold"
+  title="roboto">
+
+<link href="../../../../../assets/css/default.css?v=7" rel="stylesheet" type="text/css">
+
+
+<!-- FULLSCREEN STYLESHEET -->
+<link href="../../../../../assets/css/fullscreen.css" rel="stylesheet" class="fullscreen"
+type="text/css">
+
+
+<!-- JAVASCRIPT -->
+<script src="../../../../../assets/js/android_3p-bundle.js" type="text/javascript"></script>
+<script type="text/javascript">
+  var toRoot = "../../../../../";
+  var metaTags = [];
+  var devsite = false;
+</script>
+<script src="../../../../../assets/js/docs.js?v=6" type="text/javascript"></script>
+
+</head>
+
+
+<body class="gc-documentation 
+  develop reference">
+  <div id="doc-api-level" class="" style="display:none"></div>
+  <a name="top"></a>
+
+<a name="top"></a>
+
+<!-- Header -->
+<div id="header-wrapper">
+  <div class="dac-header" id="header">
+    <div class="dac-header-inner">
+      <a class="dac-header-logo" href="../../../../../reference/packages.html">
+        <img class="dac-header-logo-image" src="../../../../../assets/images/xposed_logo.png"
+          srcset="../../../../../assets/images/xposed_logo@2x.png 2x"
+          width="36" height="36" alt="Xposed logo" /> Xposed Framework API
+      </a>
+    </div>
+  </div>
+</div><!-- headerwrapper -->
+
+
+
+  <div class="wrap clearfix" id="body-content"><div class="cols">
+    <div class="col-4 dac-hidden-mobile" id="side-nav" itemscope itemtype="http://schema.org/SiteNavigationElement">
+      <div id="devdoc-nav">
+      <div id="api-nav-header">
+        <div id="api-level-toggle">
+          <label for="apiLevelCheckbox" class="disabled"
+            title="Select your target API level to dim unavailable APIs">API level: </label>
+          <div class="select-wrapper">
+            <select id="apiLevelSelector">
+              <!-- option elements added by buildApiLevelSelector() -->
+            </select>
+          </div>
+        </div><!-- end toggle -->
+        <div id="api-nav-title">Xposed</div>
+        </div><!-- end nav header -->
+      <script>
+        var SINCE_DATA = [ '', '36', '37', '39', '42', '50', '51', '52', '53', '60', '63', '65', '81' ];
+        buildApiLevelSelector();
+      </script>
+
+      <div id="swapper">
+        <div id="nav-panels">
+          <div id="resize-packages-nav">
+            <div id="packages-nav" class="scroll-pane">
+
+              <ul>
+                
+    <li class="api apilevel-">
+  <a href="../../../../../reference/android/app/package-summary.html">android.app</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../reference/android/content/res/package-summary.html">android.content.res</a></li>
+    <li class="selected api apilevel-">
+  <a href="../../../../../reference/de/robv/android/xposed/package-summary.html">de.robv.android.xposed</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../reference/de/robv/android/xposed/callbacks/package-summary.html">de.robv.android.xposed.callbacks</a></li>
+    <li class="api apilevel-60">
+  <a href="../../../../../reference/de/robv/android/xposed/services/package-summary.html">de.robv.android.xposed.services</a></li>
+              </ul><br/>
+
+            </div> <!-- end packages-nav -->
+          </div> <!-- end resize-packages -->
+          <div id="classes-nav" class="scroll-pane">
+
+
+
+            <ul>
+              
+              
+    <li><h2>Interfaces</h2>
+      <ul>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookInitPackageResources.html">IXposedHookInitPackageResources</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookLoadPackage.html">IXposedHookLoadPackage</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.html">IXposedHookZygoteInit</a></li>
+      </ul>
+    </li>
+              
+    <li><h2>Classes</h2>
+      <ul>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.StartupParam.html">IXposedHookZygoteInit.StartupParam</a></li>
+        <li class="api apilevel-60"><a href="../../../../../reference/de/robv/android/xposed/SELinuxHelper.html">SELinuxHelper</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.MethodHookParam.html">XC_MethodHook.MethodHookParam</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodReplacement.html">XC_MethodReplacement</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html">XposedBridge</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html">XposedHelpers</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html">XSharedPreferences</a></li>
+      </ul>
+    </li>
+              
+              
+              
+    <li><h2>Errors</h2>
+      <ul>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.ClassNotFoundError.html">XposedHelpers.ClassNotFoundError</a></li>
+        <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.InvocationTargetError.html">XposedHelpers.InvocationTargetError</a></li>
+      </ul>
+    </li>
+            </ul><br/>
+
+
+          </div><!-- end classes -->
+        </div><!-- end nav-panels -->
+        <div id="nav-tree" style="display:none" class="scroll-pane">
+          <div id="tree-list"></div>
+        </div><!-- end nav-tree -->
+      </div><!-- end swapper -->
+      <div id="nav-swap">
+      <a class="fullscreen">fullscreen</a>
+      <a href='#' onclick='swapNav();return false;'><span id='tree-link'>Use Tree Navigation</span><span id='panel-link' style='display:none'>Use Panel Navigation</span></a>
+      </div>
+    </div> <!-- end devdoc-nav -->
+    </div> <!-- end side-nav -->
+    <script type="text/javascript">
+      // init fullscreen based on user pref
+      var fullscreen = readCookie("fullscreen");
+      if (fullscreen != 0) {
+        if (fullscreen == "false") {
+          toggleFullscreen(false);
+        } else {
+          toggleFullscreen(true);
+        }
+      }
+      // init nav version for mobile
+      if (isMobile) {
+        swapNav(); // tree view should be used on mobile
+        $('#nav-swap').hide();
+      } else {
+        chooseDefaultNav();
+        if ($("#nav-tree").is(':visible')) {
+          init_default_navtree("../../../../../");
+        }
+      }
+      // scroll the selected page into view
+      $(document).ready(function() {
+        scrollIntoView("packages-nav");
+        scrollIntoView("classes-nav");
+        });
+    </script>
+
+     
+
+
+
+<div class="col-12" id="doc-col">
+
+<div id="api-info-block">
+<div class="api-level">
+  
+
+  
+  
+
+</div>
+</div>
+
+<div id="jd-header">
+  package
+  <h1>de.robv.android.xposed</h1>
+</div><!-- end header -->
+
+<div id="naMessage"></div>
+
+<div id="jd-content" class="api apilevel-">
+
+
+  <div class="jd-descr">
+    Contains the main classes of the Xposed framework.
+
+  </div>
+
+
+
+
+
+  
+
+
+  
+    <h2>Interfaces</h2>
+    <div class="jd-sumtable">
+    
+  
+  <table class="jd-sumtable-expando">
+    
+      <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookInitPackageResources.html">IXposedHookInitPackageResources</a></td>
+        <td class="jd-descrcol" width="100%">
+          Get notified when the resources for an app are initialized.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class=" api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookLoadPackage.html">IXposedHookLoadPackage</a></td>
+        <td class="jd-descrcol" width="100%">
+          Get notified when an app ("Android package") is loaded.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.html">IXposedHookZygoteInit</a></td>
+        <td class="jd-descrcol" width="100%">
+          Hook the initialization of Zygote process(es), from which all the apps are forked.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+  </table>
+
+    </div>
+  
+
+
+  
+    <h2>Classes</h2>
+    <div class="jd-sumtable">
+    
+  
+  <table class="jd-sumtable-expando">
+    
+      <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.StartupParam.html">IXposedHookZygoteInit.StartupParam</a></td>
+        <td class="jd-descrcol" width="100%">
+          Data holder for <code><a href="../../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.html#initZygote(de.robv.android.xposed.IXposedHookZygoteInit.StartupParam)">IXposedHookZygoteInit.initZygote(IXposedHookZygoteInit.StartupParam)</a></code>.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class=" api apilevel-60" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/SELinuxHelper.html">SELinuxHelper</a></td>
+        <td class="jd-descrcol" width="100%">
+          A helper to work with (or without) SELinux, abstracting much of its big complexity.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a></td>
+        <td class="jd-descrcol" width="100%">
+          Callback class for method hooks.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class=" api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.MethodHookParam.html">XC_MethodHook.MethodHookParam</a></td>
+        <td class="jd-descrcol" width="100%">
+          Wraps information about the method call and allows to influence it.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a></td>
+        <td class="jd-descrcol" width="100%">
+          An object with which the method/constructor can be unhooked.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class=" api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodReplacement.html">XC_MethodReplacement</a></td>
+        <td class="jd-descrcol" width="100%">
+          A special case of <code><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a></code> which completely replaces the original method.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html">XposedBridge</a></td>
+        <td class="jd-descrcol" width="100%">
+          This class contains most of Xposed's central logic, such as initialization and callbacks used by
+ the native side.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class=" api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html">XposedHelpers</a></td>
+        <td class="jd-descrcol" width="100%">
+          Helpers that simplify hooking and calling methods/constructors, getting and settings fields, ...&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html">XSharedPreferences</a></td>
+        <td class="jd-descrcol" width="100%">
+          This class is basically the same as SharedPreferencesImpl from AOSP, but
+ read-only and without listeners support.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+  </table>
+
+    </div>
+  
+
+
+  
+
+
+  
+
+
+  
+    <h2>Errors</h2>
+    <div class="jd-sumtable">
+    
+  
+  <table class="jd-sumtable-expando">
+    
+      <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.ClassNotFoundError.html">XposedHelpers.ClassNotFoundError</a></td>
+        <td class="jd-descrcol" width="100%">
+          Thrown when a class loader is unable to find a class.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+      <tr class=" api apilevel-" >
+        <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.InvocationTargetError.html">XposedHelpers.InvocationTargetError</a></td>
+        <td class="jd-descrcol" width="100%">
+          This class provides a wrapper for an exception thrown by a method invocation.&nbsp;
+          
+    
+
+        </td>
+      </tr>
+      
+    
+  </table>
+
+    </div>
+  
+
+
+</div><!-- end jd-content -->
+
+
+</div><!-- doc-content -->
+
+
+
+</body>
+</html>

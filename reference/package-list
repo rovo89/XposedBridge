@@ -1,0 +1,6 @@
+android.app
+android.content.res
+de.robv.android.xposed
+de.robv.android.xposed.callbacks
+de.robv.android.xposed.services
+

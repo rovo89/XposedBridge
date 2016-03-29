@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+
+<link rel="shortcut icon" type="image/x-icon" href="../assets/images/favicon.ico" />
+<title>Xposed Framework API</title>
+
+<!-- STYLESHEETS -->
+<link rel="stylesheet"
+href="http://fonts.googleapis.com/css?family=Roboto+Condensed">
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:light,regular,medium,thin,italic,mediumitalic,bold"
+  title="roboto">
+
+<link href="../assets/css/default.css?v=7" rel="stylesheet" type="text/css">
+
+
+<!-- FULLSCREEN STYLESHEET -->
+<link href="../assets/css/fullscreen.css" rel="stylesheet" class="fullscreen"
+type="text/css">
+
+
+<!-- JAVASCRIPT -->
+<script src="../assets/js/android_3p-bundle.js" type="text/javascript"></script>
+<script type="text/javascript">
+  var toRoot = "../";
+  var metaTags = [];
+  var devsite = false;
+</script>
+<script src="../assets/js/docs.js?v=6" type="text/javascript"></script>
+
+</head>
+
+<body class="gc-documentation 
+  develop reference">
+  <a name="top"></a>
+
+<a name="top"></a>
+
+<!-- Header -->
+<div id="header-wrapper">
+  <div class="dac-header" id="header">
+    <div class="dac-header-inner">
+      <a class="dac-header-logo" href="../reference/packages.html">
+        <img class="dac-header-logo-image" src="../assets/images/xposed_logo.png"
+          srcset="../assets/images/xposed_logo@2x.png 2x"
+          width="36" height="36" alt="Xposed logo" /> Xposed Framework API
+      </a>
+    </div>
+  </div>
+</div><!-- headerwrapper -->
+
+
+
+  <div class="wrap clearfix" id="body-content"><div class="cols">
+    <div class="col-4 dac-hidden-mobile" id="side-nav" itemscope itemtype="http://schema.org/SiteNavigationElement">
+      <div id="devdoc-nav">
+      <div id="api-nav-header">
+        <div id="api-level-toggle">
+          <label for="apiLevelCheckbox" class="disabled"
+            title="Select your target API level to dim unavailable APIs">API level: </label>
+          <div class="select-wrapper">
+            <select id="apiLevelSelector">
+              <!-- option elements added by buildApiLevelSelector() -->
+            </select>
+          </div>
+        </div><!-- end toggle -->
+        <div id="api-nav-title">Xposed</div>
+        </div><!-- end nav header -->
+      <script>
+        var SINCE_DATA = [ '', '36', '37', '39', '42', '50', '51', '52', '53', '60', '63', '65', '81' ];
+        buildApiLevelSelector();
+      </script>
+
+      <div id="swapper">
+        <div id="nav-panels">
+          <div id="resize-packages-nav">
+            <div id="packages-nav" class="scroll-pane">
+
+              <ul>
+                
+    <li class="api apilevel-">
+  <a href="../reference/android/app/package-summary.html">android.app</a></li>
+    <li class="api apilevel-">
+  <a href="../reference/android/content/res/package-summary.html">android.content.res</a></li>
+    <li class="api apilevel-">
+  <a href="../reference/de/robv/android/xposed/package-summary.html">de.robv.android.xposed</a></li>
+    <li class="api apilevel-">
+  <a href="../reference/de/robv/android/xposed/callbacks/package-summary.html">de.robv.android.xposed.callbacks</a></li>
+    <li class="api apilevel-60">
+  <a href="../reference/de/robv/android/xposed/services/package-summary.html">de.robv.android.xposed.services</a></li>
+              </ul><br/>
+
+            </div> <!-- end packages-nav -->
+          </div> <!-- end resize-packages -->
+          <div id="classes-nav" class="scroll-pane">
+
+
+
+              <p style="padding:10px">Select a package to view its members</p><br/>
+
+
+          </div><!-- end classes -->
+        </div><!-- end nav-panels -->
+        <div id="nav-tree" style="display:none" class="scroll-pane">
+          <div id="tree-list"></div>
+        </div><!-- end nav-tree -->
+      </div><!-- end swapper -->
+      <div id="nav-swap">
+      <a class="fullscreen">fullscreen</a>
+      <a href='#' onclick='swapNav();return false;'><span id='tree-link'>Use Tree Navigation</span><span id='panel-link' style='display:none'>Use Panel Navigation</span></a>
+      </div>
+    </div> <!-- end devdoc-nav -->
+    </div> <!-- end side-nav -->
+    <script type="text/javascript">
+      // init fullscreen based on user pref
+      var fullscreen = readCookie("fullscreen");
+      if (fullscreen != 0) {
+        if (fullscreen == "false") {
+          toggleFullscreen(false);
+        } else {
+          toggleFullscreen(true);
+        }
+      }
+      // init nav version for mobile
+      if (isMobile) {
+        swapNav(); // tree view should be used on mobile
+        $('#nav-swap').hide();
+      } else {
+        chooseDefaultNav();
+        if ($("#nav-tree").is(':visible')) {
+          init_default_navtree("../");
+        }
+      }
+      // scroll the selected page into view
+      $(document).ready(function() {
+        scrollIntoView("packages-nav");
+        scrollIntoView("classes-nav");
+        });
+    </script>
+
+     
+
+
+
+<div class="col-12" id="doc-col">
+
+<div id="jd-header">
+<h1>Overview</h1>
+</div>
+
+<div id="jd-content">
+
+<div class="jd-descr">
+<p>Welcome to the Javadoc reference of the <b>Xposed Framework API</b>. It's meant for module developers who want to understand which classes and methods they can use. The most ones are:
+
+<ul>
+  <li style="margin: 0;"><code><a href="../reference/de/robv/android/xposed/IXposedHookZygoteInit.html">IXposedHookZygoteInit</a></code></li>
+  <li style="margin: 0;"><code><a href="../reference/de/robv/android/xposed/IXposedHookLoadPackage.html">IXposedHookLoadPackage</a></code></li>
+  <li style="margin: 0;"><code><a href="../reference/de/robv/android/xposed/XposedHelpers.html#findAndHookMethod(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...)">XposedHelpers.findAndHookMethod()</a></code></li>
+  <li style="margin: 0;"><code><a href="../reference/de/robv/android/xposed/IXposedHookInitPackageResources.html">IXposedHookInitPackageResources</a></code></li>
+  <li style="margin: 0;"><code><a href="../reference/android/content/res/XResources.html#setReplacement(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)">XResources.setReplacement()</a></code>
+</ul>
+
+If you're completely new to writing modules, you should read the <b><a href="https://github.com/rovo89/XposedBridge/wiki/Development-tutorial">tutorial</a></b> first.
+In case of questions, someone on <b><a href="http://forum.xda-developers.com/xposed/development">XDA</a></b> can probably help you (if you describe exactly what you're trying to do and what you've already tried).</p>
+</div>
+
+<h2>Packages Index:</h2>
+
+<table class="jd-sumtable">
+
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol">
+  <a href="../reference/android/app/package-summary.html">android.app</a></td>
+        <td class="jd-descrcol" width="100%">Contains <code><a href="../reference/android/app/AndroidAppHelper.html">AndroidAppHelper</a></code> with various methods for information about the current app.</td>
+    </tr>
+
+
+    <tr class=" api apilevel-" >
+        <td class="jd-linkcol">
+  <a href="../reference/android/content/res/package-summary.html">android.content.res</a></td>
+        <td class="jd-descrcol" width="100%">Contains classes that are required for replacing resources.</td>
+    </tr>
+
+
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-linkcol">
+  <a href="../reference/de/robv/android/xposed/package-summary.html">de.robv.android.xposed</a></td>
+        <td class="jd-descrcol" width="100%">Contains the main classes of the Xposed framework.</td>
+    </tr>
+
+
+    <tr class=" api apilevel-" >
+        <td class="jd-linkcol">
+  <a href="../reference/de/robv/android/xposed/callbacks/package-summary.html">de.robv.android.xposed.callbacks</a></td>
+        <td class="jd-descrcol" width="100%">Contains the base classes for callbacks.</td>
+    </tr>
+
+
+    <tr class="alt-color api apilevel-60" >
+        <td class="jd-linkcol">
+  <a href="../reference/de/robv/android/xposed/services/package-summary.html">de.robv.android.xposed.services</a></td>
+        <td class="jd-descrcol" width="100%">Contains file access services provided by the Xposed framework.</td>
+    </tr>
+
+
+</table>
+
+</div><!-- end jd-content -->
+
+
+</div> <!-- end doc-content -->
+
+
+
+</body>
+</html>

@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+
+<link rel="shortcut icon" type="image/x-icon" href="../../../../../assets/images/favicon.ico" />
+<title>XposedBridge | Xposed Framework API</title>
+
+<!-- STYLESHEETS -->
+<link rel="stylesheet"
+href="http://fonts.googleapis.com/css?family=Roboto+Condensed">
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:light,regular,medium,thin,italic,mediumitalic,bold"
+  title="roboto">
+
+<link href="../../../../../assets/css/default.css?v=7" rel="stylesheet" type="text/css">
+
+
+<!-- FULLSCREEN STYLESHEET -->
+<link href="../../../../../assets/css/fullscreen.css" rel="stylesheet" class="fullscreen"
+type="text/css">
+
+
+<!-- JAVASCRIPT -->
+<script src="../../../../../assets/js/android_3p-bundle.js" type="text/javascript"></script>
+<script type="text/javascript">
+  var toRoot = "../../../../../";
+  var metaTags = [];
+  var devsite = false;
+</script>
+<script src="../../../../../assets/js/docs.js?v=6" type="text/javascript"></script>
+
+</head>
+
+<body class="gc-documentation 
+  develop reference" itemscope itemtype="http://schema.org/Article">
+  <div id="doc-api-level" class="" style="display:none"></div>
+  <a name="top"></a>
+
+<a name="top"></a>
+
+<!-- Header -->
+<div id="header-wrapper">
+  <div class="dac-header" id="header">
+    <div class="dac-header-inner">
+      <a class="dac-header-logo" href="../../../../../reference/packages.html">
+        <img class="dac-header-logo-image" src="../../../../../assets/images/xposed_logo.png"
+          srcset="../../../../../assets/images/xposed_logo@2x.png 2x"
+          width="36" height="36" alt="Xposed logo" /> Xposed Framework API
+      </a>
+    </div>
+  </div>
+</div><!-- headerwrapper -->
+
+
+
+  <div class="wrap clearfix" id="body-content"><div class="cols">
+    <div class="col-4 dac-hidden-mobile" id="side-nav" itemscope itemtype="http://schema.org/SiteNavigationElement">
+      <div id="devdoc-nav">
+      <div id="api-nav-header">
+        <div id="api-level-toggle">
+          <label for="apiLevelCheckbox" class="disabled"
+            title="Select your target API level to dim unavailable APIs">API level: </label>
+          <div class="select-wrapper">
+            <select id="apiLevelSelector">
+              <!-- option elements added by buildApiLevelSelector() -->
+            </select>
+          </div>
+        </div><!-- end toggle -->
+        <div id="api-nav-title">Xposed</div>
+        </div><!-- end nav header -->
+      <script>
+        var SINCE_DATA = [ '', '36', '37', '39', '42', '50', '51', '52', '53', '60', '63', '65', '81' ];
+        buildApiLevelSelector();
+      </script>
+
+      <div id="swapper">
+        <div id="nav-panels">
+          <div id="resize-packages-nav">
+            <div id="packages-nav" class="scroll-pane">
+
+              <ul>
+                
+    <li class="api apilevel-">
+  <a href="../../../../../reference/android/app/package-summary.html">android.app</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../reference/android/content/res/package-summary.html">android.content.res</a></li>
+    <li class="selected api apilevel-">
+  <a href="../../../../../reference/de/robv/android/xposed/package-summary.html">de.robv.android.xposed</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../reference/de/robv/android/xposed/callbacks/package-summary.html">de.robv.android.xposed.callbacks</a></li>
+    <li class="api apilevel-60">
+  <a href="../../../../../reference/de/robv/android/xposed/services/package-summary.html">de.robv.android.xposed.services</a></li>
+              </ul><br/>
+
+            </div> <!-- end packages-nav -->
+          </div> <!-- end resize-packages -->
+          <div id="classes-nav" class="scroll-pane">
+
+
+
+            <ul>
+              
+              
+    <li><h2>Interfaces</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookInitPackageResources.html">IXposedHookInitPackageResources</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookLoadPackage.html">IXposedHookLoadPackage</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.html">IXposedHookZygoteInit</a></li>
+      </ul>
+    </li>
+              
+    <li><h2>Classes</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/IXposedHookZygoteInit.StartupParam.html">IXposedHookZygoteInit.StartupParam</a></li>
+          <li class="api apilevel-60"><a href="../../../../../reference/de/robv/android/xposed/SELinuxHelper.html">SELinuxHelper</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.MethodHookParam.html">XC_MethodHook.MethodHookParam</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XC_MethodReplacement.html">XC_MethodReplacement</a></li>
+          <li class="selected api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html">XposedBridge</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html">XposedHelpers</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XSharedPreferences.html">XSharedPreferences</a></li>
+      </ul>
+    </li>
+              
+              
+              
+    <li><h2>Errors</h2>
+      <ul>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.ClassNotFoundError.html">XposedHelpers.ClassNotFoundError</a></li>
+          <li class="api apilevel-"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.InvocationTargetError.html">XposedHelpers.InvocationTargetError</a></li>
+      </ul>
+    </li>
+            </ul><br/>
+
+
+          </div><!-- end classes -->
+        </div><!-- end nav-panels -->
+        <div id="nav-tree" style="display:none" class="scroll-pane">
+          <div id="tree-list"></div>
+        </div><!-- end nav-tree -->
+      </div><!-- end swapper -->
+      <div id="nav-swap">
+      <a class="fullscreen">fullscreen</a>
+      <a href='#' onclick='swapNav();return false;'><span id='tree-link'>Use Tree Navigation</span><span id='panel-link' style='display:none'>Use Panel Navigation</span></a>
+      </div>
+    </div> <!-- end devdoc-nav -->
+    </div> <!-- end side-nav -->
+    <script type="text/javascript">
+      // init fullscreen based on user pref
+      var fullscreen = readCookie("fullscreen");
+      if (fullscreen != 0) {
+        if (fullscreen == "false") {
+          toggleFullscreen(false);
+        } else {
+          toggleFullscreen(true);
+        }
+      }
+      // init nav version for mobile
+      if (isMobile) {
+        swapNav(); // tree view should be used on mobile
+        $('#nav-swap').hide();
+      } else {
+        chooseDefaultNav();
+        if ($("#nav-tree").is(':visible')) {
+          init_default_navtree("../../../../../");
+        }
+      }
+      // scroll the selected page into view
+      $(document).ready(function() {
+        scrollIntoView("packages-nav");
+        scrollIntoView("classes-nav");
+        });
+    </script>
+
+     
+
+
+
+<div class="col-12"  id="doc-col">
+
+<div id="api-info-block">
+
+
+
+  
+   
+  
+  
+  
+  
+
+
+<div class="sum-details-links">
+
+Summary:
+
+
+
+
+
+
+
+  <a href="#lfields">Fields</a>
+  
+
+
+
+
+
+  &#124; <a href="#pubmethods">Methods</a>
+  
+
+
+
+  &#124; <a href="#inhmethods">Inherited Methods</a>
+
+&#124; <a href="#" onclick="return toggleAllClassInherited()" id="toggleAllClassInherited">[Expand All]</a>
+
+</div><!-- end sum-details-links -->
+<div class="api-level">
+  
+
+  
+  
+
+</div>
+</div><!-- end api-info-block -->
+
+
+<!-- ======== START OF CLASS DATA ======== -->
+
+<div id="jd-header">
+    public
+     
+    final 
+    
+    class
+<h1 itemprop="name">XposedBridge</h1>
+
+
+
+  
+    extends <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a><br/>
+  
+  
+  
+
+  
+  
+  
+
+
+    
+
+
+</div><!-- end header -->
+
+<div id="naMessage"></div>
+
+<div id="jd-content" class="api apilevel-">
+<table class="jd-inheritance-table">
+
+
+    <tr>
+         	
+        <td colspan="2" class="jd-inheritance-class-cell"><a href="http://developer.android.com/reference/java/lang/Object.html">java.lang.Object</a></td>
+    </tr>
+    
+
+    <tr>
+        
+            <td class="jd-inheritance-space">&nbsp;&nbsp;&nbsp;&#x21b3;</td>
+         	
+        <td colspan="1" class="jd-inheritance-class-cell">de.robv.android.xposed.XposedBridge</td>
+    </tr>
+    
+
+</table>
+
+
+
+
+
+
+
+<div class="jd-descr">
+
+
+<h2>Class Overview</h2>
+<p itemprop="articleBody">This class contains most of Xposed's central logic, such as initialization and callbacks used by
+ the native side. It also includes methods to add new hooks.
+</p>
+
+
+
+
+
+</div><!-- jd-descr -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="jd-descr">
+
+
+<h2>Summary</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- =========== FIELD SUMMARY =========== -->
+<table id="lfields" class="jd-sumtable"><tr><th colspan="12">Fields</th></tr>
+
+
+    
+      <tr class="alt-color api apilevel-" >
+          <td class="jd-typecol"><nobr>
+          public
+          static
+          final
+          <a href="http://developer.android.com/reference/java/lang/ClassLoader.html">ClassLoader</a></nobr></td>
+          <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#BOOTCLASSLOADER">BOOTCLASSLOADER</a></td>
+          <td class="jd-descrcol" width="100%">
+            The system class loader which can be used to locate Android framework classes.
+            
+    
+
+          </td>
+      </tr>
+      
+    
+      <tr class=" api apilevel-37" >
+          <td class="jd-typecol"><nobr>
+          public
+          static
+          
+          int</nobr></td>
+          <td class="jd-linkcol"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#XPOSED_BRIDGE_VERSION">XPOSED_BRIDGE_VERSION</a></td>
+          <td class="jd-descrcol" width="100%">
+            <em>
+      This field was deprecated
+      in API level 65.
+    Use <code><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#getXposedVersion()">getXposedVersion()</a></code> instead. </em>
+            
+    
+
+          </td>
+      </tr>
+      
+    
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="pubmethods" class="jd-sumtable"><tr><th colspan="12">Public Methods</th></tr>
+
+
+
+	 
+    <tr class="alt-color api apilevel-65" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#getXposedVersion()">getXposedVersion</a></span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns the currently installed version of the Xposed framework.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/util/Set.html">Set</a>&lt;<a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a>&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#hookAllConstructors(java.lang.Class<?>, de.robv.android.xposed.XC_MethodHook)">hookAllConstructors</a></span>(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; hookClass, <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          Hook all constructors of the specified class.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/util/Set.html">Set</a>&lt;<a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a>&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#hookAllMethods(java.lang.Class<?>, java.lang.String, de.robv.android.xposed.XC_MethodHook)">hookAllMethods</a></span>(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; hookClass, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> methodName, <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          Hooks all methods with a certain name that were declared in the specified class.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#hookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook)">hookMethod</a></span>(<a href="http://developer.android.com/reference/java/lang/reflect/Member.html">Member</a> hookMethod, <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          Hook any method (or constructor) with the specified callback.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#invokeOriginalMethod(java.lang.reflect.Member, java.lang.Object, java.lang.Object[])">invokeOriginalMethod</a></span>(<a href="http://developer.android.com/reference/java/lang/reflect/Member.html">Member</a> method, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> thisObject, <a href="http://developer.android.com/reference/java/lang/Object.html">Object[]</a> args)</nobr>
+        
+        <div class="jd-descrdiv">
+          Basically the same as <code><a href="http://developer.android.com/reference/java/lang/reflect/Method.html#invoke(java.lang.Object, java.lang.Object...)">Method.invoke(Object, Object...)</a></code>, but calls the original method
+ as it was before the interception by Xposed.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#log(java.lang.String)">log</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> text)</nobr>
+        
+        <div class="jd-descrdiv">
+          Writes a message to the Xposed error log.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#log(java.lang.Throwable)">log</a></span>(<a href="http://developer.android.com/reference/java/lang/Throwable.html">Throwable</a> t)</nobr>
+        
+        <div class="jd-descrdiv">
+          Logs a stack trace to the Xposed error log.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#unhookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook)">unhookMethod</a></span>(<a href="http://developer.android.com/reference/java/lang/reflect/Member.html">Member</a> hookMethod, <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a> callback)</nobr>
+        
+        <div class="jd-descrdiv">
+          <em>
+      This method was deprecated
+      in API level 81.
+    Use <code><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html#unhook()">XC_MethodHook.Unhook.unhook()</a></code> instead. An instance of the <code>Unhook</code>
+ class is returned when you hook the method.</em>
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+
+</table>
+
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="inhmethods" class="jd-sumtable"><tr><th>
+  <a href="#" class="toggle-all" onclick="return toggleAllInherited(this, null)">[Expand]</a>
+  <div style="clear:left;">Inherited Methods</div></th></tr>
+
+
+<tr class="api apilevel-" >
+<td colspan="12">
+  <a href="#" onclick="return toggleInherited(this, null)" id="inherited-methods-java.lang.Object" class="jd-expando-trigger closed"
+          ><img id="inherited-methods-java.lang.Object-trigger"
+          src="../../../../../assets/images/triangle-closed.png"
+          class="jd-expando-trigger-img" /></a>
+From class
+
+  <a href="http://developer.android.com/reference/java/lang/Object.html">java.lang.Object</a>
+
+<div id="inherited-methods-java.lang.Object">
+  <div id="inherited-methods-java.lang.Object-list"
+        class="jd-inheritedlinks">
+  </div>
+  <div id="inherited-methods-java.lang.Object-summary" style="display: none;">
+    <table class="jd-sumtable-expando">
+    
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">clone</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Creates and returns a copy of this <code>Object</code>.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">equals</span>(<a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> o)</nobr>
+        
+        <div class="jd-descrdiv">
+          Compares this instance with the specified object and indicates if they
+ are equal.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">finalize</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Invoked when the garbage collector has detected that this instance is no longer reachable.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            <a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">getClass</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns the unique instance of <code><a href="http://developer.android.com/reference/java/lang/Class.html">Class</a></code> that represents this
+ object's class.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            int</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">hashCode</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns an integer hash code for this object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">notify</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes a thread which is waiting on this object's monitor (by means of
+ calling one of the <code>wait()</code> methods) to be woken up.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">notifyAll</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes all threads which are waiting on this object's monitor (by means
+ of calling one of the <code>wait()</code> methods) to be woken up.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/String.html">String</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">toString</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Returns a string containing a concise, human-readable description of this
+ object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>()</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>(long millis, int nanos)</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object or until the
+ specified timeout expires.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            final
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad">wait</span>(long millis)</nobr>
+        
+        <div class="jd-descrdiv">
+          Causes the calling thread to wait until another thread calls the <code>notify()</code> or <code>notifyAll()</code> method of this object or until the
+ specified timeout expires.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+</table>
+  </div>
+</div>
+</td></tr>
+
+
+</table>
+
+
+</div><!-- jd-descr (summary) -->
+
+<!-- Details -->
+
+
+
+
+
+
+
+
+<!-- XML Attributes -->
+
+
+<!-- Enum Values -->
+
+
+<!-- Constants -->
+
+
+<!-- Fields -->
+
+
+<!-- ========= FIELD DETAIL ======== -->
+<h2>Fields</h2>
+
+
+
+
+<A NAME="BOOTCLASSLOADER"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+        static 
+        final 
+        <a href="http://developer.android.com/reference/java/lang/ClassLoader.html">ClassLoader</a>
+      </span>
+        BOOTCLASSLOADER
+    </h4>
+      <div class="api-level">
+        
+
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>The system class loader which can be used to locate Android framework classes.
+ Application classes cannot be retrieved from it.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">See Also</h5>
+      <ul class="nolist"><li><code><a href="../../../../../http://developer.android.com/reference/java/lang/ClassLoader.html#getSystemClassLoader()">ClassLoader.getSystemClassLoader()</a></code></li>
+      </ul>
+  </div>
+
+    
+    </div>
+</div>
+
+
+
+<A NAME="XPOSED_BRIDGE_VERSION"></A>
+
+<div class="jd-details api apilevel-37"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+        static 
+         
+        int
+      </span>
+        XPOSED_BRIDGE_VERSION
+    </h4>
+      <div class="api-level">
+        
+  Added in API level 37
+
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      <p>
+  <p class="caution"><strong>
+      This field was deprecated
+      in API level 65.</strong><br/>
+    Use <code><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#getXposedVersion()">getXposedVersion()</a></code> instead. 
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+
+    
+    </div>
+</div>
+
+
+
+
+<!-- Public ctors -->
+
+
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<!-- Protected ctors -->
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+<!-- Public methdos -->
+
+<h2>Public Methods</h2>
+
+
+
+<A NAME="getXposedVersion()"></A>
+
+<div class="jd-details api apilevel-65"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        int
+      </span>
+      <span class="sympad">getXposedVersion</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 65
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Returns the currently installed version of the Xposed framework.
+</p></div>
+
+    </div>
+</div>
+
+
+<A NAME="hookAllConstructors(java.lang.Class<?>, de.robv.android.xposed.XC_MethodHook)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/util/Set.html">Set</a>&lt;<a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a>&gt;
+      </span>
+      <span class="sympad">hookAllConstructors</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; hookClass, <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Hook all constructors of the specified class.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>hookClass</td>
+          <td>The class to check for constructors.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The callback to be executed when the hooked constructors are called.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A set containing one object for each found constructor which can be used to unhook it.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="hookAllMethods(java.lang.Class<?>, java.lang.String, de.robv.android.xposed.XC_MethodHook)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/util/Set.html">Set</a>&lt;<a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a>&gt;
+      </span>
+      <span class="sympad">hookAllMethods</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; hookClass, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> methodName, <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Hooks all methods with a certain name that were declared in the specified class. Inherited
+ methods and constructors are not considered. For constructors, use
+ <code><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#hookAllConstructors(java.lang.Class<?>, de.robv.android.xposed.XC_MethodHook)">hookAllConstructors(Class<?>, XC_MethodHook)</a></code> instead.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>hookClass</td>
+          <td>The class to check for declared methods.</td>
+        </tr>
+        <tr>
+          <th>methodName</td>
+          <td>The name of the method(s) to hook.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The callback to be executed when the hooked methods are called.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A set containing one object for each found method which can be used to unhook it.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="hookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html">XC_MethodHook.Unhook</a>
+      </span>
+      <span class="sympad">hookMethod</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/reflect/Member.html">Member</a> hookMethod, <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Hook any method (or constructor) with the specified callback. See below for some wrappers
+ that make it easier to find a method/constructor in one step.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>hookMethod</td>
+          <td>The method to be hooked.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The callback to be executed when the hooked method is called.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>An object that can be used to remove the hook.</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">See Also</h5>
+      <ul class="nolist"><li><code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findAndHookMethod(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...)">XposedHelpers.findAndHookMethod(String, ClassLoader, String, Object...)</a></code></li><li><code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findAndHookMethod(java.lang.Class<?>, java.lang.String, java.lang.Object...)">XposedHelpers.findAndHookMethod(Class, String, Object...)</a></code></li><li><code><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#hookAllMethods(java.lang.Class<?>, java.lang.String, de.robv.android.xposed.XC_MethodHook)">hookAllMethods(Class<?>, String, XC_MethodHook)</a></code></li><li><code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findAndHookConstructor(java.lang.String, java.lang.ClassLoader, java.lang.Object...)">XposedHelpers.findAndHookConstructor(String, ClassLoader, Object...)</a></code></li><li><code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findAndHookConstructor(java.lang.Class<?>, java.lang.Object...)">XposedHelpers.findAndHookConstructor(Class, Object...)</a></code></li><li><code><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#hookAllConstructors(java.lang.Class<?>, de.robv.android.xposed.XC_MethodHook)">hookAllConstructors(Class<?>, XC_MethodHook)</a></code></li>
+      </ul>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="invokeOriginalMethod(java.lang.reflect.Member, java.lang.Object, java.lang.Object[])"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a>
+      </span>
+      <span class="sympad">invokeOriginalMethod</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/reflect/Member.html">Member</a> method, <a href="http://developer.android.com/reference/java/lang/Object.html">Object</a> thisObject, <a href="http://developer.android.com/reference/java/lang/Object.html">Object[]</a> args)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Basically the same as <code><a href="http://developer.android.com/reference/java/lang/reflect/Method.html#invoke(java.lang.Object, java.lang.Object...)">Method.invoke(Object, Object...)</a></code>, but calls the original method
+ as it was before the interception by Xposed. Also, access permissions are not checked.
+
+ <p class="caution">There are very few cases where this method is needed. A common mistake is
+ to replace a method and then invoke the original one based on dynamic conditions. This
+ creates overhead and skips further hooks by other modules. Instead, just hook (don't replace)
+ the method and call <code>param.setResult(null)</code> in <code><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html#beforeHookedMethod(de.robv.android.xposed.XC_MethodHook.MethodHookParam)">XC_MethodHook.beforeHookedMethod(XC_MethodHook.MethodHookParam)</a></code>
+ if the original method should be skipped.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>method</td>
+          <td>The method to be called.</td>
+        </tr>
+        <tr>
+          <th>thisObject</td>
+          <td>For non-static calls, the "this" pointer, otherwise <code>null</code>.</td>
+        </tr>
+        <tr>
+          <th>args</td>
+          <td>Arguments for the method call as Object[] array.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>The result returned from the invoked method.</li></ul>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/lang/NullPointerException.html">NullPointerException</a></td>
+            <td>if <code>receiver == null</code> for a non-static method</td>
+        </tr>  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/lang/IllegalAccessException.html">IllegalAccessException</a></td>
+            <td>if this method is not accessible (see <code><a href="http://developer.android.com/reference/java/lang/reflect/AccessibleObject.html">AccessibleObject</a></code>)</td>
+        </tr>  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/lang/IllegalArgumentException.html">IllegalArgumentException</a></td>
+            <td>if the number of arguments doesn't match the number of parameters, the receiver
+             is incompatible with the declaring class, or an argument could not be unboxed
+             or converted by a widening conversion to the corresponding parameter type</td>
+        </tr>  
+        <tr>
+            <th><a href="http://developer.android.com/reference/java/lang/reflect/InvocationTargetException.html">InvocationTargetException</a></td>
+            <td>if an exception was thrown by the invoked method
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="log(java.lang.String)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        void
+      </span>
+      <span class="sympad">log</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> text)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Writes a message to the Xposed error log.
+
+ <p class="warning"><b>DON'T FLOOD THE LOG!!!</b> This is only meant for error logging.
+ If you want to write information/debug messages, use logcat.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>text</td>
+          <td>The log message.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="log(java.lang.Throwable)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        void
+      </span>
+      <span class="sympad">log</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/Throwable.html">Throwable</a> t)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Logs a stack trace to the Xposed error log.
+
+ <p class="warning"><b>DON'T FLOOD THE LOG!!!</b> This is only meant for error logging.
+ If you want to write information/debug messages, use logcat.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>t</td>
+          <td>The Throwable object for the stack trace.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="unhookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        void
+      </span>
+      <span class="sympad">unhookMethod</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/reflect/Member.html">Member</a> hookMethod, <a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.html">XC_MethodHook</a> callback)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      <p>
+  <p class="caution"><strong>
+      This method was deprecated
+      in API level 81.</strong><br/>
+    Use <code><a href="../../../../../reference/de/robv/android/xposed/XC_MethodHook.Unhook.html#unhook()">XC_MethodHook.Unhook.unhook()</a></code> instead. An instance of the <code>Unhook</code>
+ class is returned when you hook the method.
+  </p>
+  <div class="jd-tagdata jd-tagdescr"><p>Removes the callback for a hooked method/constructor.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>hookMethod</td>
+          <td>The method for which the callback should be removed.</td>
+        </tr>
+        <tr>
+          <th>callback</td>
+          <td>The reference to the callback as specified in <code><a href="../../../../../reference/de/robv/android/xposed/XposedBridge.html#hookMethod(java.lang.reflect.Member, de.robv.android.xposed.XC_MethodHook)">hookMethod(Member, XC_MethodHook)</a></code>.
+</td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- ========= METHOD DETAIL ======== -->
+
+
+
+<!-- ========= END OF CLASS DATA ========= -->
+<A NAME="navbar_top"></A>
+</div> <!-- jd-content -->
+
+
+</div><!-- end doc-content -->
+
+
+
+</body>
+</html>
