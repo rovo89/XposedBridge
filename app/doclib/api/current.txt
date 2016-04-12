@@ -175,13 +175,17 @@ package de.robv.android.xposed {
     method public static de.robv.android.xposed.XC_MethodHook.Unhook findAndHookMethod(java.lang.Class<?>, java.lang.String, java.lang.Object...);
     method public static de.robv.android.xposed.XC_MethodHook.Unhook findAndHookMethod(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...);
     method public static java.lang.Class<?> findClass(java.lang.String, java.lang.ClassLoader);
+    method public static java.lang.Class<?> findClassIfExists(java.lang.String, java.lang.ClassLoader);
     method public static java.lang.reflect.Constructor<?> findConstructorBestMatch(java.lang.Class<?>, java.lang.Class<?>...);
     method public static java.lang.reflect.Constructor<?> findConstructorBestMatch(java.lang.Class<?>, java.lang.Object...);
     method public static java.lang.reflect.Constructor<?> findConstructorBestMatch(java.lang.Class<?>, java.lang.Class<?>[], java.lang.Object[]);
     method public static java.lang.reflect.Constructor<?> findConstructorExact(java.lang.Class<?>, java.lang.Object...);
     method public static java.lang.reflect.Constructor<?> findConstructorExact(java.lang.String, java.lang.ClassLoader, java.lang.Object...);
     method public static java.lang.reflect.Constructor<?> findConstructorExact(java.lang.Class<?>, java.lang.Class<?>...);
+    method public static java.lang.reflect.Constructor<?> findConstructorExactIfExists(java.lang.Class<?>, java.lang.Object...);
+    method public static java.lang.reflect.Constructor<?> findConstructorExactIfExists(java.lang.String, java.lang.ClassLoader, java.lang.Object...);
     method public static java.lang.reflect.Field findField(java.lang.Class<?>, java.lang.String);
+    method public static java.lang.reflect.Field findFieldIfExists(java.lang.Class<?>, java.lang.String);
     method public static java.lang.reflect.Field findFirstFieldByExactType(java.lang.Class<?>, java.lang.Class<?>);
     method public static java.lang.reflect.Method findMethodBestMatch(java.lang.Class<?>, java.lang.String, java.lang.Class<?>...);
     method public static java.lang.reflect.Method findMethodBestMatch(java.lang.Class<?>, java.lang.String, java.lang.Object...);
@@ -189,6 +193,8 @@ package de.robv.android.xposed {
     method public static java.lang.reflect.Method findMethodExact(java.lang.Class<?>, java.lang.String, java.lang.Object...);
     method public static java.lang.reflect.Method findMethodExact(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...);
     method public static java.lang.reflect.Method findMethodExact(java.lang.Class<?>, java.lang.String, java.lang.Class<?>...);
+    method public static java.lang.reflect.Method findMethodExactIfExists(java.lang.Class<?>, java.lang.String, java.lang.Object...);
+    method public static java.lang.reflect.Method findMethodExactIfExists(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...);
     method public static java.lang.reflect.Method[] findMethodsByExactParameters(java.lang.Class<?>, java.lang.Class<?>, java.lang.Class<?>...);
     method public static java.lang.Object getAdditionalInstanceField(java.lang.Object, java.lang.String);
     method public static java.lang.Object getAdditionalStaticField(java.lang.Object, java.lang.String);

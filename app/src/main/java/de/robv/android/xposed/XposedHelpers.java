@@ -64,6 +64,22 @@ public final class XposedHelpers {
 	}
 
 	/**
+	 * Look up and return a class if it exists.
+	 * Like {@link #findClass}, but doesn't throw an exception if the class doesn't exist.
+	 *
+	 * @param className The class name.
+	 * @param classLoader The class loader, or {@code null} for the boot class loader.
+	 * @return A reference to the class, or {@code null} if it doesn't exist.
+	 */
+	public static Class<?> findClassIfExists(String className, ClassLoader classLoader) {
+		try {
+			return findClass(className, classLoader);
+		} catch (ClassNotFoundError e) {
+			return null;
+		}
+	}
+
+	/**
 	 * Look up a field in a class and set it to accessible.
 	 *
 	 * @param clazz The class which either declares or inherits the field.
@@ -89,6 +105,22 @@ public final class XposedHelpers {
 		} catch (NoSuchFieldException e) {
 			fieldCache.put(fullFieldName, null);
 			throw new NoSuchFieldError(fullFieldName);
+		}
+	}
+
+	/**
+	 * Look up and return a field if it exists.
+	 * Like {@link #findField}, but doesn't throw an exception if the field doesn't exist.
+	 *
+	 * @param clazz The class which either declares or inherits the field.
+	 * @param fieldName The field name.
+	 * @return A reference to the field, or {@code null} if it doesn't exist.
+	 */
+	public static Field findFieldIfExists(Class<?> clazz, String fieldName) {
+		try {
+			return findField(clazz, fieldName);
+		} catch (NoSuchFieldError e) {
+			return null;
 		}
 	}
 
@@ -228,6 +260,20 @@ public final class XposedHelpers {
 	}
 
 	/**
+	 * Look up and return a method if it exists.
+	 * See {@link #findMethodExactIfExists(String, ClassLoader, String, Object...)} for details.
+	 */
+	public static Method findMethodExactIfExists(Class<?> clazz, String methodName, Object... parameterTypes) {
+		try {
+			return findMethodExact(clazz, methodName, parameterTypes);
+		} catch (NoSuchMethodError e) {
+			return null;
+		} catch (ClassNotFoundError e) {
+			return null;
+		}
+	}
+
+	/**
 	 * Look up a method in a class and set it to accessible.
 	 * The method must be declared or overridden in the given class.
 	 *
@@ -244,6 +290,27 @@ public final class XposedHelpers {
 	 */
 	public static Method findMethodExact(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
 		return findMethodExact(findClass(className, classLoader), methodName, getParameterClasses(classLoader, parameterTypes));
+	}
+
+	/**
+	 * Look up and return a method if it exists.
+	 * Like {@link #findMethodExact(String, ClassLoader, String, Object...)}, but doesn't throw an
+	 * exception if the method doesn't exist.
+	 *
+	 * @param className The name of the class which implements the method.
+	 * @param classLoader The class loader for resolving the target and parameter classes.
+	 * @param methodName The target method name.
+	 * @param parameterTypes The parameter types of the target method.
+	 * @return A reference to the method, or {@code null} if it doesn't exist.
+	 */
+	public static Method findMethodExactIfExists(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
+		try {
+			return findMethodExact(className, classLoader, methodName, parameterTypes);
+		} catch (NoSuchMethodError e) {
+			return null;
+		} catch (ClassNotFoundError e) {
+			return null;
+		}
 	}
 
 	/**
@@ -481,11 +548,39 @@ public final class XposedHelpers {
 	}
 
 	/**
+	 * Look up and return a constructor if it exists.
+	 * See {@link #findMethodExactIfExists(String, ClassLoader, String, Object...)} for details.
+	 */
+	public static Constructor<?> findConstructorExactIfExists(Class<?> clazz, Object... parameterTypes) {
+		try {
+			return findConstructorExact(clazz, parameterTypes);
+		} catch (NoSuchMethodError e) {
+			return null;
+		} catch (ClassNotFoundError e) {
+			return null;
+		}
+	}
+
+	/**
 	 * Look up a constructor of a class and set it to accessible.
 	 * See {@link #findMethodExact(String, ClassLoader, String, Object...)} for details.
 	 */
 	public static Constructor<?> findConstructorExact(String className, ClassLoader classLoader, Object... parameterTypes) {
 		return findConstructorExact(findClass(className, classLoader), getParameterClasses(classLoader, parameterTypes));
+	}
+
+	/**
+	 * Look up and return a constructor if it exists.
+	 * See {@link #findMethodExactIfExists(String, ClassLoader, String, Object...)} for details.
+	 */
+	public static Constructor<?> findConstructorExactIfExists(String className, ClassLoader classLoader, Object... parameterTypes) {
+		try {
+			return findConstructorExact(className, classLoader, parameterTypes);
+		} catch (NoSuchMethodError e) {
+			return null;
+		} catch (ClassNotFoundError e) {
+			return null;
+		}
 	}
 
 	/**
