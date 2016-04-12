@@ -46,6 +46,7 @@ import de.robv.android.xposed.callbacks.XCallback;
 import de.robv.android.xposed.services.BaseService;
 
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.findClassIfExists;
 import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getIntField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
@@ -246,6 +247,14 @@ public final class XposedBridge {
 											param.args[2] = true;
 									}
 								});
+
+								// Huawei
+								Class<?> clsHwPackageManager = findClassIfExists("com.android.server.pm.HwPackageManagerService", cl);
+								if (clsHwPackageManager != null) {
+									findAndHookMethod(clsHwPackageManager, "isOdexMode", XC_MethodReplacement.returnConstant(false));
+									String className = "com.android.server.pm." + (Build.VERSION.SDK_INT >= 23 ? "PackageDexOptimizer" : "PackageManagerService");
+									findAndHookMethod(className, cl, "dexEntryExists", String.class, XC_MethodReplacement.returnConstant(true));
+								}
 							}
 						}
 					});
