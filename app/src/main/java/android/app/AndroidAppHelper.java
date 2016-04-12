@@ -15,8 +15,8 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 
 import static de.robv.android.xposed.XposedHelpers.findClass;
-import static de.robv.android.xposed.XposedHelpers.findField;
-import static de.robv.android.xposed.XposedHelpers.findMethodExact;
+import static de.robv.android.xposed.XposedHelpers.findFieldIfExists;
+import static de.robv.android.xposed.XposedHelpers.findMethodExactIfExists;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.newInstance;
 
@@ -30,28 +30,17 @@ public final class AndroidAppHelper {
 	private AndroidAppHelper() {}
 
 	private static final Class<?> CLASS_RESOURCES_KEY;
-	private static boolean HAS_IS_THEMEABLE = false;
-	private static boolean HAS_THEME_CONFIG_PARAMETER = false;
+	private static final boolean HAS_IS_THEMEABLE;
+	private static final boolean HAS_THEME_CONFIG_PARAMETER;
 
 	static {
 		CLASS_RESOURCES_KEY = (Build.VERSION.SDK_INT < 19) ?
 			  findClass("android.app.ActivityThread$ResourcesKey", null)
 			: findClass("android.content.res.ResourcesKey", null);
 
-		try {
-			// T-Mobile theming engine (CyanogenMod etc.)
-			findField(CLASS_RESOURCES_KEY, "mIsThemeable");
-			HAS_IS_THEMEABLE = true;
-		} catch (NoSuchFieldError ignored) {
-		} catch (Throwable t) { XposedBridge.log(t); }
-
-		if (HAS_IS_THEMEABLE && Build.VERSION.SDK_INT >= 21) {
-			try {
-				findMethodExact("android.app.ResourcesManager", null, "getThemeConfig");
-				HAS_THEME_CONFIG_PARAMETER = true;
-			} catch (NoSuchMethodError ignored) {
-			} catch (Throwable t) { XposedBridge.log(t); }
-		}
+		HAS_IS_THEMEABLE = findFieldIfExists(CLASS_RESOURCES_KEY, "mIsThemeable") != null;
+		HAS_THEME_CONFIG_PARAMETER = HAS_IS_THEMEABLE && Build.VERSION.SDK_INT >= 21
+			&& findMethodExactIfExists("android.app.ResourcesManager", null, "getThemeConfig") != null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
