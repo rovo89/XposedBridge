@@ -174,7 +174,7 @@ type="text/css">
         <div id="api-nav-title">Xposed</div>
         </div><!-- end nav header -->
       <script>
-        var SINCE_DATA = [ '', '36', '37', '39', '42', '50', '51', '52', '53', '60', '63', '65', '81' ];
+        var SINCE_DATA = [ '', '36', '37', '39', '42', '50', '51', '52', '53', '60', '63', '65', '81', '82' ];
         buildApiLevelSelector();
       </script>
 
@@ -749,7 +749,30 @@ Summary:
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class=" api apilevel-82" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findClassIfExists(java.lang.String, java.lang.ClassLoader)">findClassIfExists</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> className, <a href="http://developer.android.com/reference/java/lang/ClassLoader.html">ClassLoader</a> classLoader)</nobr>
+        
+        <div class="jd-descrdiv">
+          Look up and return a class if it exists.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -772,7 +795,7 @@ Summary:
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -795,7 +818,7 @@ Summary:
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -818,7 +841,7 @@ Summary:
 
 
 	 
-    <tr class="alt-color api apilevel-51" >
+    <tr class=" api apilevel-51" >
         <td class="jd-typecol"><nobr>
             
             
@@ -841,7 +864,7 @@ Summary:
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -864,7 +887,7 @@ Summary:
 
 
 	 
-    <tr class="alt-color api apilevel-51" >
+    <tr class=" api apilevel-51" >
         <td class="jd-typecol"><nobr>
             
             
@@ -887,7 +910,53 @@ Summary:
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-82" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/reflect/Constructor.html">Constructor</a>&lt;?&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findConstructorExactIfExists(java.lang.Class<?>, java.lang.Object...)">findConstructorExactIfExists</a></span>(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; clazz, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> parameterTypes)</nobr>
+        
+        <div class="jd-descrdiv">
+          Look up and return a constructor if it exists.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-82" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/reflect/Constructor.html">Constructor</a>&lt;?&gt;</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findConstructorExactIfExists(java.lang.String, java.lang.ClassLoader, java.lang.Object...)">findConstructorExactIfExists</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> className, <a href="http://developer.android.com/reference/java/lang/ClassLoader.html">ClassLoader</a> classLoader, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> parameterTypes)</nobr>
+        
+        <div class="jd-descrdiv">
+          Look up and return a constructor if it exists.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -901,6 +970,29 @@ Summary:
         
         <div class="jd-descrdiv">
           Look up a field in a class and set it to accessible.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-82" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/reflect/Field.html">Field</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findFieldIfExists(java.lang.Class<?>, java.lang.String)">findFieldIfExists</a></span>(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; clazz, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> fieldName)</nobr>
+        
+        <div class="jd-descrdiv">
+          Look up and return a field if it exists.
           
     
 
@@ -1062,6 +1154,52 @@ Summary:
         
         <div class="jd-descrdiv">
           Look up a method in a class and set it to accessible.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-82" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/reflect/Method.html">Method</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findMethodExactIfExists(java.lang.Class<?>, java.lang.String, java.lang.Object...)">findMethodExactIfExists</a></span>(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; clazz, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> methodName, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> parameterTypes)</nobr>
+        
+        <div class="jd-descrdiv">
+          Look up and return a method if it exists.
+          
+    
+
+        </div>
+  
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-82" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            static
+            
+            
+            <a href="http://developer.android.com/reference/java/lang/reflect/Method.html">Method</a></nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findMethodExactIfExists(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...)">findMethodExactIfExists</a></span>(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> className, <a href="http://developer.android.com/reference/java/lang/ClassLoader.html">ClassLoader</a> classLoader, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> methodName, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> parameterTypes)</nobr>
+        
+        <div class="jd-descrdiv">
+          Look up and return a method if it exists.
           
     
 
@@ -3275,6 +3413,59 @@ From class
 </div>
 
 
+<A NAME="findClassIfExists(java.lang.String, java.lang.ClassLoader)"></A>
+
+<div class="jd-details api apilevel-82"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt;
+      </span>
+      <span class="sympad">findClassIfExists</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> className, <a href="http://developer.android.com/reference/java/lang/ClassLoader.html">ClassLoader</a> classLoader)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 82
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Look up and return a class if it exists.
+ Like <code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findClass(java.lang.String, java.lang.ClassLoader)">findClass(String, ClassLoader)</a></code>, but doesn't throw an exception if the class doesn't exist.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>className</td>
+          <td>The class name.</td>
+        </tr>
+        <tr>
+          <th>classLoader</td>
+          <td>The class loader, or <code>null</code> for the boot class loader.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A reference to the class, or <code>null</code> if it doesn't exist.
+</li></ul>
+  </div>
+
+    </div>
+</div>
+
+
 <A NAME="findConstructorBestMatch(java.lang.Class<?>, java.lang.Class<?>[], java.lang.Object[])"></A>
 
 <div class="jd-details api apilevel-"> 
@@ -3493,6 +3684,78 @@ From class
 </div>
 
 
+<A NAME="findConstructorExactIfExists(java.lang.Class<?>, java.lang.Object...)"></A>
+
+<div class="jd-details api apilevel-82"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/lang/reflect/Constructor.html">Constructor</a>&lt;?&gt;
+      </span>
+      <span class="sympad">findConstructorExactIfExists</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; clazz, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> parameterTypes)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 82
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Look up and return a constructor if it exists.
+ See <code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findMethodExactIfExists(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...)">findMethodExactIfExists(String, ClassLoader, String, Object...)</a></code> for details.
+</p></div>
+
+    </div>
+</div>
+
+
+<A NAME="findConstructorExactIfExists(java.lang.String, java.lang.ClassLoader, java.lang.Object...)"></A>
+
+<div class="jd-details api apilevel-82"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/lang/reflect/Constructor.html">Constructor</a>&lt;?&gt;
+      </span>
+      <span class="sympad">findConstructorExactIfExists</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> className, <a href="http://developer.android.com/reference/java/lang/ClassLoader.html">ClassLoader</a> classLoader, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> parameterTypes)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 82
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Look up and return a constructor if it exists.
+ See <code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findMethodExactIfExists(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...)">findMethodExactIfExists(String, ClassLoader, String, Object...)</a></code> for details.
+</p></div>
+
+    </div>
+</div>
+
+
 <A NAME="findField(java.lang.Class<?>, java.lang.String)"></A>
 
 <div class="jd-details api apilevel-"> 
@@ -3547,6 +3810,59 @@ From class
 </td>
         </tr>
       </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="findFieldIfExists(java.lang.Class<?>, java.lang.String)"></A>
+
+<div class="jd-details api apilevel-82"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/lang/reflect/Field.html">Field</a>
+      </span>
+      <span class="sympad">findFieldIfExists</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; clazz, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> fieldName)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 82
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Look up and return a field if it exists.
+ Like <code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findField(java.lang.Class<?>, java.lang.String)">findField(Class<?>, String)</a></code>, but doesn't throw an exception if the field doesn't exist.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>clazz</td>
+          <td>The class which either declares or inherits the field.</td>
+        </tr>
+        <tr>
+          <th>fieldName</td>
+          <td>The field name.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A reference to the field, or <code>null</code> if it doesn't exist.
+</li></ul>
   </div>
 
     </div>
@@ -3900,6 +4216,104 @@ From class
             <td>In case the target class or one of the parameter types couldn't be resolved.</td>
         </tr>
       </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="findMethodExactIfExists(java.lang.Class<?>, java.lang.String, java.lang.Object...)"></A>
+
+<div class="jd-details api apilevel-82"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/lang/reflect/Method.html">Method</a>
+      </span>
+      <span class="sympad">findMethodExactIfExists</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/Class.html">Class</a>&lt;?&gt; clazz, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> methodName, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> parameterTypes)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 82
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Look up and return a method if it exists.
+ See <code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findMethodExactIfExists(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...)">findMethodExactIfExists(String, ClassLoader, String, Object...)</a></code> for details.
+</p></div>
+
+    </div>
+</div>
+
+
+<A NAME="findMethodExactIfExists(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...)"></A>
+
+<div class="jd-details api apilevel-82"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public
+        
+        
+        static
+        
+        <a href="http://developer.android.com/reference/java/lang/reflect/Method.html">Method</a>
+      </span>
+      <span class="sympad">findMethodExactIfExists</span>
+      <span class="normal">(<a href="http://developer.android.com/reference/java/lang/String.html">String</a> className, <a href="http://developer.android.com/reference/java/lang/ClassLoader.html">ClassLoader</a> classLoader, <a href="http://developer.android.com/reference/java/lang/String.html">String</a> methodName, <a href="http://developer.android.com/reference/java/lang/Object.html">Object...</a> parameterTypes)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+  Added in API level 82
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+    
+
+      
+  <div class="jd-tagdata jd-tagdescr"><p>Look up and return a method if it exists.
+ Like <code><a href="../../../../../reference/de/robv/android/xposed/XposedHelpers.html#findMethodExact(java.lang.String, java.lang.ClassLoader, java.lang.String, java.lang.Object...)">findMethodExact(String, ClassLoader, String, Object...)</a></code>, but doesn't throw an
+ exception if the method doesn't exist.</p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>className</td>
+          <td>The name of the class which implements the method.</td>
+        </tr>
+        <tr>
+          <th>classLoader</td>
+          <td>The class loader for resolving the target and parameter classes.</td>
+        </tr>
+        <tr>
+          <th>methodName</td>
+          <td>The target method name.</td>
+        </tr>
+        <tr>
+          <th>parameterTypes</td>
+          <td>The parameter types of the target method.</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Returns</h5>
+      <ul class="nolist"><li>A reference to the method, or <code>null</code> if it doesn't exist.
+</li></ul>
   </div>
 
     </div>
