@@ -1,5 +1,10 @@
 This file lists the changes in the Xposed Framework API:
 --------------------------------------------------------
+v82:
+  added XposedHelpers.findClassIfExists() helper
+  added XposedHelpers.findMethodIfExists() helpers
+  added XposedHelpers.findConstructorIfExists() helpers
+  added XposedHelpers.findFieldIfExists() helper
 
 v81:
   added IXUnhook.getCallback()
