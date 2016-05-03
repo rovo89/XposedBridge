@@ -444,11 +444,17 @@ public final class XposedBridge {
 			return;
 		}
 
+		ClassLoader topClassLoader = BOOTCLASSLOADER;
+		ClassLoader parent;
+		while ((parent = topClassLoader.getParent()) != null) {
+			topClassLoader = parent;
+		}
+
 		InputStream stream = service.getFileInputStream(filename);
 		BufferedReader apks = new BufferedReader(new InputStreamReader(stream));
 		String apk;
 		while ((apk = apks.readLine()) != null) {
-			loadModule(apk);
+			loadModule(apk, topClassLoader);
 		}
 		apks.close();
 	}
@@ -457,12 +463,18 @@ public final class XposedBridge {
 	 * Load a module from an APK by calling the init(String) method for all classes defined
 	 * in <code>assets/xposed_init</code>.
 	 */
-	private static void loadModule(String apk) {
+	private static void loadModule(String apk, ClassLoader topClassLoader) {
 		log("Loading modules from " + apk);
 
 		if (!new File(apk).exists()) {
 			log("  File does not exist");
 			return;
+		}
+
+		if (findClassIfExists(XposedBridge.class.getName(), new PathClassLoader(apk, topClassLoader)) != null) {
+			Log.w(TAG, "  The Xposed API classes are compiled into the module's APK.");
+			Log.w(TAG, "  This may cause strange issues and must be fixed by the module developer.");
+			Log.w(TAG, "  For details, see: http://api.xposed.info/using.html");
 		}
 
 		ClassLoader mcl = new PathClassLoader(apk, BOOTCLASSLOADER);
