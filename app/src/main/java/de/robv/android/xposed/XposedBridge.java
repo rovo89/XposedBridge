@@ -233,14 +233,12 @@ public final class XposedBridge {
 							lpparam.isFirstApplication = true;
 							XC_LoadPackage.callAll(lpparam);
 
-							if (Build.VERSION.SDK_INT >= 21) {
-								// Huawei
-								Class<?> clsHwPackageManager = findClassIfExists("com.android.server.pm.HwPackageManagerService", cl);
-								if (clsHwPackageManager != null) {
-									findAndHookMethod(clsHwPackageManager, "isOdexMode", XC_MethodReplacement.returnConstant(false));
-									String className = "com.android.server.pm." + (Build.VERSION.SDK_INT >= 23 ? "PackageDexOptimizer" : "PackageManagerService");
-									findAndHookMethod(className, cl, "dexEntryExists", String.class, XC_MethodReplacement.returnConstant(true));
-								}
+							// Huawei
+							Class<?> clsHwPackageManager = findClassIfExists("com.android.server.pm.HwPackageManagerService", cl);
+							if (clsHwPackageManager != null) {
+								findAndHookMethod(clsHwPackageManager, "isOdexMode", XC_MethodReplacement.returnConstant(false));
+								String className = "com.android.server.pm." + (Build.VERSION.SDK_INT >= 23 ? "PackageDexOptimizer" : "PackageManagerService");
+								findAndHookMethod(className, cl, "dexEntryExists", String.class, XC_MethodReplacement.returnConstant(true));
 							}
 						}
 					});
