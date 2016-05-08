@@ -6,13 +6,13 @@ import java.io.InputStream;
  * Holder for the result of a {@link BaseService#readFile} or  {@link BaseService#statFile} call.
  */
 public final class FileResult {
-	/** File content, might be {@code null} if the file wasn't read */
+	/** File content, might be {@code null} if the file wasn't read. */
 	public final byte[] content;
-	/** File input stream, might be {@code null} if the file wasn't read */
+	/** File input stream, might be {@code null} if the file wasn't read. */
 	public final InputStream stream;
-	/** File size */
+	/** File size. */
 	public final long size;
-	/** File last modification time */
+	/** File last modification time. */
 	public final long mtime;
 
 	/*package*/ FileResult(long size, long mtime) {

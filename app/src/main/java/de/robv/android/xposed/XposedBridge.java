@@ -91,12 +91,9 @@ public final class XposedBridge {
 	private static final String BASE_DIR = "/data/data/" + INSTALLER_PACKAGE_NAME + "/";
 
 	// built-in handlers
-	private static final Map<Member, CopyOnWriteSortedSet<XC_MethodHook>> sHookedMethodCallbacks
-									= new HashMap<Member, CopyOnWriteSortedSet<XC_MethodHook>>();
-	private static final CopyOnWriteSortedSet<XC_LoadPackage> sLoadedPackageCallbacks
-									= new CopyOnWriteSortedSet<XC_LoadPackage>();
-	private static final CopyOnWriteSortedSet<XC_InitPackageResources> sInitPackageResourcesCallbacks
-									= new CopyOnWriteSortedSet<XC_InitPackageResources>();
+	private static final Map<Member, CopyOnWriteSortedSet<XC_MethodHook>> sHookedMethodCallbacks = new HashMap<>();
+	private static final CopyOnWriteSortedSet<XC_LoadPackage> sLoadedPackageCallbacks = new CopyOnWriteSortedSet<>();
+	private static final CopyOnWriteSortedSet<XC_InitPackageResources> sInitPackageResourcesCallbacks = new CopyOnWriteSortedSet<>();
 
 	private XposedBridge() {}
 
@@ -161,10 +158,11 @@ public final class XposedBridge {
 	 * Hook some methods which we want to create an easier interface for developers.
 	 */
 	private static void initForZygote() throws Throwable {
-		final HashSet<String> loadedPackagesInProcess = new HashSet<String>(1);
+		final HashSet<String> loadedPackagesInProcess = new HashSet<>(1);
 
 		// normal process initialization (for new Activity, Service, BroadcastReceiver etc.)
 		findAndHookMethod(ActivityThread.class, "handleBindApplication", "android.app.ActivityThread.AppBindData", new XC_MethodHook() {
+			@Override
 			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 				ActivityThread activityThread = (ActivityThread) param.thisObject;
 				ApplicationInfo appInfo = (ApplicationInfo) getObjectField(param.args[0], "appInfo");
@@ -304,7 +302,7 @@ public final class XposedBridge {
 
 		final Class<?> classGTLR;
 		final Class<?> classResKey;
-		final ThreadLocal<Object> latestResKey = new ThreadLocal<Object>();
+		final ThreadLocal<Object> latestResKey = new ThreadLocal<>();
 		final String[] conflictingPackages = { "com.sygic.aura" };
 
 		if (Build.VERSION.SDK_INT <= 18) {
@@ -592,7 +590,7 @@ public final class XposedBridge {
 		synchronized (sHookedMethodCallbacks) {
 			callbacks = sHookedMethodCallbacks.get(hookMethod);
 			if (callbacks == null) {
-				callbacks = new CopyOnWriteSortedSet<XC_MethodHook>();
+				callbacks = new CopyOnWriteSortedSet<>();
 				sHookedMethodCallbacks.put(hookMethod, callbacks);
 				newMethod = true;
 			}
@@ -657,7 +655,7 @@ public final class XposedBridge {
 	 */
 	@SuppressWarnings("UnusedReturnValue")
 	public static Set<XC_MethodHook.Unhook> hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
-		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
+		Set<XC_MethodHook.Unhook> unhooks = new HashSet<>();
 		for (Member method : hookClass.getDeclaredMethods())
 			if (method.getName().equals(methodName))
 				unhooks.add(hookMethod(method, callback));
@@ -673,7 +671,7 @@ public final class XposedBridge {
 	 */
 	@SuppressWarnings("UnusedReturnValue")
 	public static Set<XC_MethodHook.Unhook> hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
-		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
+		Set<XC_MethodHook.Unhook> unhooks = new HashSet<>();
 		for (Member constructor : hookClass.getDeclaredConstructors())
 			unhooks.add(hookMethod(constructor, callback));
 		return unhooks;

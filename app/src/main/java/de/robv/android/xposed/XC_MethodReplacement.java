@@ -34,6 +34,7 @@ public abstract class XC_MethodReplacement extends XC_MethodHook {
 	}
 
 	/** @hide */
+	@Override
 	@SuppressWarnings("EmptyMethod")
 	protected final void afterHookedMethod(MethodHookParam param) throws Throwable {}
 

@@ -30,11 +30,11 @@ import external.org.apache.commons.lang3.reflect.MemberUtils;
 public final class XposedHelpers {
 	private XposedHelpers() {}
 
-	private static final HashMap<String, Field> fieldCache = new HashMap<String, Field>();
-	private static final HashMap<String, Method> methodCache = new HashMap<String, Method>();
-	private static final HashMap<String, Constructor<?>> constructorCache = new HashMap<String, Constructor<?>>();
-	private static final WeakHashMap<Object, HashMap<String, Object>> additionalFields = new WeakHashMap<Object, HashMap<String, Object>>();
-	private static final HashMap<String, ThreadLocal<AtomicInteger>> sMethodDepth = new HashMap<String, ThreadLocal<AtomicInteger>>();
+	private static final HashMap<String, Field> fieldCache = new HashMap<>();
+	private static final HashMap<String, Method> methodCache = new HashMap<>();
+	private static final HashMap<String, Constructor<?>> constructorCache = new HashMap<>();
+	private static final WeakHashMap<Object, HashMap<String, Object>> additionalFields = new WeakHashMap<>();
+	private static final HashMap<String, ThreadLocal<AtomicInteger>> sMethodDepth = new HashMap<>();
 
 	/**
 	 * Look up a class with the specified class loader.
@@ -352,7 +352,7 @@ public final class XposedHelpers {
 	 * @return An array with matching methods, all set to accessible already.
 	 */
 	public static Method[] findMethodsByExactParameters(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
-		List<Method> result = new LinkedList<Method>();
+		List<Method> result = new LinkedList<>();
 		for (Method method : clazz.getDeclaredMethods()) {
 			if (returnType != null && returnType != method.getReturnType())
 				continue;
@@ -1230,7 +1230,7 @@ public final class XposedHelpers {
 
 	/**
 	 * Calls an instance or static method of the given object.
-	 * See {@link #callMethod(Object, String, Class[], Object...)}.
+	 * See {@link #callMethod(Object, String, Object...)}.
 	 *
 	 * <p>This variant allows you to specify parameter types, which can help in case there are multiple
 	 * methods with the same name, especially if you call it with {@code null} parameters.
@@ -1381,7 +1381,7 @@ public final class XposedHelpers {
 		synchronized (additionalFields) {
 			objectFields = additionalFields.get(obj);
 			if (objectFields == null) {
-				objectFields = new HashMap<String, Object>();
+				objectFields = new HashMap<>();
 				additionalFields.put(obj, objectFields);
 			}
 		}
@@ -1557,6 +1557,7 @@ public final class XposedHelpers {
 			ThreadLocal<AtomicInteger> counter = sMethodDepth.get(method);
 			if (counter == null) {
 				counter = new ThreadLocal<AtomicInteger>() {
+					@Override
 					protected AtomicInteger initialValue() {
 						return new AtomicInteger();
 					}

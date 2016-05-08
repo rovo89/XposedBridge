@@ -51,30 +51,27 @@ import static de.robv.android.xposed.XposedHelpers.incrementMethodDepth;
  */
 @SuppressWarnings("JniMissingFunction")
 public class XResources extends MiuiResources {
-	private static final SparseArray<HashMap<String, Object>> sReplacements = new SparseArray<HashMap<String, Object>>();
-	private static final SparseArray<HashMap<String, ResourceNames>> sResourceNames
-		= new SparseArray<HashMap<String, ResourceNames>>();
+	private static final SparseArray<HashMap<String, Object>> sReplacements = new SparseArray<>();
+	private static final SparseArray<HashMap<String, ResourceNames>> sResourceNames = new SparseArray<>();
 
 	private static final byte[] sSystemReplacementsCache = new byte[256]; // bitmask: 0x000700ff => 2048 bit => 256 bytes
 	private byte[] mReplacementsCache; // bitmask: 0x0007007f => 1024 bit => 128 bytes
-	private static final HashMap<String, byte[]> sReplacementsCacheMap = new HashMap<String, byte[]>();
-	private static final SparseArray<ColorStateList> sColorStateListCache = new SparseArray<ColorStateList>(0);
+	private static final HashMap<String, byte[]> sReplacementsCacheMap = new HashMap<>();
+	private static final SparseArray<ColorStateList> sColorStateListCache = new SparseArray<>(0);
 
-	private static final SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>> sLayoutCallbacks
-		= new SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>>();
-	private static final WeakHashMap<XmlResourceParser, XMLInstanceDetails> sXmlInstanceDetails
-		= new WeakHashMap<XmlResourceParser, XMLInstanceDetails>();
+	private static final SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>> sLayoutCallbacks = new SparseArray<>();
+	private static final WeakHashMap<XmlResourceParser, XMLInstanceDetails> sXmlInstanceDetails = new WeakHashMap<>();
 
 	private static final String EXTRA_XML_INSTANCE_DETAILS = "xmlInstanceDetails";
 	private static final ThreadLocal<LinkedList<MethodHookParam>> sIncludedLayouts = new ThreadLocal<LinkedList<MethodHookParam>>() {
 		@Override
 		protected LinkedList<MethodHookParam> initialValue() {
-			return new LinkedList<MethodHookParam>();
+			return new LinkedList<>();
 		}
 	};
 
-	private static final HashMap<String, Long> sResDirLastModified = new HashMap<String, Long>();
-	private static final HashMap<String, String> sResDirPackageNames = new HashMap<String, String>();
+	private static final HashMap<String, Long> sResDirLastModified = new HashMap<>();
+	private static final HashMap<String, String> sResDirPackageNames = new HashMap<>();
 	private static ThreadLocal<Object> sLatestResKey = null;
 
 	private boolean mIsObjectInited;
@@ -318,7 +315,7 @@ public class XResources extends MiuiResources {
 		synchronized (sResourceNames) {
 			HashMap<String, ResourceNames> inner = sResourceNames.get(id);
 			if (inner == null) {
-				inner = new HashMap<String, ResourceNames>();
+				inner = new HashMap<>();
 				sResourceNames.put(id, inner);
 			}
 			synchronized (inner) {
@@ -584,7 +581,7 @@ public class XResources extends MiuiResources {
 		synchronized (sReplacements) {
 			HashMap<String, Object> inner = sReplacements.get(id);
 			if (inner == null) {
-				inner = new HashMap<String, Object>();
+				inner = new HashMap<>();
 				sReplacements.put(id, inner);
 			}
 			inner.put(resDir, replacement);
@@ -1234,7 +1231,7 @@ public class XResources extends MiuiResources {
 	}
 
 	/**
-	 * Similar to {@link #translateResId}, but used to determine the original ID of attribute names
+	 * Similar to {@link #translateResId}, but used to determine the original ID of attribute names.
 	 */
 	private static int translateAttrId(String attrName, XResources origRes) {
 		String origPackage = origRes.mPackageName;
@@ -1708,7 +1705,7 @@ public class XResources extends MiuiResources {
 		synchronized (sLayoutCallbacks) {
 			inner = sLayoutCallbacks.get(id);
 			if (inner == null) {
-				inner = new HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>();
+				inner = new HashMap<>();
 				sLayoutCallbacks.put(id, inner);
 			}
 		}
@@ -1717,7 +1714,7 @@ public class XResources extends MiuiResources {
 		synchronized (inner) {
 			callbacks = inner.get(resDir);
 			if (callbacks == null) {
-				callbacks = new CopyOnWriteSortedSet<XC_LayoutInflated>();
+				callbacks = new CopyOnWriteSortedSet<>();
 				inner.put(resDir, callbacks);
 			}
 		}

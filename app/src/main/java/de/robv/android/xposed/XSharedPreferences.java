@@ -150,7 +150,7 @@ public final class XSharedPreferences implements SharedPreferences {
 			mLastModified = result.mtime;
 			mFileSize = result.size;
 		} else {
-			mMap = new HashMap<String, Object>();
+			mMap = new HashMap<>();
 		}
 		notifyAll();
 	}
@@ -197,7 +197,7 @@ public final class XSharedPreferences implements SharedPreferences {
 	public Map<String, ?> getAll() {
 		synchronized (this) {
 			awaitLoadedLocked();
-			return new HashMap<String, Object>(mMap);
+			return new HashMap<>(mMap);
 		}
 	}
 

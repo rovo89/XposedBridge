@@ -111,7 +111,7 @@ public final class AndroidAppHelper {
 			resourcesKey = createResourcesKey(resDir, Display.DEFAULT_DISPLAY, null, scale, null, isThemeable);
 
 		if (resourcesKey != null)
-			getActiveResources(thread).put(resourcesKey, new WeakReference<Resources>(resources));
+			getActiveResources(thread).put(resourcesKey, new WeakReference<>(resources));
 	}
 
 	/**
