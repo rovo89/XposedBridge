@@ -80,6 +80,7 @@ public final class XposedBridge {
 	private static int runtime = 0;
 	private static final int RUNTIME_DALVIK = 1;
 	private static final int RUNTIME_ART = 2;
+	private static final String INSTANT_RUN_CLASS = "com.android.tools.fd.runtime.BootstrapApplication";
 
 	private static boolean disableHooks = false;
 	private static boolean disableResources = false;
@@ -463,11 +464,16 @@ public final class XposedBridge {
 		log("Loading modules from " + apk);
 
 		if (!new File(apk).exists()) {
-			log("  File does not exist");
+			Log.e(TAG, "  File does not exist");
 			return;
 		}
 
-		if (findClassIfExists(XposedBridge.class.getName(), new PathClassLoader(apk, topClassLoader)) != null) {
+		ClassLoader mclWithoutXposedBridge = new PathClassLoader(apk, topClassLoader);
+		if (findClassIfExists(INSTANT_RUN_CLASS, mclWithoutXposedBridge) != null) {
+			Log.e(TAG, "  Cannot load module, please disable \"Instant Run\" in Android Studio.");
+			return;
+		}
+		if (findClassIfExists(XposedBridge.class.getName(), mclWithoutXposedBridge) != null) {
 			Log.w(TAG, "  The Xposed API classes are compiled into the module's APK.");
 			Log.w(TAG, "  This may cause strange issues and must be fixed by the module developer.");
 			Log.w(TAG, "  For details, see: http://api.xposed.info/using.html");
@@ -476,7 +482,7 @@ public final class XposedBridge {
 		ClassLoader mcl = new PathClassLoader(apk, BOOTCLASSLOADER);
 		InputStream is = mcl.getResourceAsStream("assets/xposed_init");
 		if (is == null) {
-			log("assets/xposed_init not found in the APK");
+			Log.e(TAG, "assets/xposed_init not found in the APK");
 			return;
 		}
 
@@ -493,10 +499,10 @@ public final class XposedBridge {
 					Class<?> moduleClass = mcl.loadClass(moduleClassName);
 
 					if (!IXposedMod.class.isAssignableFrom(moduleClass)) {
-						log ("    This class doesn't implement any sub-interface of IXposedMod, skipping it");
+						Log.e(TAG, "    This class doesn't implement any sub-interface of IXposedMod, skipping it");
 						continue;
 					} else if (disableResources && IXposedHookInitPackageResources.class.isAssignableFrom(moduleClass)) {
-						log ("    This class requires resource-related hooks (which are disabled), skipping it.");
+						Log.e(TAG, "    This class requires resource-related hooks (which are disabled), skipping it.");
 						continue;
 					}
 
