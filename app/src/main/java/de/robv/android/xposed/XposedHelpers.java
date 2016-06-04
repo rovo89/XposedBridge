@@ -266,9 +266,7 @@ public final class XposedHelpers {
 	public static Method findMethodExactIfExists(Class<?> clazz, String methodName, Object... parameterTypes) {
 		try {
 			return findMethodExact(clazz, methodName, parameterTypes);
-		} catch (NoSuchMethodError e) {
-			return null;
-		} catch (ClassNotFoundError e) {
+		} catch (ClassNotFoundError | NoSuchMethodError e) {
 			return null;
 		}
 	}
@@ -306,9 +304,7 @@ public final class XposedHelpers {
 	public static Method findMethodExactIfExists(String className, ClassLoader classLoader, String methodName, Object... parameterTypes) {
 		try {
 			return findMethodExact(className, classLoader, methodName, parameterTypes);
-		} catch (NoSuchMethodError e) {
-			return null;
-		} catch (ClassNotFoundError e) {
+		} catch (ClassNotFoundError | NoSuchMethodError e) {
 			return null;
 		}
 	}
@@ -554,9 +550,7 @@ public final class XposedHelpers {
 	public static Constructor<?> findConstructorExactIfExists(Class<?> clazz, Object... parameterTypes) {
 		try {
 			return findConstructorExact(clazz, parameterTypes);
-		} catch (NoSuchMethodError e) {
-			return null;
-		} catch (ClassNotFoundError e) {
+		} catch (ClassNotFoundError | NoSuchMethodError e) {
 			return null;
 		}
 	}
@@ -576,9 +570,7 @@ public final class XposedHelpers {
 	public static Constructor<?> findConstructorExactIfExists(String className, ClassLoader classLoader, Object... parameterTypes) {
 		try {
 			return findConstructorExact(className, classLoader, parameterTypes);
-		} catch (NoSuchMethodError e) {
-			return null;
-		} catch (ClassNotFoundError e) {
+		} catch (ClassNotFoundError | NoSuchMethodError e) {
 			return null;
 		}
 	}
