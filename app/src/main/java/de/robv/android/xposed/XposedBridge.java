@@ -38,6 +38,7 @@ import java.util.Set;
 
 import dalvik.system.PathClassLoader;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
+import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -235,12 +236,14 @@ public final class XposedBridge {
 							XC_LoadPackage.callAll(lpparam);
 
 							// Huawei
-							Class<?> clsHwPackageManager = findClassIfExists("com.android.server.pm.HwPackageManagerService", cl);
-							if (clsHwPackageManager != null) {
-								findAndHookMethod(clsHwPackageManager, "isOdexMode", XC_MethodReplacement.returnConstant(false));
+							try {
+								findAndHookMethod("com.android.server.pm.HwPackageManagerService", cl, "isOdexMode", XC_MethodReplacement.returnConstant(false));
+							} catch (ClassNotFoundError | NoSuchMethodError ignored) {}
+
+							try {
 								String className = "com.android.server.pm." + (Build.VERSION.SDK_INT >= 23 ? "PackageDexOptimizer" : "PackageManagerService");
 								findAndHookMethod(className, cl, "dexEntryExists", String.class, XC_MethodReplacement.returnConstant(true));
-							}
+							} catch (ClassNotFoundError | NoSuchMethodError ignored) {}
 						}
 					});
 				}
