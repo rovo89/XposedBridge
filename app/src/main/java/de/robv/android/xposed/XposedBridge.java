@@ -107,32 +107,34 @@ public final class XposedBridge {
 	protected static void main(String[] args) {
 		// Initialize the Xposed framework and modules
 		try {
-			SELinuxHelper.initOnce();
-			SELinuxHelper.initForProcess(null);
+			if (!hadInitErrors()) {
+				SELinuxHelper.initOnce();
+				SELinuxHelper.initForProcess(null);
 
-			runtime = getRuntime();
-			if (initNative()) {
+				runtime = getRuntime();
 				XPOSED_BRIDGE_VERSION = getXposedVersion();
+
 				if (isZygote) {
 					startsSystemServer = startsSystemServer();
 					initForZygote();
+					hookResources();
 				}
 
 				loadModules();
 			} else {
-				log("Errors during native Xposed initialization");
+				Log.e(TAG, "Not initializing Xposed because of previous errors");
 			}
 		} catch (Throwable t) {
-			log("Errors during Xposed initialization");
-			log(t);
+			Log.e(TAG, "Errors during Xposed initialization", t);
 			disableHooks = true;
 		}
 
 		// Call the original startup code
-		if (isZygote)
+		if (isZygote) {
 			ZygoteInit.main(args);
-		else
+		} else {
 			RuntimeInit.main(args);
+		}
 	}
 
 	/** @hide */
@@ -147,6 +149,7 @@ public final class XposedBridge {
 		}
 	}
 
+	private native static boolean hadInitErrors();
 	private static native String getStartClassName();
 	private static native int getRuntime();
 	private static native boolean startsSystemServer();
@@ -283,16 +286,21 @@ public final class XposedBridge {
 					app.uid == Process.myUid() ? app.sourceDir : app.publicSourceDir);
 			}
 		});
-
-		if (!SELinuxHelper.getAppDataFileService().checkFileExists(BASE_DIR + "conf/disable_resources")) {
-			hookResources();
-		} else {
-			Log.w(TAG, "Found " + BASE_DIR + "conf/disable_resources, not hooking resources");
-			disableResources = true;
-		}
 	}
 
 	private static void hookResources() throws Throwable {
+		if (SELinuxHelper.getAppDataFileService().checkFileExists(BASE_DIR + "conf/disable_resources")) {
+			Log.w(TAG, "Found " + BASE_DIR + "conf/disable_resources, not hooking resources");
+			disableResources = true;
+			return;
+		}
+
+		if (!initXResourcesNative()) {
+			Log.e(TAG, "Cannot hook resources");
+			disableResources = true;
+			return;
+		}
+
 		/*
 		 * getTopLevelResources(a)
 		 *   -> getTopLevelResources(b)
@@ -803,7 +811,7 @@ public final class XposedBridge {
 		}
 	}
 
-	private native static boolean initNative();
+	private native static boolean initXResourcesNative();
 
 	/**
 	 * Intercept every call to the specified method and call a handler function instead.
