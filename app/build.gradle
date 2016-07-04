@@ -87,6 +87,7 @@ task generateDocs(type: Javadoc, dependsOn: 'compileReleaseSources') {
         (101..122).each {
             addBooleanOption 'hide ' + it, true
         }
+        addBooleanOption 'hidePackage xposed.dummy', true
     }
 }
 
@@ -105,6 +106,7 @@ task generateStubs(type: Javadoc, dependsOn: 'compileReleaseSources') {
         addFileOption 'api', file('doclib/api/current.txt')
         addBooleanOption 'hide 111', true
         addBooleanOption 'hide 113', true
+        addBooleanOption 'hidePackage xposed.dummy', true
     }
 }
 

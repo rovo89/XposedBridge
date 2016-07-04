@@ -1,10 +1,13 @@
 package de.robv.android.xposed;
 
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.android.internal.os.RuntimeInit;
 import com.android.internal.os.ZygoteInit;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -17,11 +20,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import dalvik.system.PathClassLoader;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import static de.robv.android.xposed.XposedHelpers.getIntField;
+import static de.robv.android.xposed.XposedHelpers.setObjectField;
 
 /**
  * This class contains most of Xposed's central logic, such as initialization and callbacks used by
@@ -70,6 +75,8 @@ public final class XposedBridge {
 		// Initialize the Xposed framework and modules
 		try {
 			if (!hadInitErrors()) {
+				initXResources();
+
 				SELinuxHelper.initOnce();
 				SELinuxHelper.initForProcess(null);
 
@@ -104,6 +111,17 @@ public final class XposedBridge {
 			isZygote = false;
 			XposedBridge.main(args);
 		}
+	}
+
+	private static void initXResources() throws IOException {
+		// Create a dex file for XResourcesSuperClass. Its superclass should be the same class that
+		// is used for the system resources by this ROM.
+		File xResSuperDex = DexCreator.ensure("XResources", Resources.getSystem().getClass(), Resources.class);
+
+		// Inject a ClassLoader for the created class as parent of XposedBridge's ClassLoader.
+		ClassLoader myCL =  XposedBridge.class.getClassLoader();
+		PathClassLoader resCL = new PathClassLoader(xResSuperDex.getAbsolutePath(), myCL.getParent());
+		setObjectField(myCL, "parent", resCL);
 	}
 
 	private native static boolean hadInitErrors();

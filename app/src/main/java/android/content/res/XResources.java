@@ -34,6 +34,7 @@ import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated.LayoutInflatedParam;
 import de.robv.android.xposed.callbacks.XCallback;
+import xposed.dummy.XResourcesSuperClass;
 
 import static de.robv.android.xposed.XposedHelpers.decrementMethodDepth;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -50,7 +51,7 @@ import static de.robv.android.xposed.XposedHelpers.incrementMethodDepth;
  * be set using the methods made available via the API methods in this class.
  */
 @SuppressWarnings("JniMissingFunction")
-public class XResources extends MiuiResources {
+public class XResources extends XResourcesSuperClass {
 	private static final SparseArray<HashMap<String, Object>> sReplacements = new SparseArray<>();
 	private static final SparseArray<HashMap<String, ResourceNames>> sResourceNames = new SparseArray<>();
 
@@ -80,7 +81,6 @@ public class XResources extends MiuiResources {
 
 	/** Dummy, will never be called (objects are transferred to this class only). */
 	private XResources() {
-		super(null, null, null);
 		throw new UnsupportedOperationException();
 	}
 
