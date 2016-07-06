@@ -4,6 +4,7 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import dalvik.system.DexFile;
 import external.org.apache.commons.lang3.ClassUtils;
 import external.org.apache.commons.lang3.reflect.MemberUtils;
 
@@ -1485,6 +1487,24 @@ public final class XposedHelpers {
 		}
 		is.close();
 		return buf.toByteArray();
+	}
+
+	/**
+	 * Invokes the {@link Closeable#close()} method, ignoring IOExceptions.
+	 */
+	/*package*/ static void closeSilently(Closeable c) {
+		try {
+			c.close();
+		} catch (IOException ignored) {}
+	}
+
+	/**
+	 * Invokes the {@link DexFile#close()} method, ignoring IOExceptions.
+	 */
+	/*package*/ static void closeSilently(DexFile dexFile) {
+		try {
+			dexFile.close();
+		} catch (IOException ignored) {}
 	}
 
 	/**

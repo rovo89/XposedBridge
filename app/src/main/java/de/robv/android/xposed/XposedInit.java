@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
+import dalvik.system.DexFile;
 import dalvik.system.PathClassLoader;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -32,8 +33,8 @@ import de.robv.android.xposed.services.BaseService;
 
 import static de.robv.android.xposed.XposedBridge.hookAllConstructors;
 import static de.robv.android.xposed.XposedBridge.hookAllMethods;
+import static de.robv.android.xposed.XposedHelpers.closeSilently;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
-import static de.robv.android.xposed.XposedHelpers.findClassIfExists;
 import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
@@ -374,16 +375,27 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 			return;
 		}
 
-		ClassLoader mclWithoutXposedBridge = new PathClassLoader(apk, topClassLoader);
-		if (findClassIfExists(INSTANT_RUN_CLASS, mclWithoutXposedBridge) != null) {
-			Log.e(TAG, "  Cannot load module, please disable \"Instant Run\" in Android Studio.");
+		DexFile dexFile;
+		try {
+			dexFile = new DexFile(apk);
+		} catch (IOException e) {
+			Log.e(TAG, "  Cannot load module", e);
 			return;
 		}
-		if (findClassIfExists(XposedBridge.class.getName(), mclWithoutXposedBridge) != null) {
+
+		if (dexFile.loadClass(INSTANT_RUN_CLASS, topClassLoader) != null) {
+			Log.e(TAG, "  Cannot load module, please disable \"Instant Run\" in Android Studio.");
+			closeSilently(dexFile);
+			return;
+		}
+
+		if (dexFile.loadClass(XposedBridge.class.getName(), topClassLoader) != null) {
 			Log.w(TAG, "  The Xposed API classes are compiled into the module's APK.");
 			Log.w(TAG, "  This may cause strange issues and must be fixed by the module developer.");
 			Log.w(TAG, "  For details, see: http://api.xposed.info/using.html");
 		}
+
+		closeSilently(dexFile);
 
 		ClassLoader mcl = new PathClassLoader(apk, XposedBridge.BOOTCLASSLOADER);
 		InputStream is = mcl.getResourceAsStream("assets/xposed_init");
@@ -441,9 +453,7 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 		} catch (IOException e) {
 			Log.e(TAG, "  Failed to load module from " + apk, e);
 		} finally {
-			try {
-				is.close();
-			} catch (IOException ignored) {}
+			closeSilently(is);
 		}
 	}
 }
