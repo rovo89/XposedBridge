@@ -31,7 +31,7 @@ android {
     hiddenapi.afterEvaluate {
         hiddenapi.android.compileSdkVersion compileSdkVersion
         hiddenapi.android.buildToolsVersion buildToolsVersion
-        preBuild.dependsOn hiddenapi.assembleRelease
+        preBuild.dependsOn ':hiddenapistubs:assembleRelease'
         hiddenapi.preBuild << {
             def hiddenapiCompiler = hiddenapi.android.libraryVariants[0].javaCompiler
             def hiddenapiDestPath = hiddenapiCompiler.destinationDir.getAbsolutePath()
