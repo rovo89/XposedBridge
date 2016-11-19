@@ -23,6 +23,8 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import dalvik.system.DexFile;
 import dalvik.system.PathClassLoader;
@@ -400,13 +402,24 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 		closeSilently(dexFile);
 
-		ClassLoader mcl = new PathClassLoader(apk, XposedBridge.BOOTCLASSLOADER);
-		InputStream is = mcl.getResourceAsStream("assets/xposed_init");
-		if (is == null) {
-			Log.e(TAG, "assets/xposed_init not found in the APK");
+		ZipFile zipFile = null;
+		InputStream is;
+		try {
+			zipFile = new ZipFile(apk);
+			ZipEntry zipEntry = zipFile.getEntry("assets/xposed_init");
+			if (zipEntry == null) {
+				Log.e(TAG, "  assets/xposed_init not found in the APK");
+				closeSilently(zipFile);
+				return;
+			}
+			is = zipFile.getInputStream(zipEntry);
+		} catch (IOException e) {
+			Log.e(TAG, "  Cannot read assets/xposed_init in the APK", e);
+			closeSilently(zipFile);
 			return;
 		}
 
+		ClassLoader mcl = new PathClassLoader(apk, XposedBridge.BOOTCLASSLOADER);
 		BufferedReader moduleClassesReader = new BufferedReader(new InputStreamReader(is));
 		try {
 			String moduleClassName;
@@ -457,6 +470,7 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 			Log.e(TAG, "  Failed to load module from " + apk, e);
 		} finally {
 			closeSilently(is);
+			closeSilently(zipFile);
 		}
 	}
 }

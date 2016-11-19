@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.ZipFile;
 
 import dalvik.system.DexFile;
 import external.org.apache.commons.lang3.ClassUtils;
@@ -1507,6 +1508,17 @@ public final class XposedHelpers {
 		if (dexFile != null) {
 			try {
 				dexFile.close();
+			} catch (IOException ignored) {}
+		}
+	}
+
+	/**
+	 * Invokes the {@link ZipFile#close()} method, ignoring IOExceptions.
+	 */
+	/*package*/ static void closeSilently(ZipFile zipFile) {
+		if (zipFile != null) {
+			try {
+				zipFile.close();
 			} catch (IOException ignored) {}
 		}
 	}
