@@ -486,6 +486,9 @@ public final class XposedBridge {
 
 	private static native Object cloneToSubclassNative(Object obj, Class<?> targetClazz);
 
+	/*package*/ static native void closeFilesBeforeForkNative();
+	/*package*/ static native void reopenFilesAfterForkNative();
+
 	/** @hide */
 	public static final class CopyOnWriteSortedSet<E> {
 		private transient volatile Object[] elements = EMPTY_ARRAY;

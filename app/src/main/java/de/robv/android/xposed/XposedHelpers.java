@@ -3,9 +3,12 @@ package de.robv.android.xposed;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -1595,6 +1598,24 @@ public final class XposedHelpers {
 				sMethodDepth.put(method, counter);
 			}
 			return counter;
+		}
+	}
+
+	/*package*/ static boolean fileContains(File file, String str) throws IOException {
+		// There are certainly more efficient algorithms (e.g. Boyer-Moore used in grep),
+		// but the naive approach should be sufficient here.
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new FileReader(file));
+			String line;
+			while ((line = in.readLine()) != null) {
+				if (line.contains(str)) {
+					return true;
+				}
+			}
+			return false;
+		} finally {
+			closeSilently(in);
 		}
 	}
 

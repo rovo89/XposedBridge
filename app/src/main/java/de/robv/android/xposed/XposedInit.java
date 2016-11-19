@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.content.res.XResources;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
 
@@ -36,7 +37,9 @@ import de.robv.android.xposed.services.BaseService;
 import static de.robv.android.xposed.XposedBridge.hookAllConstructors;
 import static de.robv.android.xposed.XposedBridge.hookAllMethods;
 import static de.robv.android.xposed.XposedHelpers.closeSilently;
+import static de.robv.android.xposed.XposedHelpers.fileContains;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
+import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
@@ -61,6 +64,24 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 	 * Hook some methods which we want to create an easier interface for developers.
 	 */
 	/*package*/ static void initForZygote() throws Throwable {
+		if (needsToCloseFilesForFork()) {
+			XC_MethodHook callback = new XC_MethodHook() {
+				@Override
+				protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+					XposedBridge.closeFilesBeforeForkNative();
+				}
+
+				@Override
+				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+					XposedBridge.reopenFilesAfterForkNative();
+				}
+			};
+
+			Class<?> zygote = findClass("com.android.internal.os.Zygote", null);
+			hookAllMethods(zygote, "nativeForkAndSpecialize", callback);
+			hookAllMethods(zygote, "nativeForkSystemServer", callback);
+		}
+
 		final HashSet<String> loadedPackagesInProcess = new HashSet<>(1);
 
 		// normal process initialization (for new Activity, Service, BroadcastReceiver etc.)
@@ -330,6 +351,23 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 		setStaticObjectField(Resources.class, "mSystem", systemRes);
 
 		XResources.init(latestResKey);
+	}
+
+	private static boolean needsToCloseFilesForFork() {
+		if (Build.VERSION.SDK_INT >= 24) {
+			return true;
+		} else if (Build.VERSION.SDK_INT < 21) {
+			return false;
+		}
+
+		File lib = new File(Environment.getRootDirectory(), "lib/libandroid_runtime.so");
+		try {
+			return fileContains(lib, "Unable to construct file descriptor table");
+		} catch (IOException e) {
+			Log.e(TAG, "Could not check whether " + lib + " has security patch level 5");
+			// In doubt, just do it. The worst case should be unnecessary work and log messages.
+			return true;
+		}
 	}
 
 	private static void hookXposedInstaller(ClassLoader classLoader) {
