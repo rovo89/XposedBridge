@@ -1493,18 +1493,22 @@ public final class XposedHelpers {
 	 * Invokes the {@link Closeable#close()} method, ignoring IOExceptions.
 	 */
 	/*package*/ static void closeSilently(Closeable c) {
-		try {
-			c.close();
-		} catch (IOException ignored) {}
+		if (c != null) {
+			try {
+				c.close();
+			} catch (IOException ignored) {}
+		}
 	}
 
 	/**
 	 * Invokes the {@link DexFile#close()} method, ignoring IOExceptions.
 	 */
 	/*package*/ static void closeSilently(DexFile dexFile) {
-		try {
-			dexFile.close();
-		} catch (IOException ignored) {}
+		if (dexFile != null) {
+			try {
+				dexFile.close();
+			} catch (IOException ignored) {}
+		}
 	}
 
 	/**
