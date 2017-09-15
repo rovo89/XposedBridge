@@ -53,7 +53,9 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 	private static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
 	@SuppressLint("SdCardPath")
-	private static final String BASE_DIR = "/data/data/" + INSTALLER_PACKAGE_NAME + "/";
+	private static final String BASE_DIR = Build.VERSION.SDK_INT >= 24
+			? "/data/user_de/0/" + INSTALLER_PACKAGE_NAME + "/"
+			: "/data/data/" + INSTALLER_PACKAGE_NAME + "/";
 	private static final String INSTANT_RUN_CLASS = "com.android.tools.fd.runtime.BootstrapApplication";
 
 	private static boolean disableResources = false;
