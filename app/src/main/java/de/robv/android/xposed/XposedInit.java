@@ -12,6 +12,7 @@ import android.content.res.TypedArray;
 import android.content.res.XResources;
 import android.os.Build;
 import android.os.Environment;
+import android.os.IBinder;
 import android.os.Process;
 import android.util.Log;
 
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,6 +38,7 @@ import de.robv.android.xposed.services.BaseService;
 
 import static de.robv.android.xposed.XposedBridge.hookAllConstructors;
 import static de.robv.android.xposed.XposedBridge.hookAllMethods;
+import static de.robv.android.xposed.XposedHelpers.callMethod;
 import static de.robv.android.xposed.XposedHelpers.closeSilently;
 import static de.robv.android.xposed.XposedHelpers.fileContains;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -59,6 +62,7 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 	private static final String INSTANT_RUN_CLASS = "com.android.tools.fd.runtime.BootstrapApplication";
 
 	private static boolean disableResources = false;
+	private static final String[] XRESOURCES_CONFLICTING_PACKAGES = { "com.sygic.aura" };
 
 	private XposedInit() {}
 
@@ -234,7 +238,6 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 		final Class<?> classGTLR;
 		final Class<?> classResKey;
 		final ThreadLocal<Object> latestResKey = new ThreadLocal<>();
-		final String[] conflictingPackages = { "com.sygic.aura" };
 
 		if (Build.VERSION.SDK_INT <= 18) {
 			classGTLR = ActivityThread.class;
@@ -244,94 +247,82 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 			classResKey = Class.forName("android.content.res.ResourcesKey");
 		}
 
-		hookAllConstructors(classResKey, new XC_MethodHook() {
-			@Override
-			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				latestResKey.set(param.thisObject);
-			}
-		});
-
-		hookAllMethods(classGTLR, "getTopLevelResources", new XC_MethodHook() {
-			@Override
-			protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-				latestResKey.set(null);
-			}
-
-			@Override
-			protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-				Object key = latestResKey.get();
-				if (key == null)
-					return;
-
-				latestResKey.set(null);
-
-				Object result = param.getResult();
-				if (result == null || result instanceof XResources)
-					return;
-
-				if (Arrays.binarySearch(conflictingPackages, AndroidAppHelper.currentPackageName()) == 0)
-					return;
-
-				// replace the returned resources with our subclass
-				XResources newRes = (XResources) XposedBridge.cloneToSubclass(result, XResources.class);
-				String resDir = (String) getObjectField(key, "mResDir");
-				newRes.initObject(resDir);
-
-				@SuppressWarnings("unchecked")
-				Map<Object, WeakReference<Resources>> mActiveResources =
-						(Map<Object, WeakReference<Resources>>) getObjectField(param.thisObject, "mActiveResources");
-				Object lockObject = (Build.VERSION.SDK_INT <= 18)
-						? getObjectField(param.thisObject, "mPackages") : param.thisObject;
-
-				synchronized (lockObject) {
-					WeakReference<Resources> existing = mActiveResources.get(key);
-					if (existing != null && existing.get() != null && existing.get().getAssets() != newRes.getAssets())
-						existing.get().getAssets().close();
-					mActiveResources.put(key, new WeakReference<Resources>(newRes));
-				}
-
-				// Invoke handleInitPackageResources()
-				if (newRes.isFirstLoad()) {
-					String packageName = newRes.getPackageName();
-					XC_InitPackageResources.InitPackageResourcesParam resparam = new XC_InitPackageResources.InitPackageResourcesParam(XposedBridge.sInitPackageResourcesCallbacks);
-					resparam.packageName = packageName;
-					resparam.res = newRes;
-					XCallback.callAll(resparam);
-				}
-
-				param.setResult(newRes);
-			}
-		});
-
-		if (Build.VERSION.SDK_INT >= 19) {
-			// This method exists only on CM-based ROMs
-			hookAllMethods(classGTLR, "getTopLevelThemedResources", new XC_MethodHook() {
+		if (Build.VERSION.SDK_INT >= 24) {
+			findAndHookMethod(classGTLR, "getOrCreateResources", IBinder.class, classResKey, ClassLoader.class, new XC_MethodHook() {
 				@Override
 				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-					Object result = param.getResult();
-					if (result == null || result instanceof XResources)
+					String resDir = (String) getObjectField(param.args[1], "mResDir");
+					XResources newRes = cloneToXResources(param, resDir);
+					if (newRes == null) {
 						return;
-
-					if (Arrays.binarySearch(conflictingPackages, AndroidAppHelper.currentPackageName()) == 0)
-						return;
-
-					// replace the returned resources with our subclass
-					XResources newRes = (XResources) XposedBridge.cloneToSubclass(result, XResources.class);
-					String resDir = (String) param.args[0];
-					newRes.initObject(resDir);
-
-					// Invoke handleInitPackageResources()
-					if (newRes.isFirstLoad()) {
-						String packageName = newRes.getPackageName();
-						XC_InitPackageResources.InitPackageResourcesParam resparam = new XC_InitPackageResources.InitPackageResourcesParam(XposedBridge.sInitPackageResourcesCallbacks);
-						resparam.packageName = packageName;
-						resparam.res = newRes;
-						XCallback.callAll(resparam);
 					}
 
-					param.setResult(newRes);
+					Object activityToken = param.args[0];
+					synchronized (param.thisObject) {
+						ArrayList<WeakReference<Resources>> resourceReferences;
+						if (activityToken != null) {
+							Object activityResources = callMethod(param.thisObject, "getOrCreateActivityResourcesStructLocked", activityToken);
+							resourceReferences = (ArrayList<WeakReference<Resources>>) getObjectField(activityResources, "activityResources");
+						} else {
+							resourceReferences = (ArrayList<WeakReference<Resources>>) getObjectField(param.thisObject, "mResourceReferences");
+						}
+						resourceReferences.add(new WeakReference(newRes));
+					}
 				}
 			});
+		} else {
+			hookAllConstructors(classResKey, new XC_MethodHook() {
+				@Override
+				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+					latestResKey.set(param.thisObject);
+				}
+			});
+
+			hookAllMethods(classGTLR, "getTopLevelResources", new XC_MethodHook() {
+				@Override
+				protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+					latestResKey.set(null);
+				}
+
+				@Override
+				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+					Object key = latestResKey.get();
+					if (key == null) {
+						return;
+					}
+					latestResKey.set(null);
+
+					String resDir = (String) getObjectField(key, "mResDir");
+					XResources newRes = cloneToXResources(param, resDir);
+					if (newRes == null) {
+						return;
+					}
+
+					@SuppressWarnings("unchecked")
+					Map<Object, WeakReference<Resources>> mActiveResources =
+							(Map<Object, WeakReference<Resources>>) getObjectField(param.thisObject, "mActiveResources");
+					Object lockObject = (Build.VERSION.SDK_INT <= 18)
+							? getObjectField(param.thisObject, "mPackages") : param.thisObject;
+
+					synchronized (lockObject) {
+						WeakReference<Resources> existing = mActiveResources.put(key, new WeakReference<Resources>(newRes));
+						if (existing != null && existing.get() != null && existing.get().getAssets() != newRes.getAssets()) {
+							existing.get().getAssets().close();
+						}
+					}
+				}
+			});
+
+			if (Build.VERSION.SDK_INT >= 19) {
+				// This method exists only on CM-based ROMs
+				hookAllMethods(classGTLR, "getTopLevelThemedResources", new XC_MethodHook() {
+					@Override
+					protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+						String resDir = (String) param.args[0];
+						cloneToXResources(param, resDir);
+					}
+				});
+			}
 		}
 
 		// Replace TypedArrays with XTypedArrays
@@ -353,6 +344,30 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 		setStaticObjectField(Resources.class, "mSystem", systemRes);
 
 		XResources.init(latestResKey);
+	}
+
+	private static XResources cloneToXResources(XC_MethodHook.MethodHookParam param, String resDir) {
+		Object result = param.getResult();
+		if (result == null || result instanceof XResources ||
+				Arrays.binarySearch(XRESOURCES_CONFLICTING_PACKAGES, AndroidAppHelper.currentPackageName()) == 0) {
+			return null;
+		}
+
+		// Replace the returned resources with our subclass.
+		XResources newRes = (XResources) XposedBridge.cloneToSubclass(result, XResources.class);
+		newRes.initObject(resDir);
+
+		// Invoke handleInitPackageResources().
+		if (newRes.isFirstLoad()) {
+			String packageName = newRes.getPackageName();
+			XC_InitPackageResources.InitPackageResourcesParam resparam = new XC_InitPackageResources.InitPackageResourcesParam(XposedBridge.sInitPackageResourcesCallbacks);
+			resparam.packageName = packageName;
+			resparam.res = newRes;
+			XCallback.callAll(resparam);
+		}
+
+		param.setResult(newRes);
+		return newRes;
 	}
 
 	private static boolean needsToCloseFilesForFork() {
