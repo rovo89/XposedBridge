@@ -45,6 +45,7 @@ import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
 import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
+import static de.robv.android.xposed.XposedHelpers.getParameterIndexByType;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
 import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
@@ -248,16 +249,20 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 		}
 
 		if (Build.VERSION.SDK_INT >= 24) {
-			findAndHookMethod(classGTLR, "getOrCreateResources", IBinder.class, classResKey, ClassLoader.class, new XC_MethodHook() {
+			hookAllMethods(classGTLR, "getOrCreateResources", new XC_MethodHook() {
 				@Override
 				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-					String resDir = (String) getObjectField(param.args[1], "mResDir");
+					// At least on OnePlus 5, the method has an additional parameter compared to AOSP.
+					final int activityTokenIdx = getParameterIndexByType(param.method, IBinder.class);
+					final int resKeyIdx = getParameterIndexByType(param.method, classResKey);
+
+					String resDir = (String) getObjectField(param.args[resKeyIdx], "mResDir");
 					XResources newRes = cloneToXResources(param, resDir);
 					if (newRes == null) {
 						return;
 					}
 
-					Object activityToken = param.args[0];
+					Object activityToken = param.args[activityTokenIdx];
 					synchronized (param.thisObject) {
 						ArrayList<WeakReference<Resources>> resourceReferences;
 						if (activityToken != null) {

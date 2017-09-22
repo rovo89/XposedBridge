@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
@@ -720,6 +721,49 @@ public final class XposedHelpers {
 		/** @hide */
 		public ClassNotFoundError(String detailMessage, Throwable cause) {
 			super(detailMessage, cause);
+		}
+	}
+
+	/**
+	 * Returns the index of the first parameter declared with the given type.
+	 *
+	 * @throws NoSuchFieldError if there is no parameter with that type.
+	 * @hide
+	 */
+	public static int getFirstParameterIndexByType(Member method, Class<?> type) {
+		Class<?>[] classes = (method instanceof  Method) ?
+				((Method) method).getParameterTypes() : ((Constructor) method).getParameterTypes();
+		for (int i = 0 ; i < classes.length; i++) {
+			if (classes[i] == type) {
+				return i;
+			}
+		}
+		throw new NoSuchFieldError("No parameter of type " + type + " found in " + method);
+	}
+
+	/**
+	 * Returns the index of the parameter declared with the given type, ensuring that there is exactly one such parameter.
+	 *
+	 * @throws NoSuchFieldError if there is no or more than one parameter with that type.
+	 * @hide
+	 */
+	public static int getParameterIndexByType(Member method, Class<?> type) {
+		Class<?>[] classes = (method instanceof  Method) ?
+				((Method) method).getParameterTypes() : ((Constructor) method).getParameterTypes();
+		int idx = -1;
+		for (int i = 0 ; i < classes.length; i++) {
+			if (classes[i] == type) {
+				if (idx == -1) {
+					idx = i;
+				} else {
+					throw new NoSuchFieldError("More than one parameter of type " + type + " found in " + method);
+				}
+			}
+		}
+		if (idx != -1) {
+			return idx;
+		} else {
+			throw new NoSuchFieldError("No parameter of type " + type + " found in " + method);
 		}
 	}
 
