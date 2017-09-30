@@ -1,5 +1,6 @@
 package de.robv.android.xposed;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.util.Log;
 
@@ -113,10 +114,12 @@ public final class XposedBridge {
 		}
 	}
 
+	@SuppressLint("SetWorldReadable")
 	private static void initXResources() throws IOException {
 		// Create a dex file for XResourcesSuperClass. Its superclass should be the same class that
 		// is used for the system resources by this ROM.
 		File xResSuperDex = DexCreator.ensure("XResources", Resources.getSystem().getClass(), Resources.class);
+		xResSuperDex.setReadable(true, false);
 
 		// Inject a ClassLoader for the created class as parent of XposedBridge's ClassLoader.
 		ClassLoader myCL =  XposedBridge.class.getClassLoader();
