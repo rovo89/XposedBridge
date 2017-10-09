@@ -118,7 +118,9 @@ public final class XposedBridge {
 	private static void initXResources() throws IOException {
 		// Create a dex file for XResourcesSuperClass. Its superclass should be the same class that
 		// is used for the system resources by this ROM.
-		File xResSuperDex = DexCreator.ensure("XResources", Resources.getSystem().getClass(), Resources.class);
+		Class<?> actualResourcesClass = Resources.getSystem().getClass();
+		XposedBridge.removeFinalFlagNative(actualResourcesClass);
+		File xResSuperDex = DexCreator.ensure("XResources", actualResourcesClass, Resources.class);
 		xResSuperDex.setReadable(true, false);
 
 		// Inject a ClassLoader for the created class as parent of XposedBridge's ClassLoader.
@@ -488,6 +490,8 @@ public final class XposedBridge {
 	}
 
 	private static native Object cloneToSubclassNative(Object obj, Class<?> targetClazz);
+
+	private static native void removeFinalFlagNative(Class<?> clazz);
 
 	/*package*/ static native void closeFilesBeforeForkNative();
 	/*package*/ static native void reopenFilesAfterForkNative();
