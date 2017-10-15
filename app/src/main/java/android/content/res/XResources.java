@@ -1253,26 +1253,15 @@ public class XResources extends XResourcesSuperClass {
 	 * @hide
 	 */
 	public static class XTypedArray extends TypedArray {
-		private boolean mIsObjectInited;
-		private XResources mRes;
-
 		/** Dummy, will never be called (objects are transferred to this class only). */
 		private XTypedArray() {
 			super(null, null, null, 0);
 			throw new UnsupportedOperationException();
 		}
 
-		public void initObject(XResources res) {
-			if (mIsObjectInited)
-				throw new IllegalStateException("Object has already been initialized");
-
-			this.mRes = res;
-			this.mIsObjectInited = true;
-		}
-
 		@Override
 		public boolean getBoolean(int index, boolean defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof Boolean) {
 				return (Boolean) replacement;
 			} else if (replacement instanceof XResForwarder) {
@@ -1285,7 +1274,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public int getColor(int index, int defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof Integer) {
 				return (Integer) replacement;
 			} else if (replacement instanceof XResForwarder) {
@@ -1298,7 +1287,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public ColorStateList getColorStateList(int index) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof ColorStateList) {
 				return (ColorStateList) replacement;
 			} else if (replacement instanceof Integer) {
@@ -1321,7 +1310,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public float getDimension(int index, float defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();
@@ -1332,7 +1321,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public int getDimensionPixelOffset(int index, int defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();
@@ -1343,7 +1332,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public int getDimensionPixelSize(int index, int defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();
@@ -1355,10 +1344,11 @@ public class XResources extends XResourcesSuperClass {
 		@Override
 		public Drawable getDrawable(int index) {
 			final int resId = getResourceId(index, 0);
-			Object replacement = mRes.getReplacement(resId);
+			XResources xres = (XResources) getResources();
+			Object replacement = xres.getReplacement(resId);
 			if (replacement instanceof DrawableLoader) {
 				try {
-					Drawable result = ((DrawableLoader) replacement).newDrawable(mRes, resId);
+					Drawable result = ((DrawableLoader) replacement).newDrawable(xres, resId);
 					if (result != null)
 						return result;
 				} catch (Throwable t) { XposedBridge.log(t); }
@@ -1374,7 +1364,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public float getFloat(int index, float defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();
@@ -1386,7 +1376,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public float getFraction(int index, int base, int pbase, float defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();
@@ -1398,7 +1388,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public int getInt(int index, int defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof Integer) {
 				return (Integer) replacement;
 			} else if (replacement instanceof XResForwarder) {
@@ -1411,7 +1401,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public int getInteger(int index, int defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof Integer) {
 				return (Integer) replacement;
 			} else if (replacement instanceof XResForwarder) {
@@ -1424,7 +1414,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public int getLayoutDimension(int index, int defValue) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();
@@ -1435,7 +1425,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public int getLayoutDimension(int index, String name) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof XResForwarder) {
 				Resources repRes = ((XResForwarder) replacement).getResources();
 				int repId = ((XResForwarder) replacement).getId();
@@ -1446,7 +1436,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public String getString(int index) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof CharSequence) {
 				return replacement.toString();
 			} else if (replacement instanceof XResForwarder) {
@@ -1459,7 +1449,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public CharSequence getText(int index) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof CharSequence) {
 				return (CharSequence) replacement;
 			} else if (replacement instanceof XResForwarder) {
@@ -1472,7 +1462,7 @@ public class XResources extends XResourcesSuperClass {
 
 		@Override
 		public CharSequence[] getTextArray(int index) {
-			Object replacement = mRes.getReplacement(getResourceId(index, 0));
+			Object replacement = ((XResources) getResources()).getReplacement(getResourceId(index, 0));
 			if (replacement instanceof CharSequence[]) {
 				return (CharSequence[]) replacement;
 			} else if (replacement instanceof XResForwarder) {

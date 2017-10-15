@@ -459,20 +459,9 @@ public final class XposedBridge {
 	}
 
 	/*package*/ static void setObjectClass(Object obj, Class<?> clazz) {
-		/*
-		 * Whitelist for classes we have prepared for this substitution in native code.
-		 * These classes must be de-facto final, otherwise subclasses which are not loaded by the
-		 * boot classloader will have gaps in their field offsets, which causes issues with code
-		 * where DexOpt replaced field accesses with direct accesses byte offsets.
-		 */
-		if (!clazz.getName().equals("android.content.res.XResources$XTypedArray")) {
-			throw new IllegalArgumentException("Target class " + clazz + " is not allowed");
-		}
-
-		if (obj.getClass() != clazz.getSuperclass()) {
+		if (clazz.isAssignableFrom(obj.getClass())) {
 			throw new IllegalArgumentException("Cannot transfer object from " + obj.getClass() + " to " + clazz);
 		}
-
 		setObjectClassNative(obj, clazz);
 	}
 

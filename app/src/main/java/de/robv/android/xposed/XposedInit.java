@@ -338,7 +338,6 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 				Resources res = typedArray.getResources();
 				if (res instanceof XResources) {
 					XposedBridge.setObjectClass(typedArray, XResources.XTypedArray.class);
-					((XResources.XTypedArray) typedArray).initObject((XResources) res);
 				}
 			}
 		});
