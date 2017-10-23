@@ -59,6 +59,9 @@ public final class XposedBridge {
 
 	/*package*/ static boolean disableHooks = false;
 
+	// This field is set "magically" on MIUI.
+	/*package*/ static long BOOT_START_TIME;
+
 	private static final Object[] EMPTY_ARRAY = new Object[0];
 
 	// built-in handlers

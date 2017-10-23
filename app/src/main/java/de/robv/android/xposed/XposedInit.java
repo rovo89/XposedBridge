@@ -16,6 +16,8 @@ import android.os.IBinder;
 import android.os.Process;
 import android.util.Log;
 
+import com.android.internal.os.ZygoteInit;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -43,10 +45,12 @@ import static de.robv.android.xposed.XposedHelpers.closeSilently;
 import static de.robv.android.xposed.XposedHelpers.fileContains;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
 import static de.robv.android.xposed.XposedHelpers.findClass;
+import static de.robv.android.xposed.XposedHelpers.findFieldIfExists;
 import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.getParameterIndexByType;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
+import static de.robv.android.xposed.XposedHelpers.setStaticLongField;
 import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
 /*package*/ final class XposedInit {
@@ -212,6 +216,11 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 								app.uid == Process.myUid() ? app.sourceDir : app.publicSourceDir);
 					}
 				});
+
+		// MIUI
+		if (findFieldIfExists(ZygoteInit.class, "BOOT_START_TIME") != null) {
+			setStaticLongField(ZygoteInit.class, "BOOT_START_TIME", XposedBridge.BOOT_START_TIME);
+		}
 	}
 
 	/*package*/ static void hookResources() throws Throwable {
