@@ -50,6 +50,7 @@ import static de.robv.android.xposed.XposedHelpers.getBooleanField;
 import static de.robv.android.xposed.XposedHelpers.getObjectField;
 import static de.robv.android.xposed.XposedHelpers.getParameterIndexByType;
 import static de.robv.android.xposed.XposedHelpers.setObjectField;
+import static de.robv.android.xposed.XposedHelpers.setStaticBooleanField;
 import static de.robv.android.xposed.XposedHelpers.setStaticLongField;
 import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 
@@ -220,6 +221,15 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 		// MIUI
 		if (findFieldIfExists(ZygoteInit.class, "BOOT_START_TIME") != null) {
 			setStaticLongField(ZygoteInit.class, "BOOT_START_TIME", XposedBridge.BOOT_START_TIME);
+		}
+
+		// Samsung
+		if (Build.VERSION.SDK_INT >= 24) {
+			Class<?> zygote = findClass("com.android.internal.os.Zygote", null);
+			try {
+				setStaticBooleanField(zygote, "isEnhancedZygoteASLREnabled", false);
+			} catch (NoSuchFieldError ignored) {
+			}
 		}
 	}
 
