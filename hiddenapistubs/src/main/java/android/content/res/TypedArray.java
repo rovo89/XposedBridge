@@ -8,7 +8,7 @@ public class TypedArray {
 		throw new UnsupportedOperationException("STUB");
 	}
 
-	/*package*/ TypedArray(Resources resources, int[] data, int[] indices, int len) {
+	protected TypedArray(Resources resources, int[] data, int[] indices, int len) {
 		throw new UnsupportedOperationException("STUB");
 	}
 
@@ -81,6 +81,10 @@ public class TypedArray {
 	}
 
 	public CharSequence[] getTextArray(int index) {
+		throw new UnsupportedOperationException("STUB");
+	}
+
+	public void recycle() {
 		throw new UnsupportedOperationException("STUB");
 	}
 }

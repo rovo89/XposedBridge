@@ -2,6 +2,7 @@ package de.robv.android.xposed;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.util.Log;
 
 import com.android.internal.os.RuntimeInit;
@@ -114,19 +115,36 @@ public final class XposedBridge {
 		}
 	}
 
-	@SuppressLint("SetWorldReadable")
 	private static void initXResources() throws IOException {
-		// Create a dex file for XResourcesSuperClass. Its superclass should be the same class that
-		// is used for the system resources by this ROM.
-		Class<?> actualResourcesClass = Resources.getSystem().getClass();
-		XposedBridge.removeFinalFlagNative(actualResourcesClass);
-		File xResSuperDex = DexCreator.ensure("XResources", actualResourcesClass, Resources.class);
-		xResSuperDex.setReadable(true, false);
+		// Create XResourcesSuperClass.
+		Resources res = Resources.getSystem();
+		File resDexFile = ensureSuperDexFile("XResources", res.getClass(), Resources.class);
 
-		// Inject a ClassLoader for the created class as parent of XposedBridge's ClassLoader.
+		// Create XTypedArraySuperClass.
+		Class<?> taClass = TypedArray.class;
+		try {
+			TypedArray ta = res.obtainTypedArray(res.getIdentifier("preloaded_drawables", "array", "android"));
+			taClass = ta.getClass();
+			ta.recycle();
+		} catch (Resources.NotFoundException nfe) {
+			XposedBridge.log(nfe);
+		}
+		Runtime.getRuntime().gc();
+		File taDexFile = ensureSuperDexFile("XTypedArray", taClass, TypedArray.class);
+
+		// Inject a ClassLoader for the created classes as parent of XposedBridge's ClassLoader.
 		ClassLoader myCL =  XposedBridge.class.getClassLoader();
-		PathClassLoader resCL = new PathClassLoader(xResSuperDex.getAbsolutePath(), myCL.getParent());
-		setObjectField(myCL, "parent", resCL);
+		String paths = resDexFile.getAbsolutePath() + File.pathSeparator + taDexFile.getAbsolutePath();
+		PathClassLoader dummyCL = new PathClassLoader(paths, myCL.getParent());
+		setObjectField(myCL, "parent", dummyCL);
+	}
+
+	@SuppressLint("SetWorldReadable")
+	private static File ensureSuperDexFile(String clz, Class<?> realSuperClz, Class<?> topClz) throws IOException {
+		XposedBridge.removeFinalFlagNative(realSuperClz);
+		File dexFile = DexCreator.ensure(clz, realSuperClz, topClz);
+		dexFile.setReadable(true, false);
+		return dexFile;
 	}
 
 	private native static boolean hadInitErrors();

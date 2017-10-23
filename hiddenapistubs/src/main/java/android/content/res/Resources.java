@@ -189,4 +189,8 @@ public class Resources {
 	public InputStream openRawResource(int id) throws NotFoundException {
 		throw new UnsupportedOperationException("STUB");
 	}
+
+	public TypedArray obtainTypedArray (int id) {
+		throw new UnsupportedOperationException("STUB");
+	}
 }

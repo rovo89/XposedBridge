@@ -35,6 +35,7 @@ import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated.LayoutInflatedParam;
 import de.robv.android.xposed.callbacks.XCallback;
 import xposed.dummy.XResourcesSuperClass;
+import xposed.dummy.XTypedArraySuperClass;
 
 import static de.robv.android.xposed.XposedHelpers.decrementMethodDepth;
 import static de.robv.android.xposed.XposedHelpers.findAndHookMethod;
@@ -1252,7 +1253,7 @@ public class XResources extends XResourcesSuperClass {
 	 * Mainly used when inflating layouts.
 	 * @hide
 	 */
-	public static class XTypedArray extends TypedArray {
+	public static class XTypedArray extends XTypedArraySuperClass {
 		/** Dummy, will never be called (objects are transferred to this class only). */
 		private XTypedArray() {
 			super(null, null, null, 0);
