@@ -3,6 +3,7 @@ package de.robv.android.xposed;
 import android.annotation.SuppressLint;
 import android.app.ActivityThread;
 import android.app.AndroidAppHelper;
+import android.app.Application;
 import android.app.LoadedApk;
 import android.content.ComponentName;
 import android.content.pm.ApplicationInfo;
@@ -15,6 +16,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.Process;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.internal.os.ZygoteInit;
 
@@ -414,6 +416,19 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 		try {
 			findAndHookMethod(INSTALLER_PACKAGE_NAME + ".XposedApp", classLoader, "getActiveXposedVersion",
 					XC_MethodReplacement.returnConstant(XposedBridge.getXposedVersion()));
+
+			findAndHookMethod(INSTALLER_PACKAGE_NAME + ".XposedApp", classLoader, "onCreate", new XC_MethodHook() {
+				@Override
+				protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+					Application application = (Application) param.thisObject;
+					Resources res = application.getResources();
+					if (res.getIdentifier("installer_needs_update", "string", INSTALLER_PACKAGE_NAME) == 0) {
+						// If this resource is missing, take it as indication that the installer is outdated.
+						Log.e("XposedInstaller", "Xposed Installer is outdated (resource string \"installer_needs_update\" is missing)");
+						Toast.makeText(application, "Please update Xposed Installer!", Toast.LENGTH_LONG).show();
+					}
+				}
+			});
 		} catch (Throwable t) { Log.e(TAG, "Could not hook Xposed Installer", t); }
 	}
 
