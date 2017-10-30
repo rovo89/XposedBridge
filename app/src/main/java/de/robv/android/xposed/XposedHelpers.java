@@ -231,7 +231,7 @@ public final class XposedHelpers {
 	 * }
 	 *
 	 * // ... you can use this call:
-	 * findAndHookMethod("com.example.SomeClass", lpparam.classLoader, String.class, int.class, "com.example.MyClass", new XC_MethodHook() {
+	 * findAndHookMethod("com.example.SomeClass", lpparam.classLoader, "doSomething", String.class, int.class, "com.example.MyClass", new XC_MethodHook() {
 	 *   &#64;Override
 	 *   protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 	 *     String oldText = (String) param.args[0];
