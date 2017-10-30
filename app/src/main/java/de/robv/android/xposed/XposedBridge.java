@@ -506,6 +506,8 @@ public final class XposedBridge {
 	/*package*/ static native void closeFilesBeforeForkNative();
 	/*package*/ static native void reopenFilesAfterForkNative();
 
+	/*package*/ static native void invalidateCallersNative(Member[] methods);
+
 	/** @hide */
 	public static final class CopyOnWriteSortedSet<E> {
 		private transient volatile Object[] elements = EMPTY_ARRAY;
