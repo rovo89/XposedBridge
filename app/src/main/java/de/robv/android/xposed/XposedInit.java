@@ -494,7 +494,9 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 			return;
 		}
 
-		if (dexFile.loadClass(XposedBridge.class.getName(), topClassLoader) != null) {
+		boolean ignoreModuleXposedClassesError = SELinuxHelper.getAppDataFileService().checkFileExists(BASE_DIR + "conf/ignore_module_xposed_classes_error");
+
+		if (!ignoreModuleXposedClassesError && dexFile.loadClass(XposedBridge.class.getName(), topClassLoader) != null) {
 			Log.e(TAG, "  Cannot load module:");
 			Log.e(TAG, "  The Xposed API classes are compiled into the module's APK.");
 			Log.e(TAG, "  This may cause strange issues and must be fixed by the module developer.");
