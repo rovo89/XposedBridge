@@ -1,0 +1,47 @@
+From 094aced02587a659036d2d83296cfed49d5e3ef8 Mon Sep 17 00:00:00 2001
+From: rovo89 <android@robv.de>
+Date: Wed, 24 Feb 2016 20:55:37 +0100
+Subject: [PATCH 4/4] [Xposed] Improve label for see/link tags
+
+For methods/fields in other classes, mention the class name.
+For varargs methods, add ... notation.
+
+Change-Id: Ic16193662c618e697583d4fa0bdf6eae77e3903e
+---
+ src/com/google/doclava/LinkReference.java | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/src/com/google/doclava/LinkReference.java b/src/com/google/doclava/LinkReference.java
+index 816bdb1..e31c145 100644
+--- a/src/com/google/doclava/LinkReference.java
++++ b/src/com/google/doclava/LinkReference.java
+@@ -303,9 +303,15 @@ public class LinkReference {
+           result.memberInfo = method;
+         }
+       }
++      if (result.classInfo != cl) {
++        result.referencedMemberName = result.classInfo.name() + "." + mem;
++      }
++    }
++
++    if (result.referencedMemberName == null) {
++      result.referencedMemberName = mem;
+     }
+ 
+-    result.referencedMemberName = mem;
+     if (params != null) {
+       result.referencedMemberName = result.referencedMemberName + '(';
+       len = params.length;
+@@ -317,6 +323,9 @@ public class LinkReference {
+         }
+         result.referencedMemberName =
+             result.referencedMemberName + params[len] + paramDimensions[len];
++        if (varargs) {
++          result.referencedMemberName = result.referencedMemberName + "...";
++        }
+       }
+       result.referencedMemberName = result.referencedMemberName + ")";
+     }
+-- 
+2.7.0
+

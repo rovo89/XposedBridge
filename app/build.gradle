@@ -1,0 +1,167 @@
+import com.android.builder.core.BuilderConstants
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 15
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs += ['src/main/apacheCommonsLang']
+        }
+    }
+
+    // Only build the release variant
+    variantFilter { variant ->
+        if (variant.buildType.name != BuilderConstants.RELEASE) {
+            variant.ignore = true
+        }
+    }
+
+    // Add the hidden API stub classes to the bootclasspath.
+    // As they have to be injected before the official SDK classes and must not be part of the
+    // final JAR/APK, the best way seems to compile them in a separate project and use some dirty
+    // magic to add its output directory to all variants' configuration.
+    def hiddenapi = project(':hiddenapistubs')
+    hiddenapi.afterEvaluate {
+        hiddenapi.android.compileSdkVersion compileSdkVersion
+        hiddenapi.android.buildToolsVersion buildToolsVersion
+        preBuild.dependsOn hiddenapi.assembleRelease
+        hiddenapi.preBuild << {
+            def hiddenapiCompiler = hiddenapi.android.libraryVariants[0].javaCompiler
+            def hiddenapiDestPath = hiddenapiCompiler.destinationDir.getAbsolutePath()
+            applicationVariants.all { variant ->
+                variant.javaCompiler.with {
+                    dependsOn hiddenapiCompiler
+                    options.bootClasspath = hiddenapiDestPath + File.pathSeparator + options.bootClasspath
+                    if (variant.name == BuilderConstants.RELEASE) {
+                        generateDocs.options.bootClasspath = files(options.bootClasspath.split(File.pathSeparator), destinationDir).asType(List)
+                        generateStubs.options.bootClasspath = generateDocs.options.bootClasspath
+                        compileStubs.classpath = files(options.bootClasspath.split(File.pathSeparator))
+                    }
+                }
+            }
+        }
+    }
+}
+
+task generateDocs(type: Javadoc, dependsOn: 'compileReleaseSources') {
+    source = file('src/main/java')
+    ext.templateDir = file('doclib/template')
+    ext.overviewFile = file('doclib/overview.html')
+    inputs.dir ext.templateDir
+    inputs.file ext.overviewFile
+    title = null
+
+    options {
+        doclet = 'com.google.doclava.Doclava'
+        docletpath = fileTree(dir: 'doclib', include: '**/*.jar').asType(List)
+        jFlags '-Dignore.symbol.file'
+        addFileOption 'templatedir', ext.templateDir
+        addFileOption 'overview', ext.overviewFile
+        addBooleanOption 'nodefaultassets', true
+        addStringOption 'hdf android.whichdoc', 'offline'
+        addStringOption 'federate android', 'http://developer.android.com'
+        addFileOption 'federationapi android', fileTree(dir: 'doclib/api', include: 'android_*.txt').singleFile
+        addFileOption 'proofread', file("$buildDir/docs/proofread.txt")
+        addStringOption 'todo', 'reference/todo.html'
+        fileTree(dir: 'doclib/api', include: 'xposed_*.txt').visit {
+            addStringOption 'since ' + it.file, it.name.replaceFirst(/^xposed_0*(\d*)\.txt$/, '$1')
+        }
+
+        // The sources of the Android SDK are added to the sourcepath.
+        // This ensures that Javadoc can be inherited properly, but it
+        // takes longer and throws a lot of errors (which we ignore here).
+        def sdkSources = file("$android.sdkDirectory/sources/$android.compileSdkVersion")
+        assert sdkSources.exists()
+        addFileOption 'sourcepath', sdkSources
+
+        failOnError = false
+        addStringOption 'Xmaxwarns', '1'
+        addStringOption 'Xmaxerrs', '1'
+        (101..122).each {
+            addBooleanOption 'hide ' + it, true
+        }
+    }
+}
+
+task generateStubs(type: Javadoc, dependsOn: 'compileReleaseSources') {
+    source = file('src/main/java')
+    ext.stubsDir = "$buildDir/api/stub-sources"
+    outputs.dir ext.stubsDir
+    title = null
+
+    options {
+        doclet = 'com.google.doclava.Doclava'
+        docletpath = fileTree(dir: 'doclib', include: '**/*.jar').asType(List)
+        jFlags '-Dignore.symbol.file'
+        addBooleanOption 'nodocs', true
+        addFileOption 'stubs', file(ext.stubsDir)
+        addFileOption 'api', file('doclib/api/current.txt')
+        addBooleanOption 'hide 111', true
+        addBooleanOption 'hide 113', true
+    }
+}
+
+task compileStubs(type: JavaCompile, dependsOn: 'generateStubs') {
+    source = fileTree(generateStubs.ext.stubsDir)
+    destinationDir = file("$buildDir/api/stub-classes")
+    options.compilerArgs += '-XDsuppressNotes'
+}
+
+task jarStubs(type: Jar) {
+    from compileStubs
+    destinationDir = file("$buildDir/api")
+    baseName = 'api'
+}
+
+task jarStubsSource(type: Jar) {
+    from generateStubs.source
+    destinationDir = jarStubs.destinationDir
+    baseName = jarStubs.baseName
+    classifier = 'sources'
+}
+
+task generateAPI(dependsOn: ['generateDocs', 'generateStubs', 'jarStubs', 'jarStubsSource'])
+
+// Make sure that hiddenapistubs are placed before the Android SDK in app.iml
+// as there doesn't seem to be any way to configure this in Android Studio.
+task fixIml {
+    ext.imlFile = projectDir.absolutePath + '/' + project.name + '.iml'
+    inputs.file imlFile
+    outputs.file imlFile
+
+    doLast {
+        if (!file(imlFile).exists())
+            return
+
+        // Parse the existing iml file
+        def parse = new XmlParser().parse(imlFile)
+        def moduleComponent = parse.component.find { it.@name == 'NewModuleRootManager' }
+
+        // Check if it has already been fixed
+        def orderEntries = moduleComponent.orderEntry
+        if (orderEntries.find { it.@type == 'module' && it.@'module-name' == 'hiddenapistubs' })
+            return
+
+        // Determine the index of the Android SDK entry
+        def jdkOrderEntry = orderEntries.find { it.@type == 'jdk' }
+        def jdkOrderEntryIndex = moduleComponent.children().indexOf(jdkOrderEntry)
+
+        // Add the new entry just before it
+        moduleComponent.children().add(jdkOrderEntryIndex, new Node(null, 'orderEntry',
+                ['type': 'module', 'module-name': 'hiddenapistubs', 'exported': '']))
+
+        // Write the fixed iml file
+        def printer = new XmlNodePrinter(new PrintWriter(new FileWriter(imlFile)))
+        printer.preserveWhitespace = true
+        printer.print(parse)
+    }
+}
+
+tasks.preBuild.dependsOn fixIml

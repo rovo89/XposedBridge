@@ -1,0 +1,119 @@
+From fd3b7d73abeb44dc75bdea49709a8014b740376a Mon Sep 17 00:00:00 2001
+From: rovo89 <android@robv.de>
+Date: Wed, 24 Feb 2016 20:09:55 +0100
+Subject: [PATCH 1/4] [Xposed] Only generate docs/stubs/API file for included
+ classes
+
+XposedBridge puts some classes into existing android.* packages.
+However, Doclava can only consider/ignore all classes in a package.
+These changes make sure that only the explicitly specified classes are
+considered.
+
+Change-Id: I3f0f9d20da15d6057816372e39bdeb0887c8c5a8
+---
+ src/com/google/doclava/Doclava.java     | 8 ++++----
+ src/com/google/doclava/NavTree.java     | 2 +-
+ src/com/google/doclava/PackageInfo.java | 2 +-
+ src/com/google/doclava/Stubs.java       | 6 +++---
+ 4 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/com/google/doclava/Doclava.java b/src/com/google/doclava/Doclava.java
+index 23ede5f..10c6d2e 100644
+--- a/src/com/google/doclava/Doclava.java
++++ b/src/com/google/doclava/Doclava.java
+@@ -873,7 +873,7 @@ public class Doclava {
+ 
+     SortedMap<String, Object> sorted = new TreeMap<String, Object>();
+     for (ClassInfo cl : classes) {
+-      if (cl.isHiddenOrRemoved()) {
++      if (cl.isHiddenOrRemoved() || !cl.isIncluded()) {
+         continue;
+       }
+       sorted.put(cl.qualifiedName(), cl);
+@@ -1283,7 +1283,7 @@ public class Doclava {
+     ClassInfo[] classes = Converter.rootClasses();
+     ArrayList<ClassInfo> info = new ArrayList<ClassInfo>();
+     for (ClassInfo cl : classes) {
+-      if (!cl.isHiddenOrRemoved()) {
++      if (!cl.isHiddenOrRemoved() && cl.isIncluded()) {
+         info.add(cl);
+       }
+     }
+@@ -1298,7 +1298,7 @@ public class Doclava {
+ 
+     for (ClassInfo cl : classes) {
+       Data data = makePackageHDF();
+-      if (!cl.isHiddenOrRemoved()) {
++      if (!cl.isHiddenOrRemoved() && cl.isIncluded()) {
+         writeClass(cl, data);
+       }
+     }
+@@ -1315,7 +1315,7 @@ public class Doclava {
+   public static void makeClassListHDF(Data data, String base, ClassInfo[] classes) {
+     for (int i = 0; i < classes.length; i++) {
+       ClassInfo cl = classes[i];
+-      if (!cl.isHiddenOrRemoved()) {
++      if (!cl.isHiddenOrRemoved() && cl.isIncluded()) {
+         cl.makeShortDescrHDF(data, base + "." + i);
+       }
+     }
+diff --git a/src/com/google/doclava/NavTree.java b/src/com/google/doclava/NavTree.java
+index cbe9fee..4ce7438 100644
+--- a/src/com/google/doclava/NavTree.java
++++ b/src/com/google/doclava/NavTree.java
+@@ -147,7 +147,7 @@ public class NavTree {
+     List<Node> children = new ArrayList<Node>();
+ 
+     for (ClassInfo cl : classes) {
+-      if (cl.checkLevel()) {
++      if (cl.checkLevel() && cl.isIncluded()) {
+         children.add(new Node(cl.name(), cl.htmlPage(), null, cl.getSince()));
+       }
+     }
+diff --git a/src/com/google/doclava/PackageInfo.java b/src/com/google/doclava/PackageInfo.java
+index 46b5b8f..89d2d36 100644
+--- a/src/com/google/doclava/PackageInfo.java
++++ b/src/com/google/doclava/PackageInfo.java
+@@ -190,7 +190,7 @@ public class PackageInfo extends DocInfo implements ContainerInfo {
+     ArrayList<ClassInfo> out = new ArrayList<ClassInfo>();
+ 
+     for (ClassInfo cl : classes) {
+-      if (!cl.isHiddenOrRemoved()) {
++      if (!cl.isHiddenOrRemoved() && cl.isIncluded()) {
+         out.add(cl);
+       }
+     }
+diff --git a/src/com/google/doclava/Stubs.java b/src/com/google/doclava/Stubs.java
+index 6795bd4..b088e40 100644
+--- a/src/com/google/doclava/Stubs.java
++++ b/src/com/google/doclava/Stubs.java
+@@ -91,7 +91,7 @@ public class Stubs {
+     // complain about anything that looks includeable but is not supposed to
+     // be written, e.g. hidden things
+     for (ClassInfo cl : notStrippable) {
+-      if (!cl.isHiddenOrRemoved()) {
++      if (!cl.isHiddenOrRemoved() && cl.isIncluded()) {
+         for (MethodInfo m : cl.selfMethods()) {
+           if (m.isHiddenOrRemoved()) {
+             Errors.error(Errors.UNAVAILABLE_SYMBOL, m.position(), "Reference to unavailable method "
+@@ -172,7 +172,7 @@ public class Stubs {
+     HashMap<PackageInfo, List<ClassInfo>> packages = new HashMap<PackageInfo, List<ClassInfo>>();
+     final HashSet<Pattern> stubPackageWildcards = extractWildcards(stubPackages);
+     for (ClassInfo cl : notStrippable) {
+-      if (!cl.isDocOnly()) {
++      if (!cl.isDocOnly() && cl.isIncluded()) {
+         if (shouldWriteStub(cl.containingPackage().name(), stubPackages, stubPackageWildcards)) {
+           // write out the stubs
+           if (stubsDir != null) {
+@@ -1182,7 +1182,7 @@ public class Stubs {
+       Collections.sort(classes, ClassInfo.comparator);
+       boolean hasWrittenPackageHead = false;
+       for (ClassInfo cl : classes) {
+-        if (cl.hasRemovedSelfMembers()) {
++        if (cl.hasRemovedSelfMembers() && cl.isIncluded()) {
+           if (!hasWrittenPackageHead) {
+             hasWrittenPackageHead = true;
+             apiWriter.print("package ");
+-- 
+2.7.0
+

@@ -1,0 +1,57 @@
+This file lists the changes in the Xposed Framework API:
+--------------------------------------------------------
+v82:
+  added XposedHelpers.findClassIfExists() helper
+  added XposedHelpers.findMethodIfExists() helpers
+  added XposedHelpers.findConstructorIfExists() helpers
+  added XposedHelpers.findFieldIfExists() helper
+
+v81:
+  added IXUnhook.getCallback()
+  deprecated XposedBridge.unhookMethod(), use IXUnhook instead
+  deprecated full-name variants of XResources.hookLayout() etc.
+  removed several other unhooking methods, use IXUnhook instead
+  removed XC_LoadPackage / XC_InitPackageResources constructors
+  removed class de.robv.android.xposed.IXposedHookCmdInit
+
+v65:
+  added XposedBridge.getXposedVersion()
+  deprecated XposedBridge.XPOSED_BRIDGE_VERSION
+
+v63:
+  added XposedHelpers.incrementMethodDepth()
+  added XposedHelpers.decrementMethodDepth()
+  added XposedHelpers.getMethodDepth()
+
+v60:
+  added IXposedHookZygoteInit.StartupParam.startsSystemServer
+  added class de.robv.android.xposed.SELinuxHelper
+  added class de.robv.android.xposed.services.BaseService
+  added class de.robv.android.xposed.services.FileResult
+
+v53:
+  added XSharedPreferences.getFile()
+  added XSharedPreferences.hasFileChanged()
+
+v52:
+  added XResources.getPackageNameDuringConstruction()
+
+v51:
+  deprecated class de.robv.android.xposed.IXposedHookCmdInit (removed in v81)
+  added XposedHelpers.findAndHookConstructor()
+  added XposedHelpers.findConstructorExact() variants
+
+v50:
+  added class android.content.res.XResources.DimensionReplacement
+
+v42:
+  added XposedHelpers.findFirstFieldByExactType()
+
+v39:
+  added XCallback.Param.getExtra()
+
+v37:
+  added XposedBridge.XPOSED_BRIDGE_VERSION (deprecated again in v65)
+
+v36:
+  added XposedHelpers.findMethodsByExactParameters()

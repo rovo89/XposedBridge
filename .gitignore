@@ -1,3 +1,9 @@
-/gen
-/bin
-/XposedBridgeApi*.jar
+*.iml
+.idea
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
