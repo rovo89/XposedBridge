@@ -475,9 +475,16 @@ import static de.robv.android.xposed.XposedHelpers.setStaticObjectField;
 	private static void loadModule(String apk, ClassLoader topClassLoader) {
 		Log.i(TAG, "Loading modules from " + apk);
 
-		if (!new File(apk).exists()) {
+		char i = '1';
+		while (!new File(apk).exists()) {
 			Log.e(TAG, "  File does not exist");
-			return;
+			String replacement = apk.replaceFirst("-[1-3]/base\\.apk", "-" + i + "/base.apk");
+			if (replacement.equals(apk) || i >= '3') {
+				return;
+			}
+			apk = replacement;
+			Log.e(TAG, " Retrying " + apk);
+			i++;
 		}
 
 		DexFile dexFile;
